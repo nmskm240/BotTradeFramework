@@ -3,3 +3,5 @@ requests
 ccxt
 matplotlib 
 backtesting
+ipykernel
+sqlalchemy
