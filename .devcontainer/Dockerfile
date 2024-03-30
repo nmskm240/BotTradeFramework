@@ -1,12 +1,8 @@
-FROM python:3.10.6
-# Latest version in 2022.9.1
+FROM mcr.microsoft.com/dotnet/sdk:8.0
 
-RUN python -m pip install --upgrade pip
-
-WORKDIR /workspace
-
-COPY ./requirements.txt /workspace/
-
-RUN pip install -r requirements.txt
-
-ENV JUPYTER_ENABLE_LAB = yes
+RUN apt-get update \
+    && apt-get install -y \
+        sqlite3 \
+        libsqlite3-dev \
+        default-jre \
+        graphviz 

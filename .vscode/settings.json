@@ -1,0 +1,4 @@
+{
+    "plantuml.exportIncludeFolderHeirarchy": true,
+    "plantuml.exportSubFolder": false
+}

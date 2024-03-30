@@ -1,18 +1,21 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
-    "name": "TradeBots",
-    "dockerFile": "Dockerfile",
-	"workspaceFolder": "/workspace", 
-	"workspaceMount": "source=${localWorkspaceFolder},target=/workspace,type=bind,consistency=cached",
+	"name": "C# (.NET)",
+	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+	"dockerFile": "Dockerfile",
+	"features": {},
+	// Use 'postCreateCommand' to run commands after the container is created.
+	// "postCreateCommand": "dotnet restore",
+	"remoteUser": "root",
 	"customizations": {
 		"vscode": {
-			"settings": {
-				"terminal.integrated.shell.linux": "/bin/bash",
-				"python.pythonPath": "/usr/local/bin/python"
-			},
 			"extensions": [
-				"ms-python.python",
-				"ms-toolsai.jupyter",
-				"mechatroner.rainbow-csv"
+				"ms-dotnettools.vscode-dotnet-runtime",
+				"ms-dotnettools.csharp",
+				"k--kato.docomment",
+				"ms-dotnettools.vscodeintellicode-csharp",
+				"jebbs.plantuml"
 			]
 		}
 	}
