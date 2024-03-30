@@ -1,34 +1,31 @@
-namespace Domain.Attribute
+namespace BotTrade.Domain;
+
+[AttributeUsage(AttributeTargets.Field)]
+public class EnumStringAttribute : Attribute
 {
-    using System;
+    public string StringValue { get; protected set; }
 
-    [AttributeUsage(AttributeTargets.Field)]
-    public class EnumStringAttribute : Attribute
+    public EnumStringAttribute(string value)
     {
-        public string StringValue { get; protected set; }
-
-        public EnumStringAttribute(string value)
-        {
-            this.StringValue = value;
-        }
+        this.StringValue = value;
     }
+}
 
 
 
-    public static class EnumString
+public static class EnumString
+{
+    public static string? GetStringValue(this Enum value)
     {
-        public static string? GetStringValue(this Enum value)
-        {
-            var type = value.GetType();
-            var fieldInfo = type.GetField(value.ToString());
+        var type = value.GetType();
+        var fieldInfo = type.GetField(value.ToString());
 
-            if (fieldInfo == null) 
-                return null;
+        if (fieldInfo == null)
+            return null;
 
-            var attribs = fieldInfo.GetCustomAttributes(typeof(EnumStringAttribute), false) as EnumStringAttribute[];
+        var attribs = fieldInfo.GetCustomAttributes(typeof(EnumStringAttribute), false) as EnumStringAttribute[];
 
-            return attribs?.Length > 0 ? attribs[0].StringValue : null;
+        return attribs?.Length > 0 ? attribs[0].StringValue : null;
 
-        }
     }
 }

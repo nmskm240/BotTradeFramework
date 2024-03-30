@@ -1,0 +1,47 @@
+@startuml
+
+package BotTrade
+{
+    package Domain
+    {
+        enum Symbol
+        enum Timeframe
+        class Candle
+        class Bot
+        interface ICandleRepository
+        interface IExchange
+
+        package Strategy
+        {
+            class CustomStrategy
+            interface IStrategy
+        }
+    }
+    package Application
+    {
+        class BotService
+    }
+    package Presentation
+    {
+        class TradeHistoryGraph
+    }
+    package Infra
+    {
+        class PastCandleRepository
+        class BacktestExchange
+        class RealExchnage
+    }
+}
+
+IExchange <|-- BacktestExchange
+IExchange <|-- RealExchnage
+IStrategy <|-- CustomStrategy
+ICandleRepository <|-- PastCandleRepository
+
+CustomStrategy o.left.> IExchange
+Bot o-- IStrategy
+
+Bot <-up- BotService: controll
+Candle <-down- IExchange: fetch and store
+
+@enduml

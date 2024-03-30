@@ -1,7 +1,7 @@
-using Infra;
-using Domain.Candle;
+using BotTrade.Infra;
+using BotTrade.Domain;
 
-namespace Test;
+namespace BotTrade.Test;
 
 public class CnadleRepositoryTest
 {
@@ -31,22 +31,22 @@ public class CnadleRepositoryTest
 
         var a = candles.First();
         var b = candles.Last();
-        var span = b.Timestamp - a.Timestamp;
+        var span = b.Date - a.Date;
 
         Assert.Equal(a.Symbol, b.Symbol);
-        Assert.NotEqual(a.Timestamp, 0);
-        Assert.NotEqual(b.Timestamp, 0);
-        Assert.Equal(span, (int)timeframe * 60 * 1000);
+        Assert.NotEqual(0, a.Date.Ticks);
+        Assert.NotEqual(0, b.Date.Ticks);
+        Assert.Equal(span.Ticks, (int)timeframe * 60 * 1000);
         // リサンプリング失敗などを考慮しておく
-        Assert.True(a.Open > 0f);
-        Assert.True(b.Open > 0f);
-        Assert.True(a.Close > 0f);
-        Assert.True(b.Close > 0f);
-        Assert.True(a.High > 0f);
-        Assert.True(b.High > 0f);
-        Assert.True(a.Low > 0f);
-        Assert.True(b.Low > 0f);
-        Assert.True(a.Volume >= 0f);
-        Assert.True(b.Volume >= 0f);
+        Assert.True(a.Open > 0);
+        Assert.True(b.Open > 0);
+        Assert.True(a.Close > 0);
+        Assert.True(b.Close > 0);
+        Assert.True(a.High > 0);
+        Assert.True(b.High > 0);
+        Assert.True(a.Low > 0);
+        Assert.True(b.Low > 0);
+        Assert.True(a.Volume >= 0);
+        Assert.True(b.Volume >= 0);
     }
 }
