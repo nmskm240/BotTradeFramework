@@ -1,3 +1,4 @@
 {
-    "dotnet-test-explorer.testProjectPath": "**/*Test.cspoj"
+    "plantuml.exportIncludeFolderHeirarchy": true,
+    "plantuml.exportSubFolder": false
 }
