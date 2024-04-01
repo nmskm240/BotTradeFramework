@@ -22,11 +22,11 @@ public class Candle : IQuote
         Volume = volume;
     }
 
-    public static Candle Integration(IEnumerable<Candle> candles)
+    public static Candle Aggregate(IEnumerable<Candle> candles)
     {
-        if(candles == null || candles.Any(e => e == null))
+        if (candles == null || candles.Any(e => e == null))
             throw new ArgumentException("引数がNullもしくは空", nameof(candles));
-        else if(candles.GroupBy(e => e.Symbol).Count() != 1)
+        else if (candles.GroupBy(e => e.Symbol).Count() != 1)
             throw new ArgumentException("別銘柄の統合はできない", nameof(candles));
 
         var symbol = candles.First().Symbol;
