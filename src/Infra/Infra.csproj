@@ -12,6 +12,7 @@
 
   <ItemGroup>
     <PackageReference Include="ccxt" Version="4.2.85" />
+    <PackageReference Include="System.Reactive" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
