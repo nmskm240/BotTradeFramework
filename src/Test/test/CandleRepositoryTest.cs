@@ -6,12 +6,12 @@ namespace BotTrade.Test;
 public class CnadleRepositoryTest
 {
     [Theory(DisplayName = "過去データの取得")]
-    [InlineData(Symbol.BTCUSDT, Timeframe.OneMinute)]
-    [InlineData(Symbol.BTCUSDT, Timeframe.FiveMinute)]
-    [InlineData(Symbol.ETHUSDT, Timeframe.FifteenMinute)]
-    [InlineData(Symbol.ETHUSDT, Timeframe.OneHour)]
-    [InlineData(Symbol.ETHBTC, Timeframe.FourHour)]
-    [InlineData(Symbol.ETHBTC, Timeframe.OneDay)]
+    [InlineData(Symbol.Spot_BTCUSDT, Timeframe.OneMinute)]
+    [InlineData(Symbol.Spot_BTCUSDT, Timeframe.FiveMinute)]
+    [InlineData(Symbol.Spot_ETHUSDT, Timeframe.FifteenMinute)]
+    [InlineData(Symbol.Spot_ETHUSDT, Timeframe.OneHour)]
+    [InlineData(Symbol.Spot_ETHBTC, Timeframe.FourHour)]
+    [InlineData(Symbol.Spot_ETHBTC, Timeframe.OneDay)]
     public async Task FetchHistoricalData(Symbol symbol, Timeframe timeframe)
     {
         var repository = new PastCandleRepository();
