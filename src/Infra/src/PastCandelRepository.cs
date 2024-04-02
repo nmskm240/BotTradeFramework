@@ -43,7 +43,7 @@ public class PastCandleRepository : ICandleRepository, IDisposable
         while (reader.Read())
         {
             var index = 1;
-            var date = new DateTime(reader.GetInt64(index++));
+            var date = DateTime.UnixEpoch.AddMilliseconds(reader.GetDouble(index++));
             var open = reader.GetDecimal(index++);
             var high = reader.GetDecimal(index++);
             var low = reader.GetDecimal(index++);

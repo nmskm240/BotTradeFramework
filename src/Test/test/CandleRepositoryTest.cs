@@ -36,7 +36,7 @@ public class CnadleRepositoryTest
         Assert.Equal(a.Symbol, b.Symbol);
         Assert.NotEqual(0, a.Date.Ticks);
         Assert.NotEqual(0, b.Date.Ticks);
-        Assert.Equal(span.Ticks, (int)timeframe * 60 * 1000);
+        Assert.Equal(span.Ticks, (int)timeframe * TimeSpan.TicksPerMinute);
         // リサンプリング失敗などを考慮しておく
         Assert.True(a.Open > 0);
         Assert.True(b.Open > 0);
