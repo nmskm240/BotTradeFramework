@@ -1,4 +1,4 @@
-namespace BotTrade.Domain;
+namespace BotTrade;
 
 [AttributeUsage(AttributeTargets.Field)]
 public class EnumStringAttribute : Attribute
