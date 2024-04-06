@@ -14,7 +14,6 @@ public class Backtest : IExchange
 
     public Task Buy(Symbol symbol, float quantity)
     {
-        throw new NotImplementedException();
     }
 
     public Task Cancel()
@@ -43,6 +42,5 @@ public class Backtest : IExchange
 
     public Task Sell(Symbol symbol, float quantity)
     {
-        throw new NotImplementedException();
     }
 }
