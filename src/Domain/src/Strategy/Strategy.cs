@@ -3,16 +3,17 @@ using System.Reactive.Linq;
 
 namespace BotTrade.Domain.Strategy;
 
+// MEMO: あとでアービトラージ系に対応するなら、インターフェースと抽象クラスに切り分けた方がいいかもしれない
 /// <summary>
 /// 取引戦略のベースクラス
 /// </summary>
 /// <remarks> 
-/// アービトラージなどの複数の取引所の監視や両建てには非対応<br/>
+/// アービトラージなどの複数の取引所の監視や、両建てのような複数ポジションの管理には非対応<br/>
 /// </remarks> 
 /// <typeparam name="T"></typeparam>
 public abstract class Strategy<T> : IDisposable where T : StrategyParameter
 {
-    private IDisposable? _disposable;
+    private IDisposable? _subscription;
     
     /// <summary>
     /// 確定足のキャッシュデータ 
@@ -22,18 +23,24 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
     /// キュー管理のため最新は<c>Last</c>、最古は<c>First</c>で取得 
     /// </remarks>
     protected RingQueue<Candle> PastCandles { get; init; }
-    protected IExchange Exchange { get; init; }
+    private IExchange Exchange { get; init; }
     protected T Parameter { get; init; }
     public bool IsStarted { get; private set; } = false;
+    private Position? Position { get; set; }
+    // TODO: 外部保存できるようにDI化したい
+    private List<Position> TradeHistory { get; } = [];
+    public decimal Capital { get; private set; }
 
-    protected Strategy(IExchange exchange, T parameter)
+    protected Strategy(IExchange exchange, decimal capital, T parameter)
     {
         Debug.Assert(exchange != null);
         Debug.Assert(parameter != null);
+        Debug.Assert(capital > 0);
 
         // TODO: Configから変更できるようにする
         PastCandles = new RingQueue<Candle>(100);
         Exchange = exchange;
+        Capital = capital;
         Parameter = parameter;
     }
 
@@ -42,9 +49,9 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
         if (IsStarted) return;
         
         OnPreStart();
-        _disposable = Exchange.OnFetchedCandle(Parameter.Symbol, Parameter.Timeframe)
+        _subscription = Exchange.OnFetchedCandle(Parameter.Symbol, Parameter.Timeframe)
                         .Subscribe(
-                            OnNext,
+                            async value => await OnNext(value),
                             (ex) => Stop(),
                             Stop
                         );
@@ -55,8 +62,8 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
     public void Stop()
     {
         OnPreStop();
-        _disposable?.Dispose();
-        _disposable = null;
+        _subscription?.Dispose();
+        _subscription = null;
         IsStarted = false;
         OnPostStop();
     }
@@ -67,15 +74,44 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
         GC.SuppressFinalize(this);
     }
 
-    private void OnNext(Candle candle)
+    private async Task OnNext(Candle candle)
     {
         PastCandles.Enqueue(candle);
-        MightTrade();
+        await MightTrade();
+    }
+
+    // MEMO: ポジションを1つしか持てないように制限するための実装
+    protected async Task Buy(decimal quantity)
+    {
+        if(Position?.Status == PositionStatus.Open)
+        {
+            Capital += await Exchange.ClosePosition(Position);
+            Console.WriteLine($"position close. Capital: {Capital}");
+            return;
+        }
+
+        Position = await Exchange.Buy(Parameter.Symbol, quantity);
+        Console.WriteLine($"position create. type: {Position.Type} entry: {Position.Entry}");
+        TradeHistory.Add(Position);
+    }
+
+    protected async Task Sell(decimal quantity)
+    {
+        if(Position?.Status == PositionStatus.Open)
+        {
+            Capital += await Exchange.ClosePosition(Position);
+            Console.WriteLine($"position close. Capital: {Capital}");
+            return;
+        }
+
+        Position = await Exchange.Sell(Parameter.Symbol, quantity);
+        Console.WriteLine($"position create. type: {Position.Type} entry: {Position.Entry}");
+        TradeHistory.Add(Position);
     }
 
     protected virtual void OnPreStart() { }
     protected virtual void OnPostStart() { }
     protected virtual void OnPreStop() { }
     protected virtual void OnPostStop() { }
-    protected abstract void MightTrade();
+    protected abstract Task MightTrade();
 }

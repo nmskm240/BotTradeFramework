@@ -4,8 +4,8 @@ namespace BotTrade.Domain;
 
 public interface IExchange
 {
-    Task Buy(Symbol symbol, float quantity);
-    Task Sell(Symbol symbol, float quantity);
-    Task Cancel();
+    Task<Position> Buy(Symbol symbol, decimal quantity);
+    Task<Position> Sell(Symbol symbol, decimal quantity);
+    Task<decimal> ClosePosition(Position position);
     IObservable<Candle> OnFetchedCandle(Symbol symbol, Timeframe timeframe);
 }

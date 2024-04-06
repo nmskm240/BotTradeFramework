@@ -19,24 +19,22 @@ public record MACrossParameter : StrategyParameter
 
 public class MACross : Strategy<MACrossParameter>
 {
-    public MACross(IExchange exchange, MACrossParameter parameter) : base(exchange, parameter)
+    public MACross(IExchange exchange, decimal capital, MACrossParameter parameter) : base(exchange, capital, parameter)
     {
     }
 
-    protected override void MightTrade()
+    protected override async Task MightTrade()
     {
         var shortMa = PastCandles.GetSma(Parameter.ShortSpan);
         var longMa = PastCandles.GetSma(Parameter.LongSpan);
 
-        Console.WriteLine(shortMa.First());
-
         if(StrategyUtilty.IsGoldenCross(shortMa, longMa))
         {
-            Exchange.Buy(Parameter.Symbol, 1);
+            await Buy(1);
         }
         else if(StrategyUtilty.IsDeadCross(shortMa, longMa))
         {
-            Exchange.Sell(Parameter.Symbol, 1);
+            await Sell(1);
         }
     }
 }

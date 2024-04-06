@@ -14,3 +14,11 @@ public enum Timeframe
     [EnumString("1d")]
     OneDay = 1440,
 }
+
+public static partial class TimeframeExtensions
+{
+    public static TimeSpan ToTimeSpan(this Timeframe timeframe)
+    {
+        return TimeSpan.FromSeconds((int)timeframe * 60);
+    }
+}
