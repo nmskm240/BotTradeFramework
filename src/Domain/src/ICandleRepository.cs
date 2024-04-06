@@ -1,5 +1,3 @@
-using System.Runtime.CompilerServices;
-
 namespace BotTrade.Domain;
 
 public interface ICandleRepository
