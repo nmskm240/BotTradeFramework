@@ -1,5 +1,6 @@
 
 
+using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
 
 namespace BotTrade.Domain.Strategy;
@@ -19,7 +20,7 @@ public record MACrossParameter : StrategyParameter
 
 public class MACross : Strategy<MACrossParameter>
 {
-    public MACross(IExchange exchange, decimal capital, MACrossParameter parameter) : base(exchange, capital, parameter)
+    public MACross(IExchange exchange, MACrossParameter parameter, ILogger<MACross> logger) : base(exchange, parameter, logger)
     {
     }
 
@@ -28,11 +29,11 @@ public class MACross : Strategy<MACrossParameter>
         var shortMa = PastCandles.GetSma(Parameter.ShortSpan);
         var longMa = PastCandles.GetSma(Parameter.LongSpan);
 
-        if(StrategyUtilty.IsGoldenCross(shortMa, longMa))
+        if (StrategyUtilty.IsGoldenCross(shortMa, longMa))
         {
             await Buy(1);
         }
-        else if(StrategyUtilty.IsDeadCross(shortMa, longMa))
+        else if (StrategyUtilty.IsDeadCross(shortMa, longMa))
         {
             await Sell(1);
         }

@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Reactive.Linq;
+using Microsoft.Extensions.Logging;
 
 namespace BotTrade.Domain.Strategy;
 
@@ -29,26 +30,33 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
     private Position? Position { get; set; }
     // TODO: 外部保存できるようにDI化したい
     private List<Position> TradeHistory { get; } = [];
+    private ILogger Logger { get; init; }
     public decimal Capital { get; private set; }
 
-    protected Strategy(IExchange exchange, decimal capital, T parameter)
+    protected Strategy(IExchange exchange, T parameter, ILogger<Strategy<T>> logger)
     {
         Debug.Assert(exchange != null);
         Debug.Assert(parameter != null);
-        Debug.Assert(capital > 0);
 
         // TODO: Configから変更できるようにする
         PastCandles = new RingQueue<Candle>(100);
         Exchange = exchange;
-        Capital = capital;
         Parameter = parameter;
+        Logger = logger;
     }
 
-    public void MightStart()
+    public void MightStart(decimal capital)
     {
-        if (IsStarted) return;
+        if (IsStarted) 
+        {
+            Logger.LogWarning("すでに動作中のため実行をキャンセル");
+            return;
+        }
+
+        Logger.LogInformation($"{GetType()}を所持金{capital}で稼働");
         
         OnPreStart();
+
         _subscription = Exchange.OnFetchedCandle(Parameter.Symbol, Parameter.Timeframe)
                         .Subscribe(
                             async value => await OnNext(value),
