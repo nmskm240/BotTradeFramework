@@ -1,5 +1,7 @@
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using BotTrade.Domain;
+using BotTrade.Domain.Strategy;
 
 namespace BotTrade.Infra.Exchange;
 
@@ -9,50 +11,48 @@ namespace BotTrade.Infra.Exchange;
 /// <remarks>
 /// 通常の取引所と同様に扱え、注文処理は今の時間足のOClose価格で確定される
 /// </remarks>
-public class Backtest : IExchange
+public class Backtest : Domain.Exchange
 {
-    private readonly ICandleRepository _repository;
+    private ICandleRepository Repository { get; init; }
     private Candle? _currentCandle;
+    public override IConnectableObservable<Candle> OnFetchedCandle { get; init; }
 
     // TODO: 手数料を設定できるように
-    public Backtest(ICandleRepository repository)
+    public Backtest(StrategyParameter parameter, ICandleRepository repository) : base(parameter)
     {
-        _repository = repository;
+        Repository = repository;
+        OnFetchedCandle = Observable.Create<Candle>(async observer =>
+            {
+                try
+                {
+                    await foreach (var e in Repository.Fetch(Symbol, Timeframe))
+                    {
+                        _currentCandle = e;
+                        observer.OnNext(e);
+                    }
+                    observer.OnCompleted();
+                }
+                catch (Exception e)
+                {
+                    observer.OnError(e);
+                }
+            }).Publish();
     }
 
-    public async Task<Position> Buy(Symbol symbol, decimal quantity)
+    public override async Task<Position> Buy(Symbol symbol, decimal quantity)
     {
         var position = new Position(symbol, PositionType.Long, quantity, _currentCandle!.Close);
         return await Task.FromResult(position);
     }
 
-    public async Task<decimal> ClosePosition(Position position)
+    public override async Task<decimal> ClosePosition(Position position)
     {
         position.Close(_currentCandle!.Close);
         return await Task.FromResult(position.Result());
     }
 
-    public IObservable<Candle> OnFetchedCandle(Symbol symbol, Timeframe timeframe = Timeframe.OneMinute)
-    {
-        return Observable.Create<Candle>(async observer =>
-        {
-            try
-            {
-                await foreach (var e in _repository.Fetch(symbol, timeframe))
-                {
-                    _currentCandle = e;
-                    observer.OnNext(e);
-                }
-                observer.OnCompleted();
-            }
-            catch (Exception e)
-            {
-                observer.OnError(e);
-            }
-        });
-    }
 
-    public async Task<Position> Sell(Symbol symbol, decimal quantity)
+    public override async Task<Position> Sell(Symbol symbol, decimal quantity)
     {
         var position = new Position(symbol, PositionType.Short, quantity, _currentCandle!.Close);
         return await Task.FromResult(position);

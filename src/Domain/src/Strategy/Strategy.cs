@@ -15,7 +15,7 @@ namespace BotTrade.Domain.Strategy;
 public abstract class Strategy<T> : IDisposable where T : StrategyParameter
 {
     private IDisposable? _subscription;
-    
+
     /// <summary>
     /// 確定足のキャッシュデータ 
     /// </summary>
@@ -24,7 +24,7 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
     /// キュー管理のため最新は<c>Last</c>、最古は<c>First</c>で取得 
     /// </remarks>
     protected RingQueue<Candle> PastCandles { get; init; }
-    private IExchange Exchange { get; init; }
+    private Exchange Exchange { get; init; }
     protected T Parameter { get; init; }
     public bool IsStarted { get; private set; } = false;
     private Position? Position { get; set; }
@@ -33,7 +33,7 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
     private ILogger Logger { get; init; }
     public decimal Capital { get; private set; }
 
-    protected Strategy(IExchange exchange, T parameter, ILogger<Strategy<T>> logger)
+    protected Strategy(Exchange exchange, T parameter, ILogger<Strategy<T>> logger)
     {
         Debug.Assert(exchange != null);
         Debug.Assert(parameter != null);
@@ -43,26 +43,26 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
         Exchange = exchange;
         Parameter = parameter;
         Logger = logger;
-    }
-
-    public void MightStart(decimal capital)
-    {
-        if (IsStarted) 
-        {
-            Logger.LogWarning("すでに動作中のため実行をキャンセル");
-            return;
-        }
-
-        Logger.LogInformation($"{GetType()}を所持金{capital}で稼働");
-        
-        OnPreStart();
-
-        _subscription = Exchange.OnFetchedCandle(Parameter.Symbol, Parameter.Timeframe)
+        _subscription = Exchange.OnFetchedCandle
                         .Subscribe(
                             async value => await OnNext(value),
                             (ex) => Stop(),
                             Stop
                         );
+    }
+
+    public void MightStart(decimal capital)
+    {
+        if (IsStarted)
+        {
+            Logger.LogWarning("すでに動作中のため実行をキャンセル");
+            return;
+        }
+
+        Capital = capital;
+        Logger.LogInformation($"{GetType()}を所持金{capital}で稼働");
+        OnPreStart();
+        Exchange.OnFetchedCandle.Connect();
         IsStarted = true;
         OnPostStart();
     }
@@ -70,16 +70,21 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
     public void Stop()
     {
         OnPreStop();
-        _subscription?.Dispose();
-        _subscription = null;
+        UnSubscribe();
         IsStarted = false;
         OnPostStop();
     }
 
     public void Dispose()
     {
-        if (IsStarted) Stop();
+        if (IsStarted) UnSubscribe();
         GC.SuppressFinalize(this);
+    }
+
+    private void UnSubscribe()
+    {
+        _subscription?.Dispose();
+        _subscription = null;
     }
 
     private async Task OnNext(Candle candle)
@@ -91,7 +96,7 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
     // MEMO: ポジションを1つしか持てないように制限するための実装
     protected async Task Buy(decimal quantity)
     {
-        if(Position?.Status == PositionStatus.Open)
+        if (Position?.Status == PositionStatus.Open)
         {
             Capital += await Exchange.ClosePosition(Position);
             Console.WriteLine($"position close. Capital: {Capital}");
@@ -105,7 +110,7 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
 
     protected async Task Sell(decimal quantity)
     {
-        if(Position?.Status == PositionStatus.Open)
+        if (Position?.Status == PositionStatus.Open)
         {
             Capital += await Exchange.ClosePosition(Position);
             Console.WriteLine($"position close. Capital: {Capital}");

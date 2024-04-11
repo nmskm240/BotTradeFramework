@@ -1,4 +1,10 @@
 {
     "plantuml.exportIncludeFolderHeirarchy": true,
-    "plantuml.exportSubFolder": false
+    "plantuml.exportSubFolder": false,
+    "notebook.insertFinalNewline": true,
+    "notebook.editorOptionsCustomizations": {
+        "editor.colorDecorators": true
+    },
+    "polyglot-notebook.defaultNotebookLanguage": "csharp",
+    "polyglot-notebook.defaultNotebookExtension": ".ipynb"
 }

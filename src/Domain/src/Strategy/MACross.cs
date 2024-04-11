@@ -20,7 +20,7 @@ public record MACrossParameter : StrategyParameter
 
 public class MACross : Strategy<MACrossParameter>
 {
-    public MACross(IExchange exchange, MACrossParameter parameter, ILogger<MACross> logger) : base(exchange, parameter, logger)
+    public MACross(Exchange exchange, MACrossParameter parameter, ILogger<MACross> logger) : base(exchange, parameter, logger)
     {
     }
 
