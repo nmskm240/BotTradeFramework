@@ -15,7 +15,11 @@
 				"ms-dotnettools.csharp",
 				"k--kato.docomment",
 				"ms-dotnettools.vscodeintellicode-csharp",
-				"jebbs.plantuml"
+				"jebbs.plantuml",
+				"ms-dotnettools.dotnet-interactive-vscode",
+				"ms-toolsai.jupyter",
+				"EditorConfig.EditorConfig",
+				"tomoki1207.pdf"
 			]
 		}
 	}

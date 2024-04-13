@@ -1,7 +1,13 @@
-[*.cs]
+root = true
 
-# IDE0008: 明示的な型の使用
-csharp_style_var_when_type_is_apparent = true
+[*.cs]
+end_of_line = lf
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+dotnet_separate_import_directive_groups = true
+dotnet_sort_system_directives_first = true
 
 # IDE0008: 明示的な型の使用
 csharp_style_var_when_type_is_apparent = true
@@ -9,3 +15,8 @@ csharp_style_var_when_type_is_apparent = true
 # IDE0008: 明示的な型の使用
 csharp_style_var_for_built_in_types = true
 
+# IDE0290: プライマリ コンストラクターの使用
+dotnet_diagnostic.IDE0290.severity = none
+
+# IDE0028: コレクションの初期化を簡略化します
+dotnet_diagnostic.IDE0028.severity = none

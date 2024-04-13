@@ -1,0 +1,60 @@
+@startuml
+
+package BotTrade
+{
+    package Domain
+    {
+        package Strategies
+        {
+            abstract Strategy
+            class StrategyParameter <<record>>
+            class CustomStrategy
+            class CustomStrategyParameter <<record>>
+        }
+        enum Symbol
+        enum Timeframe
+        class Candle
+        class Position
+        abstract Exchange
+        interface ICandleRepository
+        interface ITradeLogger
+
+        CustomStrategy -[hidden]left- CustomStrategyParameter 
+        Strategy -[hidden]left- StrategyParameter 
+        Strategy -[hidden]- Exchange
+        Exchange -[hidden] ICandleRepository
+        Exchange -[hidden] ITradeLogger
+    }
+    package Application
+    {
+        class BacktestService
+    }
+    package Infra
+    {
+        class PastCandleRepository
+        class TradeHistoryGraphPrinter
+
+        package Exchanges
+        {
+            class BacktestExchange
+            class RealExchnage
+        }
+    }
+}
+
+Strategy <|-up- CustomStrategy
+StrategyParameter <|-up- CustomStrategyParameter
+Exchange <|-down- BacktestExchange
+Exchange <|-down- RealExchnage
+
+ITradeLogger <|... TradeHistoryGraphPrinter
+ICandleRepository <|... PastCandleRepository
+
+StrategyParameter <.. Strategy
+CustomStrategyParameter <.. CustomStrategy
+ITradeLogger <.. Strategy 
+Exchange <.. Strategy : order and fetch candle
+Candle <.. ICandleRepository : fetch and store
+Position <.. Exchange : make and close
+
+@enduml
