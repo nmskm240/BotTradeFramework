@@ -1,6 +1,6 @@
 using Skender.Stock.Indicators;
 
-namespace BotTrade.Domain.Strategy;
+namespace BotTrade.Domain.Strategies;
 
 public static class StrategyUtilty
 {
@@ -23,7 +23,7 @@ public static class StrategyUtilty
         var s = shorts.TakeLast(2);
         var l = longs.TakeLast(2);
 
-        return s?.First()?.Value < l?.First()?.Value && 
+        return s?.First()?.Value < l?.First()?.Value &&
             s?.Last()?.Value >= l?.Last()?.Value;
     }
 
@@ -46,7 +46,7 @@ public static class StrategyUtilty
         var s = shorts.TakeLast(2);
         var l = longs.TakeLast(2);
 
-        return s?.First()?.Value >= l?.First()?.Value && 
+        return s?.First()?.Value >= l?.First()?.Value &&
             s?.Last()?.Value < l?.Last()?.Value;
     }
 }

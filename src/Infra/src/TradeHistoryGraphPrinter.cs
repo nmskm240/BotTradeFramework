@@ -1,64 +1,93 @@
-﻿using OxyPlot;
-using BotTrade.Domain;
+﻿using BotTrade.Domain;
+using OxyPlot;
+using OxyPlot.Annotations;
 using OxyPlot.Axes;
 using OxyPlot.Series;
 
-namespace Infra;
+namespace BotTrade.Infra;
 
-public class TradeHistoryGraphPrinter
+public class TradeHistoryGraphPrinter : ITradeLogger
 {
-    const string GRAPTH_TITLE = "TradeHistory";
-    const string FILE_NAME = $"{GRAPTH_TITLE}.pdf";
+    private const string GRAPTH_TITLE = "TradeHistory";
+    private const string FILE_NAME = $"{GRAPTH_TITLE}.pdf";
+    private const double ARROW_SIZE = 2.5;
 
-    private PlotModel? Chart { get; set; }
-    private DateTimeAxis? DateTimeAxis { get; set; }
-    private CandleStickSeries? CandleStickSeries { get; set; }
+    private PlotModel Chart { get; init; }
+    private List<HighLowItem> SeriesItem { get; init; }
+    private Axis Axis { get { return Chart.Axes.First(); } }
 
     public TradeHistoryGraphPrinter(Exchange exchange)
     {
-        exchange.OnFetchedCandle.Subscribe(
-            OnNext,
-            Output
-        );
-    }
-
-    private void OnNext(Candle candle)
-    {
-        if (Chart == null)
+        SeriesItem = new List<HighLowItem>();
+        var series = new CandleStickSeries
         {
-            Console.WriteLine(candle.Date);
-            CandleStickSeries = new CandleStickSeries();
-            DateTimeAxis = new DateTimeAxis
-            {
-                Minimum = DateTimeAxis.ToDouble(candle.Date),
-                Maximum = DateTimeAxis.ToDouble(DateTime.Now),
-            };
-            Chart = new PlotModel()
-            {
-                Title = GRAPTH_TITLE,
-            };
-            Chart.Axes.Add(DateTimeAxis);
-            Chart.Series.Add(CandleStickSeries);
-        }
-        PlotOHLCV(candle);
+            ItemsSource = SeriesItem,
+        };
+        var axis = new DateTimeAxis
+        {
+            MajorGridlineStyle = LineStyle.Solid,
+            MajorGridlineColor = OxyColors.Gray,
+        };
+        Chart = new PlotModel()
+        {
+            Title = GRAPTH_TITLE,
+        };
+        Chart.Axes.Add(axis);
+        Chart.Series.Add(series);
+        exchange.OnFetchedCandle.Subscribe(PlotOHLCV);
     }
 
     private void PlotOHLCV(Candle candle)
     {
+        var x = DateTimeAxis.ToDouble(candle.Date);
         var item = new HighLowItem
         {
-            X = DateTimeAxis.ToDouble(candle.Date),
+            X = x,
             Open = (double)candle.Open,
             High = (double)candle.High,
             Low = (double)candle.Low,
             Close = (double)candle.Close,
         };
-        CandleStickSeries.Items.Add(item);
+        SeriesItem.Add(item);
+        Axis.Maximum = x;
+        Axis.Minimum = double.IsNaN(Axis.Minimum) ? x : Axis.Minimum;
     }
 
-    private void Output()
+    private void PlotPositionInfo(Position position, bool isEntry)
     {
-        Chart!.InvalidatePlot(true);
+        var x = DateTimeAxis.ToDouble(isEntry ? position.EntryDate : position.ExitDate);
+        var y = (double)(isEntry ? position.Entry : position.Exit);
+        var isBuyOrder = (position.Type == PositionType.Long && isEntry) ||
+                        (position.Type == PositionType.Short && !isEntry);
+        var direction = isBuyOrder ? 1 : -1;
+        var annotation = new ArrowAnnotation
+        {
+            StartPoint = new DataPoint(x, y),
+            EndPoint = new DataPoint(x, y + 1 * direction),
+            Color = isBuyOrder ? OxyColors.Green : OxyColors.Red,
+            HeadWidth = ARROW_SIZE,
+            HeadLength = ARROW_SIZE
+        };
+        Chart.Annotations.Add(annotation);
+    }
+
+    public void WritePositionHistory(Position position)
+    {
+        var trade = new LineSeries
+        {
+            RenderInLegend = true,
+            Color = OxyColors.Gray,
+        };
+        trade.Points.Add(new DataPoint(DateTimeAxis.ToDouble(position.EntryDate), (double)position.Entry));
+        trade.Points.Add(new DataPoint(DateTimeAxis.ToDouble(position.ExitDate), (double)position.Exit));
+        Chart.Series.Add(trade);
+        PlotPositionInfo(position, true);
+        PlotPositionInfo(position, false);
+    }
+
+    public void Close()
+    {
+        Chart.InvalidatePlot(true);
         using var stream = File.Create(FILE_NAME);
         var exporter = new PdfExporter()
         {

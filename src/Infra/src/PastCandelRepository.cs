@@ -1,6 +1,6 @@
-using System.Runtime.CompilerServices;
 using BotTrade.Domain;
 using Microsoft.Data.Sqlite;
+using System.Runtime.CompilerServices;
 
 namespace BotTrade.Infra;
 public class PastCandleRepository : ICandleRepository, IDisposable
@@ -31,8 +31,8 @@ public class PastCandleRepository : ICandleRepository, IDisposable
     public async IAsyncEnumerable<Candle> Fetch(Symbol symbol, Timeframe timeframe = Timeframe.OneMinute, [EnumeratorCancellation] CancellationToken token = default)
     {
         var sql = $@"
-                select * from {TABLE_NAME} 
-                where symbol='{symbol.GetStringValue()}' 
+                select * from {TABLE_NAME}
+                where symbol='{symbol.GetStringValue()}'
                 order by timestamp asc";
 
         //TODO: テーブルがないときのエラー処理

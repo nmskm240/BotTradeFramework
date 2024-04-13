@@ -1,3 +1,5 @@
+using System.Diagnostics;
+
 namespace BotTrade.Domain;
 
 public enum PositionStatus
@@ -19,37 +21,43 @@ public class Position
     public PositionType Type { get; init; }
     public decimal Quantity { get; init; }
     public decimal Entry { get; init; }
+    public DateTime EntryDate { get; init; }
     public decimal Exit { get; private set; }
+    public DateTime ExitDate { get; private set; }
     public PositionStatus Status { get; private set; } = PositionStatus.Open;
+    /// <summary>
+    /// ポジションが閉じられたときに通知される
+    /// </summary>
+    /// <remarks>
+    /// 一度通知すると<c>null</c>になる
+    /// </remarks>
+    public event Action<Position>? OnClosed;
+    /// <summary>
+    /// ポジション利益
+    /// </summary>
+    public decimal Profit
+    {
+        get { return Status == PositionStatus.Open ? 0 : (Exit - Entry) * Quantity; }
+    }
 
-    public Position(Symbol symbol, PositionType type, decimal quantity, decimal entry)
+    public Position(Symbol symbol, PositionType type, decimal quantity, decimal entry, DateTime entryDate)
     {
         Id = Guid.NewGuid().ToString();
         Symbol = symbol;
-        Type= type;
+        Type = type;
         Quantity = quantity;
         Entry = entry;
+        EntryDate = entryDate;
     }
 
-    public void Close(decimal exitPrice)
+    public void Close(decimal exitPrice, DateTime exitDate)
     {
+        Debug.Assert(Status == PositionStatus.Open);
+
         Status = PositionStatus.Close;
         Exit = exitPrice;
-    }
-
-    /// <summary>
-    /// ポジション損益
-    /// </summary>
-    /// <remarks>
-    /// <c>currentPrice</c>を省略した場合、未決済のポジションは損益0とする
-    /// </remarks>
-    /// <param name="currentPrice">現在の価格</param>
-    /// <returns></returns>
-    public decimal Result(decimal currentPrice = 0)
-    {
-        if(Status == PositionStatus.Open)
-            return (currentPrice - Entry) * Quantity;
-
-        return (Exit - Entry) * Quantity;
+        ExitDate = exitDate;
+        OnClosed?.Invoke(this);
+        OnClosed = null;
     }
 }

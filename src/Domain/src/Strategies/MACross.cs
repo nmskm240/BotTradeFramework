@@ -1,9 +1,6 @@
-
-
-using Microsoft.Extensions.Logging;
 using Skender.Stock.Indicators;
 
-namespace BotTrade.Domain.Strategy;
+namespace BotTrade.Domain.Strategies;
 
 public record MACrossParameter : StrategyParameter
 {
@@ -18,9 +15,16 @@ public record MACrossParameter : StrategyParameter
 
 }
 
+/// <summary>
+/// ゴールデンクロスで買い、デッドクロスで売る
+/// </summary>
+/// <remarks>
+/// 単一ポジションの取引にのみ対応しているため、稼働後最初にしかポジションをとらない仕様
+/// （最初にロングすると停止するまでショートはしない）
+/// </remarks>
 public class MACross : Strategy<MACrossParameter>
 {
-    public MACross(Exchange exchange, MACrossParameter parameter, ILogger<MACross> logger) : base(exchange, parameter, logger)
+    public MACross(Exchange exchange, MACrossParameter parameter, ITradeLogger logger) : base(exchange, parameter, logger)
     {
     }
 
@@ -32,10 +36,13 @@ public class MACross : Strategy<MACrossParameter>
         if (StrategyUtilty.IsGoldenCross(shortMa, longMa))
         {
             await Buy(1);
+            return;
         }
-        else if (StrategyUtilty.IsDeadCross(shortMa, longMa))
+
+        if (StrategyUtilty.IsDeadCross(shortMa, longMa))
         {
             await Sell(1);
+            return;
         }
     }
 }

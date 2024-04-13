@@ -1,7 +1,6 @@
 ﻿using BotTrade.Domain;
-using BotTrade.Domain.Strategy;
-using BotTrade.Infra.Exchange;
-using Infra;
+using BotTrade.Domain.Strategies;
+using BotTrade.Infra.Exchanges;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
@@ -19,7 +18,7 @@ public class BacktestContainer<S, P> where S : Strategy<P> where P : StrategyPar
         services.AddSingleton<P>(parameter);
         services.AddSingleton<StrategyParameter>(parameter);
         services.AddSingleton<S>();
-        services.AddSingleton<TradeHistoryGraphPrinter>();
+        services.AddSingleton<ITradeLogger, TradeHistoryGraphPrinter>();
         services.AddLogging(logger => logger.AddConsole());
 
         Provider = services.BuildServiceProvider();
@@ -27,7 +26,6 @@ public class BacktestContainer<S, P> where S : Strategy<P> where P : StrategyPar
 
     public S Resolve()
     {
-        Provider.GetRequiredService<TradeHistoryGraphPrinter>();
         return Provider.GetRequiredService<S>();
     }
 }

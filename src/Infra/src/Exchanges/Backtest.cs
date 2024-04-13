@@ -1,9 +1,9 @@
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 using BotTrade.Domain;
-using BotTrade.Domain.Strategy;
+using BotTrade.Domain.Strategies;
 
-namespace BotTrade.Infra.Exchange;
+namespace BotTrade.Infra.Exchanges;
 
 /// <summary>
 /// バックテスト用の取引所
@@ -11,7 +11,7 @@ namespace BotTrade.Infra.Exchange;
 /// <remarks>
 /// 通常の取引所と同様に扱え、注文処理は今の時間足のOClose価格で確定される
 /// </remarks>
-public class Backtest : Domain.Exchange
+public class Backtest : Exchange
 {
     private ICandleRepository Repository { get; init; }
     private Candle? _currentCandle;
@@ -41,20 +41,25 @@ public class Backtest : Domain.Exchange
 
     public override async Task<Position> Buy(Symbol symbol, decimal quantity)
     {
-        var position = new Position(symbol, PositionType.Long, quantity, _currentCandle!.Close);
+        var position = new Position(symbol, PositionType.Long, quantity, _currentCandle!.Close, _currentCandle!.Date);
         return await Task.FromResult(position);
     }
 
     public override async Task<decimal> ClosePosition(Position position)
     {
-        position.Close(_currentCandle!.Close);
-        return await Task.FromResult(position.Result());
+        if(position?.Status == PositionStatus.Open)
+        {
+            position.Close(_currentCandle!.Close, _currentCandle!.Date);
+            Positions.Remove(position);
+            return await Task.FromResult(position.Profit);
+        }
+        return await Task.FromResult(0);
     }
 
 
     public override async Task<Position> Sell(Symbol symbol, decimal quantity)
     {
-        var position = new Position(symbol, PositionType.Short, quantity, _currentCandle!.Close);
+        var position = new Position(symbol, PositionType.Short, quantity, _currentCandle!.Close, _currentCandle!.Date);
         return await Task.FromResult(position);
     }
 }
