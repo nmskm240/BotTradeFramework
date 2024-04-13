@@ -4,44 +4,57 @@ package BotTrade
 {
     package Domain
     {
+        package Strategies
+        {
+            abstract Strategy
+            class StrategyParameter <<record>>
+            class CustomStrategy
+            class CustomStrategyParameter <<record>>
+        }
         enum Symbol
         enum Timeframe
         class Candle
-        class Bot
+        class Position
+        abstract Exchange
         interface ICandleRepository
-        interface IExchange
+        interface ITradeLogger
 
-        package Strategy
-        {
-            class CustomStrategy
-            interface IStrategy
-        }
+        CustomStrategy -[hidden]left- CustomStrategyParameter 
+        Strategy -[hidden]left- StrategyParameter 
+        Strategy -[hidden]- Exchange
+        Exchange -[hidden] ICandleRepository
+        Exchange -[hidden] ITradeLogger
     }
     package Application
     {
-        class BotService
-    }
-    package Presentation
-    {
-        class TradeHistoryGraph
+        class BacktestService
     }
     package Infra
     {
         class PastCandleRepository
-        class BacktestExchange
-        class RealExchnage
+        class TradeHistoryGraphPrinter
+
+        package Exchanges
+        {
+            class BacktestExchange
+            class RealExchnage
+        }
     }
 }
 
-IExchange <|-- BacktestExchange
-IExchange <|-- RealExchnage
-IStrategy <|-- CustomStrategy
-ICandleRepository <|-- PastCandleRepository
+Strategy <|-up- CustomStrategy
+StrategyParameter <|-up- CustomStrategyParameter
+Exchange <|-down- BacktestExchange
+Exchange <|-down- RealExchnage
 
-CustomStrategy o.left.> IExchange
-Bot o-- IStrategy
+ITradeLogger <|... TradeHistoryGraphPrinter
+ICandleRepository <|... PastCandleRepository
 
-Bot <-up- BotService: controll
-Candle <-down- IExchange: fetch and store
+StrategyParameter <.. Strategy
+CustomStrategyParameter <.. CustomStrategy
+ITradeLogger <.. Strategy 
+Exchange <.. Strategy : order and fetch candle
+Candle <.. ICandleRepository : fetch and store
+Position <.. Exchange : make and close
 
 @enduml
