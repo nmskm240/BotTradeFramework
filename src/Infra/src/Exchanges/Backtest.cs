@@ -25,7 +25,7 @@ public class Backtest : Exchange
             {
                 try
                 {
-                    await foreach (var e in Repository.Fetch(Symbol, Timeframe))
+                    await foreach (var e in Repository.Pull(Symbol, Timeframe))
                     {
                         _currentCandle = e;
                         observer.OnNext(e);
