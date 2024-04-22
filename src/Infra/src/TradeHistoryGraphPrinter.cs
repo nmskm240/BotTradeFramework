@@ -1,4 +1,7 @@
 ﻿using BotTrade.Domain;
+
+using Microsoft.Extensions.Logging;
+
 using OxyPlot;
 using OxyPlot.Annotations;
 using OxyPlot.Axes;

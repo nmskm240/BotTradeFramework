@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 using Skender.Stock.Indicators;
 
 namespace BotTrade.Domain.Strategies;
@@ -24,14 +26,42 @@ public record MACrossParameter : StrategyParameter
 /// </remarks>
 public class MACross : Strategy<MACrossParameter>
 {
-    public MACross(Exchange exchange, MACrossParameter parameter, ITradeLogger logger) : base(exchange, parameter, logger)
+    private const string ShortMALabel = "ShortMA";
+    private const string LongMALabel = "LongMA";
+
+    public override int NeedDataCountForAnalysis => Parameter.LongSpan;
+    public override int NeedDataCountForTrade => 2;
+
+    public MACross(Exchange exchange, MACrossParameter parameter, ITradeLogger logger) : base(exchange, parameter, logger) { }
+
+    protected override AnalysisData Analysis(IEnumerable<Candle> candles)
     {
+        var indicators = new Dictionary<string, AnalysisValue>();
+        foreach (var (label, span) in Enumerable.Zip([ShortMALabel, LongMALabel], [Parameter.ShortSpan, Parameter.LongSpan]))
+        {
+            var ma = candles.GetSma(span).LastOrDefault()?.Sma;
+            if (ma != null)
+            {
+                indicators.Add(label, new AnalysisValue((decimal)ma, GraphType.Line));
+            }
+        }
+
+        return new AnalysisData(candles.Last(), indicators);
     }
 
-    protected override async Task MightTrade()
+    protected override async Task Trade(IEnumerable<AnalysisData> analyses)
     {
-        var shortMa = PastCandles.GetSma(Parameter.ShortSpan);
-        var longMa = PastCandles.GetSma(Parameter.LongSpan);
+        var recentryAnalysises = analyses.SelectMany(data => data.ChartPlotValues)
+            .GroupBy(pair => pair.Key)
+            .ToDictionary(
+                group => group.Key,
+                group => group.Select(pair => pair.Value.Value)
+            ) ?? [];
+        var shortMa = Enumerable.Empty<decimal>();
+        var longMa = Enumerable.Empty<decimal>();
+
+        recentryAnalysises.TryGetValue(ShortMALabel, out shortMa);
+        recentryAnalysises.TryGetValue(LongMALabel, out longMa);
 
         if (StrategyUtilty.IsGoldenCross(shortMa, longMa))
         {

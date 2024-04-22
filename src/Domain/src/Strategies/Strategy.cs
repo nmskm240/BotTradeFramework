@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using System.Reactive.Linq;
-using Microsoft.Extensions.Logging;
+using System.Reactive.Subjects;
 
 namespace BotTrade.Domain.Strategies;
 
@@ -14,40 +14,56 @@ namespace BotTrade.Domain.Strategies;
 /// <typeparam name="T"></typeparam>
 public abstract class Strategy<T> : IDisposable where T : StrategyParameter
 {
-    private IDisposable? _subscription;
+    private List<IDisposable> Subscriptions {get; init;}
 
-    /// <summary>
-    /// 確定足のキャッシュデータ
-    /// </summary>
-    /// <remarks>
-    /// 指定された容量のみ所持し、上限に達すると古いものから削除される<br/>
-    /// キュー管理のため最新は<c>Last</c>、最古は<c>First</c>で取得
-    /// </remarks>
-    protected RingQueue<Candle> PastCandles { get; init; }
     private Exchange Exchange { get; init; }
     protected T Parameter { get; init; }
     private Position? OpenPosition { get; set; } = null;
     private ITradeLogger Logger { get; init; }
     public bool IsStarted { get; private set; } = false;
     public decimal Capital { get; private set; }
+    /// <summary>
+    /// 1回の分析に必要な確定データの個数
+    /// </summary>
+    /// <remarks>
+    /// 指定された個数確定するまで<c>Analysis</c>の呼び出しはされない
+    /// </remarks>
+    public abstract int NeedDataCountForAnalysis { get; }
+    /// <summary>
+    /// 1回の取引に必要な確定データの個数
+    /// </summary>
+    /// <remarks>
+    /// 指定された個数確定するまで<c>Trade</c>の呼び出しはされない
+    /// </remarks>
+    public abstract int NeedDataCountForTrade { get; }
     public event Action? OnStoped = null;
+    private readonly Subject<AnalysisData> _onAnalysed = new Subject<AnalysisData>();
+    public IObservable<AnalysisData> OnAnalysed => _onAnalysed;
 
     public Strategy(Exchange exchange, T parameter, ITradeLogger logger)
     {
         Debug.Assert(exchange != null);
         Debug.Assert(parameter != null);
 
-        // TODO: Configから変更できるようにする
-        PastCandles = new RingQueue<Candle>(100);
         Exchange = exchange;
         Parameter = parameter;
         Logger = logger;
-        _subscription = Exchange.OnFetchedCandle
-                        .Subscribe(
-                            async value => await OnNext(value),
-                            async ex => await Stop(),
-                            async () => await Stop()
-                        );
+        Subscriptions = [
+            Exchange.OnFetchedCandle
+                .Subscribe(
+                    (_) => {} ,
+                    async () => await Stop()
+                ),
+            Exchange.OnFetchedCandle
+                .Buffer(NeedDataCountForAnalysis, 1)
+                .Select(Analysis)
+                .Subscribe(_onAnalysed),
+            OnAnalysed
+                .Buffer(NeedDataCountForTrade, 1)
+                .Subscribe(
+                    async value => await Trade(value)
+                ),
+        ];
     }
 
     public void MightStart(decimal capital)
@@ -65,7 +81,7 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
     public async Task Stop()
     {
         UnSubscribe();
-        if(OpenPosition?.Status == PositionStatus.Open)
+        if (OpenPosition?.Status == PositionStatus.Open)
         {
             await Exchange.ClosePosition(OpenPosition);
         }
@@ -82,14 +98,12 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
 
     private void UnSubscribe()
     {
-        _subscription?.Dispose();
-        _subscription = null;
-    }
-
-    private async Task OnNext(Candle candle)
-    {
-        PastCandles.Enqueue(candle);
-        await MightTrade();
+        _onAnalysed.Dispose();
+        foreach(var subscription in Subscriptions)
+        {
+            subscription.Dispose();
+        }
+        Subscriptions.Clear();
     }
 
     // MEMO: ポジションを1つしか持てないように制限するための実装
@@ -121,5 +135,11 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
         }
     }
 
-    protected abstract Task MightTrade();
+    /// <summary>
+    /// 確定
+    /// </summary>
+    /// <param name="candles">取引所の確定足</param>
+    /// <returns>計算後のインジケーターの値を含む解析データ</returns>
+    protected abstract AnalysisData Analysis(IEnumerable<Candle> candles);
+    protected abstract Task Trade(IEnumerable<AnalysisData> analyses);
 }
