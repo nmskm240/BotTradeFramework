@@ -63,6 +63,12 @@ public abstract class Strategy<T> : IDisposable where T : StrategyParameter
                 .Subscribe(
                     async value => await Trade(value)
                 ),
+            Exchange.OnFetchedCandle
+                .TakeUntil(OnAnalysed)
+                .Subscribe(
+                    value => Logger.WriteCandleAndIndicators(new AnalysisData(value))
+                ),
+            OnAnalysed.Subscribe(Logger.WriteCandleAndIndicators),
         ];
     }
 

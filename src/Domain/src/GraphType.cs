@@ -4,5 +4,6 @@ public enum GraphType
 {
     Line,
     Candlestick,
-    Box,
+    Bar,
 }
+
