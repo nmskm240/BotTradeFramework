@@ -1,4 +1,6 @@
-﻿using Skender.Stock.Indicators;
+﻿using System.Diagnostics;
+
+using Skender.Stock.Indicators;
 
 namespace BotTrade.Domain;
 public class Candle : IQuote
@@ -10,8 +12,9 @@ public class Candle : IQuote
     public decimal Low { get; init; }
     public decimal Close { get; init; }
     public decimal Volume { get; init; }
+    public Timeframe Timeframe{ get; init; }
 
-    public Candle(Symbol symbol, DateTime date, decimal open, decimal high, decimal low, decimal close, decimal volume)
+    public Candle(Symbol symbol, DateTime date, decimal open, decimal high, decimal low, decimal close, decimal volume, Timeframe timeframe = Timeframe.OneMinute)
     {
         Symbol = symbol;
         Date = date;
@@ -20,14 +23,13 @@ public class Candle : IQuote
         Low = low;
         Close = close;
         Volume = volume;
+        Timeframe = timeframe;
     }
 
-    public static Candle Aggregate(IEnumerable<Candle> candles)
+    public static Candle Aggregate(IEnumerable<Candle> candles, Timeframe timeframe)
     {
-        if (candles == null || candles.Any(e => e == null))
-            throw new ArgumentException("引数がNullもしくは空", nameof(candles));
-        else if (candles.GroupBy(e => e.Symbol).Count() != 1)
-            throw new ArgumentException("別銘柄の統合はできない", nameof(candles));
+        Debug.Assert(candles.GroupBy(e => e.Symbol).Count() == 1, "別銘柄の統合はできない");
+        Debug.Assert(candles.Count() == (int)timeframe, "統合する時間足の個数がおかしい");
 
         var symbol = candles.First().Symbol;
         var date = candles.Last().Date;
@@ -36,6 +38,6 @@ public class Candle : IQuote
         var low = candles.MinBy(e => e.Low)?.Low ?? decimal.MinusOne;
         var close = candles.Last().Close;
         var volume = candles.Sum(e => e.Volume);
-        return new Candle(symbol, date, open, high, low, close, volume);
+        return new Candle(symbol, date, open, high, low, close, volume, timeframe);
     }
 }

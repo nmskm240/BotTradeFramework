@@ -1,100 +1,168 @@
-﻿using BotTrade.Domain;
-using OxyPlot;
-using OxyPlot.Annotations;
-using OxyPlot.Axes;
-using OxyPlot.Series;
+﻿using System.Collections;
+using System.Reactive.Linq;
+using System.Security.AccessControl;
+
+using BotTrade.Domain;
+
+using Microsoft.Extensions.Logging;
+
+using Nethereum.ABI.CompilationMetadata;
+
+using ScottPlot;
+using ScottPlot.DataSources;
+using ScottPlot.Plottables;
+
+using SQLitePCL;
 
 namespace BotTrade.Infra;
 
 public class TradeHistoryGraphPrinter : ITradeLogger
 {
     private const string GRAPTH_TITLE = "TradeHistory";
-    private const string FILE_NAME = $"{GRAPTH_TITLE}.pdf";
-    private const double ARROW_SIZE = 2.5;
+    private const string CANDLE_SERIES_LABEL = "candles";
+    private const string VOLUME_SERIES_LABEL = "volumes";
+    private const float ARROW_SIZE = 10f;
 
-    private PlotModel Chart { get; init; }
-    private List<HighLowItem> SeriesItem { get; init; }
-    private Axis Axis { get { return Chart.Axes.First(); } }
+    private Plot OHLCChart { get; init; }
+    private Plot VolumeChart { get; init; }
+    private Dictionary</*描画先*/Plot, Dictionary<string, IList>> ChartAndSeries { get; init; }
 
-    public TradeHistoryGraphPrinter(Exchange exchange)
+    public TradeHistoryGraphPrinter()
     {
-        SeriesItem = new List<HighLowItem>();
-        var series = new CandleStickSeries
+        OHLCChart = new Plot();
+        var candles = new List<OHLC>();
+        var ohlcSeries = new Dictionary<string, IList>()
         {
-            ItemsSource = SeriesItem,
+            { CANDLE_SERIES_LABEL, candles },
         };
-        var axis = new DateTimeAxis
+        OHLCChart.Add.Candlestick(candles);
+        OHLCChart.Axes.DateTimeTicksBottom();
+        OHLCChart.Axes.Margins(bottom: 0);
+
+        VolumeChart = new Plot();
+        var volumes = new List<Bar>();
+        var volumeSeries = new Dictionary<string, IList>()
         {
-            MajorGridlineStyle = LineStyle.Solid,
-            MajorGridlineColor = OxyColors.Gray,
+            { VOLUME_SERIES_LABEL, volumes },
         };
-        Chart = new PlotModel()
+        VolumeChart.Add.Bars(volumes);
+        VolumeChart.Axes.DateTimeTicksBottom();
+        VolumeChart.Axes.Margins(bottom: 0);
+
+        ChartAndSeries = new Dictionary<Plot, Dictionary<string, IList>>()
         {
-            Title = GRAPTH_TITLE,
+            {OHLCChart, ohlcSeries},
+            {VolumeChart, volumeSeries},
         };
-        Chart.Axes.Add(axis);
-        Chart.Series.Add(series);
-        exchange.OnFetchedCandle.Subscribe(PlotOHLCV);
     }
 
-    private void PlotOHLCV(Candle candle)
+    private void PlotOHLC(Candle candle)
     {
-        var x = DateTimeAxis.ToDouble(candle.Date);
-        var item = new HighLowItem
+        var item = new OHLC(
+            (double)candle.Open,
+            (double)candle.High,
+            (double)candle.Low,
+            (double)candle.Close,
+            candle.Date,
+            candle.Timeframe.ToTimeSpan()
+        );
+        ChartAndSeries[OHLCChart][CANDLE_SERIES_LABEL].Add(item);
+    }
+
+    private void PlotVolume(Candle candle)
+    {
+        var item = new Bar()
         {
-            X = x,
-            Open = (double)candle.Open,
-            High = (double)candle.High,
-            Low = (double)candle.Low,
-            Close = (double)candle.Close,
+            Value = (double)candle.Volume,
+            Position = candle.Date.ToOADate(),
         };
-        SeriesItem.Add(item);
-        Axis.Maximum = x;
-        Axis.Minimum = double.IsNaN(Axis.Minimum) ? x : Axis.Minimum;
+        ChartAndSeries[VolumeChart][VOLUME_SERIES_LABEL].Add(item);
+    }
+
+    private void PlotIndicators(AnalysisData analysis)
+    {
+        var zipped = ChartAndSeries.Zip(analysis.Indicators);
+        var x = analysis.Candle.Date.ToOADate();
+        foreach (var (chartAndSeries, indicatorValues) in zipped)
+        {
+            var chart = chartAndSeries.Key;
+            var itemSources = chartAndSeries.Value;
+            foreach (var (label, indicatorValue) in indicatorValues)
+            {
+                if (!itemSources.TryGetValue(label, out var itemSource))
+                {
+                    switch (indicatorValue.GraphType)
+                    {
+                        case GraphType.Line:
+                            {
+                                var source = new List<Coordinates>();
+                                itemSource = source;
+                                chart.Add.ScatterLine(source);
+                                break;
+                            }
+                        case GraphType.Bar:
+                            {
+                                var source = Enumerable
+                                    .Repeat<Bar?>(null, ChartAndSeries[OHLCChart][CANDLE_SERIES_LABEL].Count)
+                                    .ToList();
+                                itemSource = source;
+                                chart.Add.Bars(source!);
+                                break;
+                            }
+                        default:
+                            {
+                                itemSource = new List<object>();
+                                break;
+                            }
+                    }
+                    ChartAndSeries[chart].Add(label, itemSource);
+                }
+                object? item = indicatorValue.GraphType switch
+                {
+                    GraphType.Line => new Coordinates(x, (double)indicatorValue.Value),
+                    GraphType.Bar => new Bar() { Value = (double)indicatorValue.Value },
+                    _ => null,
+                };
+                itemSource.Add(item);
+            }
+        }
     }
 
     private void PlotPositionInfo(Position position, bool isEntry)
     {
-        var x = DateTimeAxis.ToDouble(isEntry ? position.EntryDate : position.ExitDate);
+        var x = (isEntry ? position.EntryDate : position.ExitDate).ToOADate();
         var y = (double)(isEntry ? position.Entry : position.Exit);
         var isBuyOrder = (position.Type == PositionType.Long && isEntry) ||
                         (position.Type == PositionType.Short && !isEntry);
-        var direction = isBuyOrder ? 1 : -1;
-        var annotation = new ArrowAnnotation
-        {
-            StartPoint = new DataPoint(x, y),
-            EndPoint = new DataPoint(x, y + 1 * direction),
-            Color = isBuyOrder ? OxyColors.Green : OxyColors.Red,
-            HeadWidth = ARROW_SIZE,
-            HeadLength = ARROW_SIZE
-        };
-        Chart.Annotations.Add(annotation);
+        var shape = isBuyOrder ? MarkerShape.TriUp : MarkerShape.TriDown;
+        var color = isBuyOrder ? Colors.Green : Colors.Red;
+        OHLCChart.Add.Marker(x, y, shape, ARROW_SIZE, color);
+    }
+
+    public void WriteCandleAndIndicators(AnalysisData analysis)
+    {
+        PlotOHLC(analysis.Candle);
+        PlotVolume(analysis.Candle);
+        PlotIndicators(analysis);
     }
 
     public void WritePositionHistory(Position position)
     {
-        var trade = new LineSeries
-        {
-            RenderInLegend = true,
-            Color = OxyColors.Gray,
-        };
-        trade.Points.Add(new DataPoint(DateTimeAxis.ToDouble(position.EntryDate), (double)position.Entry));
-        trade.Points.Add(new DataPoint(DateTimeAxis.ToDouble(position.ExitDate), (double)position.Exit));
-        Chart.Series.Add(trade);
+        var entry = new Coordinates(position.EntryDate.ToOADate(), (double)position.Entry);
+        var exit = new Coordinates(position.ExitDate.ToOADate(), (double)position.Exit);
+        var line = OHLCChart.Add.Line(entry, exit);
+        line.LineColor = position.Type == PositionType.Long ? Colors.Green : Colors.Red;
         PlotPositionInfo(position, true);
         PlotPositionInfo(position, false);
     }
 
     public void Close()
     {
-        Chart.InvalidatePlot(true);
-        using var stream = File.Create(FILE_NAME);
-        var exporter = new PdfExporter()
+        var i = 0;
+        foreach(var (chart, series) in ChartAndSeries)
         {
-            // MEMO: ひとまず適当な長さに設定
-            Width = 3000,
-            Height = 600,
-        };
-        exporter.Export(Chart, stream);
+            chart.Save($"export_{i}.png", 6000, 2000);
+            i++;
+        }
     }
 }

@@ -16,15 +16,15 @@ public static class StrategyUtilty
     /// 要素数2以下の列挙型を引数に渡した場合は<c>false</c><br/>
     /// それ以外はゴールデンクロスの結果による
     /// </returns>
-    public static bool IsGoldenCross(IEnumerable<IReusableResult> shorts, IEnumerable<IReusableResult> longs)
+    public static bool IsGoldenCross(IEnumerable<decimal> shorts, IEnumerable<decimal> longs)
     {
         if(shorts.Count() < 2 || longs.Count() < 2)
             return false;
         var s = shorts.TakeLast(2);
         var l = longs.TakeLast(2);
 
-        return s?.First()?.Value < l?.First()?.Value &&
-            s?.Last()?.Value >= l?.Last()?.Value;
+        return s?.First() < l?.First() &&
+            s?.Last() >= l?.Last();
     }
 
     /// <summary>
@@ -39,14 +39,14 @@ public static class StrategyUtilty
     /// 要素数2以下の列挙型を引数に渡した場合は<c>false</c><br/>
     /// それ以外はデットクロスの結果による
     /// </returns>
-    public static bool IsDeadCross(IEnumerable<IReusableResult> shorts, IEnumerable<IReusableResult> longs)
+    public static bool IsDeadCross(IEnumerable<decimal> shorts, IEnumerable<decimal> longs)
     {
         if(shorts.Count() < 2 || longs.Count() < 2)
             return false;
         var s = shorts.TakeLast(2);
         var l = longs.TakeLast(2);
 
-        return s?.First()?.Value >= l?.First()?.Value &&
-            s?.Last()?.Value < l?.Last()?.Value;
+        return s?.First() >= l?.First() &&
+            s?.Last() < l?.Last();
     }
 }
