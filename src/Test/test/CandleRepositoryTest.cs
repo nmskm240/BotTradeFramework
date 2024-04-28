@@ -1,5 +1,6 @@
 using BotTrade.Infra;
 using BotTrade.Domain;
+using Microsoft.Extensions.Logging;
 
 namespace BotTrade.Test;
 
@@ -14,11 +15,12 @@ public class CnadleRepositoryTest
     [InlineData(Symbol.Spot_ETHBTC, Timeframe.OneDay)]
     public async Task FetchHistoricalData(Symbol symbol, Timeframe timeframe)
     {
-        var repository = new PastCandleRepository();
+        var logger = new LoggerFactory().CreateLogger("TEST");
+        var repository = new PastCandleRepository(logger);
         var candles = new List<Candle>();
         using var cancellation = new CancellationTokenSource();
 
-        await foreach (var candle in repository.Fetch(symbol, timeframe, token: cancellation.Token))
+        await foreach (var candle in repository.Pull(symbol, timeframe, token: cancellation.Token))
         {
             candles.Add(candle);
 

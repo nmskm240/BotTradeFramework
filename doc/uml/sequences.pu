@@ -1,0 +1,24 @@
+@startuml backtest
+
+hide footbox
+
+actor user
+boundary backtester
+control backtest_container
+entity strategy
+entity candle
+database past_candle_db
+
+user --> backtester : 戦略の決定
+backtester --> backtest_container : テストを実行
+backtest_container --> past_candle_db : 過去の値動きを取得
+backtest_container <-- past_candle_db 
+backtest_container --> candle : データをもとに時間足を再現
+backtest_container --> strategy : 再現した時間足データを提供
+strategy --> strategy : 戦略をもとにトレード
+backtest_container <-- strategy 
+backtester <-- backtest_container 
+user <-- backtester : 結果の表示
+
+
+@enduml
