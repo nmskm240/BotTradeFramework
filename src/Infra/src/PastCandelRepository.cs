@@ -57,7 +57,7 @@ public class PastCandleRepository : ICandleRepository, IDisposable
                 if (candles.Count != (int)timeframe)
                     continue;
 
-                candle = Candle.Aggregate(candles);
+                candle = Candle.Aggregate(candles, timeframe);
                 candles.Clear();
             }
 
