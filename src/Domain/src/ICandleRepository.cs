@@ -1,7 +1,14 @@
+using System.Reactive.Subjects;
+
 namespace BotTrade.Domain;
 
 public interface ICandleRepository
 {
-    Task Fetch(Symbol symbol);
-    IAsyncEnumerable<Candle> Pull(Symbol symbol, Timeframe timeframe = Timeframe.OneMinute, CancellationToken token = default);
+    Task Pull();
+    IObservable<Candle> OnPulled { get; }
+}
+
+public interface IUpdatableCandleRepository : ICandleRepository
+{
+    Task Fetch();
 }

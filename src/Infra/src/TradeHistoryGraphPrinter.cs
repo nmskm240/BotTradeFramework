@@ -1,4 +1,4 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Reactive.Linq;
 using System.Security.AccessControl;
 
@@ -159,7 +159,7 @@ public class TradeHistoryGraphPrinter : ITradeLogger
     public void Close()
     {
         var i = 0;
-        foreach(var (chart, series) in ChartAndSeries)
+        foreach (var (chart, series) in ChartAndSeries)
         {
             chart.Save($"export_{i}.png", 6000, 2000);
             i++;

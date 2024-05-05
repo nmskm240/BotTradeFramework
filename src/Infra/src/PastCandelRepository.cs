@@ -1,3 +1,6 @@
+using System.Reactive.Linq;
+using System.Reactive.Subjects;
+
 using BotTrade.Domain;
 
 using ccxt;
@@ -5,37 +8,41 @@ using ccxt;
 using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 
-using System.Runtime.CompilerServices;
-
 namespace BotTrade.Infra;
-public class PastCandleRepository : ICandleRepository, IDisposable
+public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
 {
     private const string TABLE_NAME = "candles";
+    private Symbol Symbol { get; init; }
     private SqliteConnection Connection { get; init; }
-    private ILogger Logger { get; init; }
+    private ILogger<PastCandleRepository> Logger { get; init; }
+    private Subject<Candle> PulledSubject { get; } = new Subject<Candle>();
 
-    public PastCandleRepository(ILogger logger)
+    public IObservable<Candle> OnPulled => PulledSubject;
+
+    public PastCandleRepository(Setting.Exchange setting, ILogger<PastCandleRepository> logger)
     {
-        var path = "Test.sqlite3";
+        var path = $"{setting.Place.GetStringValue()}.sqlite3";
         var builder = new SqliteConnectionStringBuilder
         {
             DataSource = Path.GetFullPath(path),
         };
+        Symbol = setting.Symbol;
         Logger = logger;
         Connection = new SqliteConnection(builder.ConnectionString);
         Connection.Open();
 
-        var sql = $@"
+        var sql = $"""
                 create table if not exists {TABLE_NAME} (
                     symbol TEXT NOT NULL,
-	                timestamp BIGINT NOT NULL,
-	                open FLOAT,
-	                high FLOAT,
-	                low FLOAT,
-	                close FLOAT,
-	                volume FLOAT,
-	                PRIMARY KEY(symbol,timestamp)
-                )";
+                    timestamp BIGINT NOT NULL,
+                    open FLOAT,
+                    high FLOAT,
+                    low FLOAT,
+                    close FLOAT,
+                    volume FLOAT,
+                    PRIMARY KEY(symbol,timestamp)
+                )
+            """;
         using var command = new SqliteCommand(sql, Connection);
         command.ExecuteReader();
     }
@@ -47,13 +54,14 @@ public class PastCandleRepository : ICandleRepository, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public async Task Fetch(Symbol symbol)
+    public async Task Fetch()
     {
-        var fetchLastTimestampSQL = $@"
-                select timestamp from {TABLE_NAME}
-                where symbol='{symbol.GetStringValue()}'
-                order by timestamp desc
-                limit 1";
+        var fetchLastTimestampSQL = $"""
+            select timestamp from {TABLE_NAME}
+            where symbol='{Symbol.GetStringValue()}'
+            order by timestamp desc
+            limit 1
+        """;
         // TODO: Configに切り出す
         // MEMO: 前回更新時の最新時間。存在しない場合はとりあえず2018/1/1
         var lastTime = new DateTimeOffset(new DateTime(2018, 1, 1)).ToUnixTimeSeconds();
@@ -62,7 +70,7 @@ public class PastCandleRepository : ICandleRepository, IDisposable
         {
             using var command = new SqliteCommand(fetchLastTimestampSQL, Connection);
             using var reader = await command.ExecuteReaderAsync();
-            if(reader.Read())
+            if (reader.Read())
             {
                 lastTime = DateTimeOffset.UnixEpoch.AddMilliseconds(reader.GetDouble(0)).ToUnixTimeMilliseconds();
                 Logger.LogInformation($"前回更新時: {lastTime}");
@@ -79,21 +87,21 @@ public class PastCandleRepository : ICandleRepository, IDisposable
             // 確定足情報を取得するため１分前の情報から取得していく
             var latest = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(1));
             IEnumerable<OHLCV> ohlcvs;
-            while(true)
+            while (true)
             {
                 var since = latest.Subtract(TimeSpan.FromMinutes(limit)).ToUnixTimeMilliseconds();
-                ohlcvs = await exchange.FetchOHLCV(symbol.GetStringValue(), since2: since, limit2: limit);
+                ohlcvs = await exchange.FetchOHLCV(Symbol.GetStringValue(), since2: since, limit2: limit);
                 ohlcvs = ohlcvs.Where(e => lastTime < e.timestamp && e.timestamp <= latest.ToUnixTimeMilliseconds());
 
-                if(!ohlcvs.Any())
+                if (!ohlcvs.Any())
                     break;
 
                 Logger.LogInformation($"Fetched since: {DateTimeOffset.FromUnixTimeMilliseconds(since)}, count: {ohlcvs.Count()}");
 
-                var values = ohlcvs.Select(e => $@"('{symbol.GetStringValue()}', '{e.timestamp}', '{e.open}', '{e.high}', '{e.low}', '{e.close}', '{e.volume}')");
+                var values = ohlcvs.Select(e => $@"('{Symbol.GetStringValue()}', '{e.timestamp}', '{e.open}', '{e.high}', '{e.low}', '{e.close}', '{e.volume}')");
                 var insertOhlcvSQL = $@"
                         insert into {TABLE_NAME}
-                        (symbol,timestamp,open,high,low,close,volume)
+                        (Symbol,timestamp,open,high,low,close,volume)
                         values {string.Join(", ", values)}";
 
                 using var transaction = Connection.BeginTransaction();
@@ -120,39 +128,38 @@ public class PastCandleRepository : ICandleRepository, IDisposable
         Logger.LogWarning("ccxtに対応していない取引所");
     }
 
-    public async IAsyncEnumerable<Candle> Pull(Symbol symbol, Timeframe timeframe = Timeframe.OneMinute, [EnumeratorCancellation] CancellationToken token = default)
+    public async Task Pull()
     {
-        var sql = $@"
-                select * from {TABLE_NAME}
-                where symbol='{symbol.GetStringValue()}'
-                order by timestamp asc";
+        var sql = $"""
+                    select * from {TABLE_NAME}
+                    where symbol='{Symbol.GetStringValue()}'
+                    order by timestamp asc
+                """;
 
-        using var command = new SqliteCommand(sql, Connection);
-        using var reader = await command.ExecuteReaderAsync(token);
-        var candles = new List<Candle>();
-
-        while (reader.Read())
+        try
         {
-            var index = 1;
-            var date = DateTime.UnixEpoch.AddMilliseconds(reader.GetDouble(index++));
-            var open = reader.GetDecimal(index++);
-            var high = reader.GetDecimal(index++);
-            var low = reader.GetDecimal(index++);
-            var close = reader.GetDecimal(index++);
-            var volume = reader.GetDecimal(index++);
-            var candle = new Candle(symbol, date, open, high, low, close, volume);
 
-            if (timeframe != Timeframe.OneMinute)
+            using var command = new SqliteCommand(sql, Connection);
+            using var reader = await command.ExecuteReaderAsync();
+
+            while (reader.Read())
             {
-                candles.Add(candle);
-                if (candles.Count != (int)timeframe)
-                    continue;
+                var index = 1;
+                var date = DateTime.UnixEpoch.AddMilliseconds(reader.GetDouble(index++));
+                var open = reader.GetDecimal(index++);
+                var high = reader.GetDecimal(index++);
+                var low = reader.GetDecimal(index++);
+                var close = reader.GetDecimal(index++);
+                var volume = reader.GetDecimal(index++);
+                var candle = new Candle(Symbol, date, open, high, low, close, volume);
 
-                candle = Candle.Aggregate(candles, timeframe);
-                candles.Clear();
+                PulledSubject.OnNext(candle);
             }
-
-            yield return candle;
         }
+        catch (Exception e)
+        {
+            PulledSubject.OnError(e);
+        }
+        PulledSubject.OnCompleted();
     }
 }
