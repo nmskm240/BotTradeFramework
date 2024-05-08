@@ -1,4 +1,4 @@
-﻿using System.Reactive.Subjects;
+using System.Reactive.Subjects;
 
 using BotTrade.Domain;
 
@@ -9,18 +9,13 @@ public class RealExchange : IExchange
     private ccxt.Exchange Exchange { get; init; }
     public List<Position> Positions { get; init; }
 
-    public IObservable<Candle> OnPulled { get; init; }
+    public IConnectableObservable<Candle> OnPulled { get; init; }
 
     public RealExchange(ccxt.Exchange exchange, Setting.Exchange setting)
     {
         Exchange = exchange;
         Positions = new List<Position>();
 
-    }
-
-    public async Task Pull()
-    {
-        throw new NotImplementedException();
     }
 
     public Task<Position> Buy(Symbol symbol, decimal quantity)

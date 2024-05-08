@@ -1,12 +1,17 @@
+using System.Reactive.Subjects;
+
 namespace BotTrade.Domain.Strategies;
 
 public abstract class Strategy
 {
+    protected Subject<AnalysisData> AnalysisSubject = new();
+
     public abstract StrategyKind KInd { get; }
     public Timeframe Timeframe { get; init; }
     public IEnumerable<int> Parameters { get; init; }
     public abstract int NeedDataCountForAnalysis { get; }
     public abstract int NeedDataCountForTrade { get; }
+    public IObservable<AnalysisData> OnAnalysised => AnalysisSubject;
 
     public Strategy(Timeframe timeframe, IEnumerable<int> parameters)
     {
@@ -14,7 +19,7 @@ public abstract class Strategy
         Parameters = parameters;
     }
 
-    public abstract IEnumerable<KeyValuePair<string, AnalysisValue>> Analysis(IEnumerable<Candle> candles);
+    public abstract void Analysis(IEnumerable<Candle> candles);
 
     public static Strategy FromSetting(Setting.Strategy setting)
     {

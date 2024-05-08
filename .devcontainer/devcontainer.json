@@ -27,7 +27,8 @@
 				"ms-dotnettools.dotnet-interactive-vscode",
 				"ms-toolsai.jupyter",
 				"EditorConfig.EditorConfig",
-				"tomoki1207.pdf"
+				"tomoki1207.pdf",
+				"VisualStudioExptTeam.vscodeintellicode"
 			]
 		}
 	}

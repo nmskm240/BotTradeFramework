@@ -15,9 +15,6 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
     private Symbol Symbol { get; init; }
     private SqliteConnection Connection { get; init; }
     private ILogger<PastCandleRepository> Logger { get; init; }
-    private Subject<Candle> PulledSubject { get; } = new Subject<Candle>();
-
-    public IObservable<Candle> OnPulled => PulledSubject;
 
     public PastCandleRepository(Setting.Exchange setting, ILogger<PastCandleRepository> logger)
     {
@@ -32,17 +29,17 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
         Connection.Open();
 
         var sql = $"""
-                create table if not exists {TABLE_NAME} (
-                    symbol TEXT NOT NULL,
-                    timestamp BIGINT NOT NULL,
-                    open FLOAT,
-                    high FLOAT,
-                    low FLOAT,
-                    close FLOAT,
-                    volume FLOAT,
-                    PRIMARY KEY(symbol,timestamp)
-                )
-            """;
+            create table if not exists {TABLE_NAME} (
+                symbol TEXT NOT NULL,
+                timestamp BIGINT NOT NULL,
+                open FLOAT,
+                high FLOAT,
+                low FLOAT,
+                close FLOAT,
+                volume FLOAT,
+                PRIMARY KEY(symbol,timestamp)
+            )
+        """;
         using var command = new SqliteCommand(sql, Connection);
         command.ExecuteReader();
     }
@@ -98,11 +95,26 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
 
                 Logger.LogInformation($"Fetched since: {DateTimeOffset.FromUnixTimeMilliseconds(since)}, count: {ohlcvs.Count()}");
 
-                var values = ohlcvs.Select(e => $@"('{Symbol.GetStringValue()}', '{e.timestamp}', '{e.open}', '{e.high}', '{e.low}', '{e.close}', '{e.volume}')");
-                var insertOhlcvSQL = $@"
-                        insert into {TABLE_NAME}
-                        (Symbol,timestamp,open,high,low,close,volume)
-                        values {string.Join(", ", values)}";
+                var values = ohlcvs.Select(e => $"""
+                    ('{Symbol.GetStringValue()}',
+                    '{e.timestamp}',
+                    '{e.open}',
+                    '{e.high}',
+                    '{e.low}',
+                    '{e.close}',
+                    '{e.volume}')
+                    """
+                );
+                var insertOhlcvSQL = $"""
+                    insert into {TABLE_NAME} (
+                        Symbol,
+                        timestamp,
+                        open,high,
+                        low,
+                        close,
+                        volume
+                    ) values {string.Join(", ", values)}
+                """;
 
                 using var transaction = Connection.BeginTransaction();
                 using var command = new SqliteCommand(insertOhlcvSQL, Connection, transaction);
@@ -128,38 +140,27 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
         Logger.LogWarning("ccxtに対応していない取引所");
     }
 
-    public async Task Pull()
+    public async IAsyncEnumerable<Candle> Pull()
     {
         var sql = $"""
-                    select * from {TABLE_NAME}
-                    where symbol='{Symbol.GetStringValue()}'
-                    order by timestamp asc
-                """;
+            select * from {TABLE_NAME}
+            where symbol='{Symbol.GetStringValue()}'
+            order by timestamp asc
+        """;
 
-        try
+        using var command = new SqliteCommand(sql, Connection);
+        using var reader = await command.ExecuteReaderAsync();
+
+        while (reader.Read())
         {
-
-            using var command = new SqliteCommand(sql, Connection);
-            using var reader = await command.ExecuteReaderAsync();
-
-            while (reader.Read())
-            {
-                var index = 1;
-                var date = DateTime.UnixEpoch.AddMilliseconds(reader.GetDouble(index++));
-                var open = reader.GetDecimal(index++);
-                var high = reader.GetDecimal(index++);
-                var low = reader.GetDecimal(index++);
-                var close = reader.GetDecimal(index++);
-                var volume = reader.GetDecimal(index++);
-                var candle = new Candle(Symbol, date, open, high, low, close, volume);
-
-                PulledSubject.OnNext(candle);
-            }
+            var index = 1;
+            var date = DateTime.UnixEpoch.AddMilliseconds(reader.GetDouble(index++));
+            var open = reader.GetDecimal(index++);
+            var high = reader.GetDecimal(index++);
+            var low = reader.GetDecimal(index++);
+            var close = reader.GetDecimal(index++);
+            var volume = reader.GetDecimal(index++);
+            yield return new Candle(Symbol, date, open, high, low, close, volume);
         }
-        catch (Exception e)
-        {
-            PulledSubject.OnError(e);
-        }
-        PulledSubject.OnCompleted();
     }
 }

@@ -15,18 +15,31 @@ public class Backtest : IExchange
 {
     private Candle? _currentCandle;
     public List<Position> Positions { get; init; }
-    public IObservable<Candle> OnPulled { get; init; }
+    public IConnectableObservable<Candle> OnPulled { get; init; }
     private ICandleRepository Repository { get; init; }
 
     // TODO: 手数料を設定できるように
     public Backtest(ICandleRepository repository)
     {
         Repository = repository;
-        OnPulled = repository.OnPulled;
         Positions = new List<Position>();
+        OnPulled = Observable.Create<Candle>(async observer =>
+        {
+            try
+            {
+                await foreach (var candle in Repository.Pull())
+                {
+                    _currentCandle = candle;
+                    observer.OnNext(candle);
+                }
+                observer.OnCompleted();
+            }
+            catch (Exception e)
+            {
+                observer.OnError(e);
+            }
+        }).Publish();
     }
-
-    public async Task Pull() => await Repository.Pull();
 
     public async Task<Position> Buy(Symbol symbol, decimal quantity)
     {

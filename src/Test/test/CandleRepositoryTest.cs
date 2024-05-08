@@ -18,34 +18,32 @@ public class CnadleRepositoryTest
         var logger = new LoggerFactory().CreateLogger<PastCandleRepository>();
         var setting = new Setting.Exchange() { Place = place, Symbol = symbol };
         var repository = new PastCandleRepository(setting, logger);
+        var candles = new List<Candle>();
 
-        repository
-            .OnPulled
-            .Take(2)
-            .ToList()
-            .Subscribe(
-                candles => {
-                    var a = candles.First();
-                    var b = candles.Last();
-                    var span = b.Date - a.Date;
+        await foreach (var candle in repository.Pull())
+        {
+            candles.Add(candle);
+            if (candles.Count == 2)
+                break;
+        }
 
-                    Assert.Equal(a.Symbol, b.Symbol);
-                    Assert.NotEqual(0, a.Date.Ticks);
-                    Assert.NotEqual(0, b.Date.Ticks);
-                    Assert.Equal(span.Ticks, (int)Timeframe.OneMinute * TimeSpan.TicksPerMinute);
-                    // リサンプリング失敗などを考慮しておく
-                    Assert.True(a.Open > 0);
-                    Assert.True(b.Open > 0);
-                    Assert.True(a.Close > 0);
-                    Assert.True(b.Close > 0);
-                    Assert.True(a.High > 0);
-                    Assert.True(b.High > 0);
-                    Assert.True(a.Low > 0);
-                    Assert.True(b.Low > 0);
-                    Assert.True(a.Volume >= 0);
-                    Assert.True(b.Volume >= 0);
-                }
-            );
-        await repository.Pull();
+        var a = candles.First();
+        var b = candles.Last();
+        var span = b.Date - a.Date;
+        Assert.Equal(a.Symbol, b.Symbol);
+        Assert.NotEqual(0, a.Date.Ticks);
+        Assert.NotEqual(0, b.Date.Ticks);
+        Assert.Equal(span.Ticks, (int)Timeframe.OneMinute * TimeSpan.TicksPerMinute);
+        // リサンプリンjグ失敗などを考慮しておく
+        Assert.True(a.Open > 0);
+        Assert.True(b.Open > 0);
+        Assert.True(a.Close > 0);
+        Assert.True(b.Close > 0);
+        Assert.True(a.High > 0);
+        Assert.True(b.High > 0);
+        Assert.True(a.Low > 0);
+        Assert.True(b.Low > 0);
+        Assert.True(a.Volume >= 0);
+        Assert.True(b.Volume >= 0);
     }
 }

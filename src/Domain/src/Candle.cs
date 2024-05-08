@@ -38,6 +38,7 @@ public class Candle : IQuote
         var low = candles.MinBy(e => e.Low)?.Low ?? decimal.MinusOne;
         var close = candles.Last().Close;
         var volume = candles.Sum(e => e.Volume);
+
         return new Candle(symbol, date, open, high, low, close, volume, timeframe);
     }
 }

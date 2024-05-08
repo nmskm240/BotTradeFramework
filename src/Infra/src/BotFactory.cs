@@ -1,4 +1,4 @@
-﻿using BotTrade.Domain;
+using BotTrade.Domain;
 using BotTrade.Domain.Strategies;
 using BotTrade.Infra.Exchanges;
 
@@ -61,7 +61,16 @@ public class BotFactory
     public Bot Create(Setting.Bot setting)
     {
         var services = new ServiceCollection();
-        var strategies = setting.Strategies.Select(e => Strategy.FromSetting(e));
+        // StrategyのOnAnalysisを購読するため、ここでListインスタンに確定させる
+        var strategies = setting.Strategies
+            .Select(Strategy.FromSetting)
+            .ToList();
+
+        if (strategies.Count == 0)
+        {
+            throw new Exception("有効な戦略が存在しない");
+        }
+
         services.AddLogging(logger => logger.AddConsole());
         services.AddSingleton<Bot>();
         services.AddSingleton<IEnumerable<Strategy>>(strategies);

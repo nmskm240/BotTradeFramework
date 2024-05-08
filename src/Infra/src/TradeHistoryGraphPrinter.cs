@@ -139,14 +139,18 @@ public class TradeHistoryGraphPrinter : ITradeLogger
         OHLCChart.Add.Marker(x, y, shape, ARROW_SIZE, color);
     }
 
-    public void WriteCandleAndIndicators(AnalysisData analysis)
+    public void Log(Candle candle)
     {
-        PlotOHLC(analysis.Candle);
-        PlotVolume(analysis.Candle);
+        PlotOHLC(candle);
+        PlotVolume(candle);
+    }
+
+    public void Log(AnalysisData analysis)
+    {
         PlotIndicators(analysis);
     }
 
-    public void WritePositionHistory(Position position)
+    public void Log(Position position)
     {
         var entry = new Coordinates(position.EntryDate.ToOADate(), (double)position.Entry);
         var exit = new Coordinates(position.ExitDate.ToOADate(), (double)position.Exit);
@@ -156,7 +160,7 @@ public class TradeHistoryGraphPrinter : ITradeLogger
         PlotPositionInfo(position, false);
     }
 
-    public void Close()
+    public void Stop()
     {
         var i = 0;
         foreach (var (chart, series) in ChartAndSeries)

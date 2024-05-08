@@ -4,8 +4,7 @@ namespace BotTrade.Domain;
 
 public interface ICandleRepository
 {
-    Task Pull();
-    IObservable<Candle> OnPulled { get; }
+    IAsyncEnumerable<Candle> Pull();
 }
 
 public interface IUpdatableCandleRepository : ICandleRepository
