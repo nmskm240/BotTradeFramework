@@ -1,18 +1,15 @@
 using System.Collections;
 using System.Reactive.Linq;
-using System.Security.AccessControl;
 
 using BotTrade.Domain;
+using BotTrade.Domain.Strategies;
 
 using Microsoft.Extensions.Logging;
-
-using Nethereum.ABI.CompilationMetadata;
+using Microsoft.Extensions.Logging.Abstractions;
 
 using ScottPlot;
 using ScottPlot.DataSources;
 using ScottPlot.Plottables;
-
-using SQLitePCL;
 
 namespace BotTrade.Infra;
 
@@ -82,7 +79,7 @@ public class TradeHistoryGraphPrinter : ITradeLogger
     private void PlotIndicators(AnalysisData analysis)
     {
         var zipped = ChartAndSeries.Zip(analysis.Indicators);
-        var x = analysis.Candle.Date.ToOADate();
+        var x = analysis.Date.ToOADate();
         foreach (var (chartAndSeries, indicatorValues) in zipped)
         {
             var chart = chartAndSeries.Key;

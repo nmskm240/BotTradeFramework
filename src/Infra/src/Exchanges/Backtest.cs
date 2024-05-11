@@ -17,10 +17,12 @@ public class Backtest : IExchange
     public List<Position> Positions { get; init; }
     public IConnectableObservable<Candle> OnPulled { get; init; }
     private ICandleRepository Repository { get; init; }
+    public Symbol Symbol { get; init; }
 
     // TODO: 手数料を設定できるように
-    public Backtest(ICandleRepository repository)
+    public Backtest(Setting.Exchange setting, ICandleRepository repository)
     {
+        Symbol = setting.Symbol;
         Repository = repository;
         Positions = new List<Position>();
         OnPulled = Observable.Create<Candle>(async observer =>
@@ -41,9 +43,10 @@ public class Backtest : IExchange
         }).Publish();
     }
 
-    public async Task<Position> Buy(Symbol symbol, decimal quantity)
+    public async Task<Position> Buy(decimal quantity)
     {
-        var position = new Position(symbol, PositionType.Long, quantity, _currentCandle!.Close, _currentCandle!.Date);
+        var position = new Position(Symbol, PositionType.Long, quantity, _currentCandle!.Close, _currentCandle!.Date);
+        Positions.Add(position);
         return await Task.FromResult(position);
     }
 
@@ -58,10 +61,21 @@ public class Backtest : IExchange
         return await Task.FromResult(0);
     }
 
-
-    public async Task<Position> Sell(Symbol symbol, decimal quantity)
+    public async Task<decimal> ClosePositionAll()
     {
-        var position = new Position(symbol, PositionType.Short, quantity, _currentCandle!.Close, _currentCandle!.Date);
+        decimal profit = 0;
+        foreach(var position in Positions.ToList())
+        {
+            profit += await ClosePosition(position);
+        }
+        return profit;
+    }
+
+
+    public async Task<Position> Sell(decimal quantity)
+    {
+        var position = new Position(Symbol, PositionType.Short, quantity, _currentCandle!.Close, _currentCandle!.Date);
+        Positions.Add(position);
         return await Task.FromResult(position);
     }
 }

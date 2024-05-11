@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reactive.Linq;
 
 using BotTrade.Domain.Strategies;
@@ -21,12 +22,13 @@ public class Bot : IDisposable
 
     private IList<IDisposable> Subscriptions { get; init; }
 
-    public Bot(IExchange exchange, IEnumerable<Strategy> strategies, ITradeLogger tradeLogger, ILogger<Bot> logger)
+    public Bot(Setting.Bot setting, IExchange exchange, IEnumerable<Strategy> strategies, ITradeLogger tradeLogger, ILogger<Bot> logger)
     {
         Exchange = exchange;
         Strategies = strategies;
         TradeLogger = tradeLogger;
         Logger = logger;
+        Capital = setting.Capital;
 
         Subscriptions = [
             Exchange.OnPulled
@@ -53,6 +55,15 @@ public class Bot : IDisposable
                     }
                 }
             ),
+            Observable.CombineLatest(
+                Strategies.Select(strategy =>
+                    strategy.OnAnalysised
+                        .Buffer(strategy.NeedDataCountForTrade)
+                        .Select(strategy.RecommendedAction)
+                )
+            ).Subscribe(
+                async datas => await Trade(datas)
+            ),
         ];
     }
 
@@ -65,6 +76,7 @@ public class Bot : IDisposable
 
     public async Task Stop()
     {
+        Capital += await Exchange.ClosePositionAll();
         IsStarted = false;
         UnSubscribe();
         TradeLogger.Stop();
@@ -76,9 +88,28 @@ public class Bot : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    private async Task Trade(AnalysisData analysis)
+    private async Task Trade(IEnumerable<StrategyActionType> recommendedActions)
     {
-        await Task.Delay(1);
+        if (recommendedActions.All(action => action == StrategyActionType.Buy))
+        {
+            if (Exchange.Positions.Count > 0)
+            {
+                Capital += await Exchange.ClosePositionAll();
+                return;
+            }
+            var position = await Exchange.Buy(1);
+            position.OnClosed += TradeLogger.Log;
+        }
+        else if (recommendedActions.All(action => action == StrategyActionType.Sell))
+        {
+            if (Exchange.Positions.Count > 0)
+            {
+                Capital += await Exchange.ClosePositionAll();
+                return;
+            }
+            var position = await Exchange.Sell(1);
+            position.OnClosed += TradeLogger.Log;
+        }
     }
 
     private void UnSubscribe()

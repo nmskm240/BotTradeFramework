@@ -29,18 +29,38 @@ public class MACross : Strategy
     public override void Analysis(IEnumerable<Candle> candles)
     {
         var indicators = new Dictionary<string, AnalysisValue>();
-        var analysisedDate = candles.MaxBy(candle => candle.Date)?.Date ?? DateTime.UtcNow;
+        var date = candles.MaxBy(candle => candle.Date)?.Date ?? DateTime.UtcNow;
         foreach (var (label, span) in Enumerable.Zip([ShortMALabel, LongMALabel], [Parameters.FirstOrDefault(0), Parameters.LastOrDefault(0)]))
         {
             var ma = candles.GetSma(span).LastOrDefault()?.Sma;
             if (ma != null)
             {
-                var value =new AnalysisValue(analysisedDate, (decimal)ma, GraphType.Line);
+                var value =new AnalysisValue((decimal)ma, GraphType.Line);
                 indicators.Add(label, value);
             }
         }
-        var data = new AnalysisData(candles.Last(), indicators);
+        var data = new AnalysisData(date, candleIndicators: indicators);
 
         AnalysisSubject.OnNext(data);
+    }
+
+    public override StrategyActionType RecommendedAction(IEnumerable<AnalysisData> datas)
+    {
+        var prevShortMa = datas.First().ChartPlotValues[ShortMALabel].Value;
+        var prevLongMa = datas.First().ChartPlotValues[LongMALabel].Value;
+        var currentShortMa = datas.Last().ChartPlotValues[ShortMALabel].Value;
+        var currentLongMa = datas.Last().ChartPlotValues[LongMALabel].Value;
+
+        if(StrategyUtilty.IsGoldenCross([prevShortMa, currentShortMa], [prevLongMa, currentLongMa]))
+        {
+            return StrategyActionType.Buy;
+        }
+
+        if(StrategyUtilty.IsDeadCross([prevShortMa, currentShortMa], [prevLongMa, currentLongMa]))
+        {
+            return StrategyActionType.Sell;
+        }
+
+        return StrategyActionType.Neutral;
     }
 }

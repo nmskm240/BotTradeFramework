@@ -1,3 +1,5 @@
+using BotTrade.Domain.Strategies;
+
 namespace BotTrade.Domain;
 
 public interface ITradeLogger

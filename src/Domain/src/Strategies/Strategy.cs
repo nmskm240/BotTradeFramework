@@ -20,6 +20,7 @@ public abstract class Strategy
     }
 
     public abstract void Analysis(IEnumerable<Candle> candles);
+    public abstract StrategyActionType RecommendedAction(IEnumerable<AnalysisData> datas);
 
     public static Strategy FromSetting(Setting.Strategy setting)
     {

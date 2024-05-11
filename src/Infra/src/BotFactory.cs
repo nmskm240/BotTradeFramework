@@ -1,4 +1,4 @@
-using BotTrade.Domain;
+﻿using BotTrade.Domain;
 using BotTrade.Domain.Strategies;
 using BotTrade.Infra.Exchanges;
 
@@ -75,6 +75,7 @@ public class BotFactory
         services.AddSingleton<Bot>();
         services.AddSingleton<IEnumerable<Strategy>>(strategies);
         services.AddSingleton<Setting.Exchange>(setting.Exchange);
+        services.AddSingleton<Setting.Bot>(setting);
         if (IsBacktest)
         {
             services.AddSingleton<IExchange, Backtest>();

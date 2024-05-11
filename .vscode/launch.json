@@ -10,9 +10,9 @@
             "request": "launch",
             "preLaunchTask": "build",
             // ターゲット フレームワークを変更した場合は、プログラム パスを更新するようにしてください。
-            "program": "${workspaceFolder}/BotTrade/bin/Debug/net8.0/BotTrade.dll",
+            "program": "${workspaceFolder}/src/Test/bin/Debug/net8.0/Test.dll",
             "args": [],
-            "cwd": "${workspaceFolder}/BotTrade",
+            "cwd": "${workspaceFolder}/src/Test",
             // 'console' フィールドの詳細については、https://aka.ms/VSCode-CS-LaunchJson-Console を参照してください
             "console": "internalConsole",
             "stopAtEntry": false
