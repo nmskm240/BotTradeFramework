@@ -1,4 +1,7 @@
 {
+    "files.associations": {
+        "*.json": "jsonc"
+    },
     "plantuml.exportIncludeFolderHeirarchy": true,
     "plantuml.exportSubFolder": false,
     "notebook.insertFinalNewline": true,

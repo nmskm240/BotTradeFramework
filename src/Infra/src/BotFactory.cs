@@ -79,7 +79,7 @@ public class BotFactory
         if (IsBacktest)
         {
             services.AddSingleton<IExchange, Backtest>();
-            services.AddSingleton<ITradeLogger, TradeHistoryGraphPrinter>();
+            services.AddSingleton<ITradeLogger, TradeHistoryReporter>();
             services.AddSingleton<ICandleRepository, PastCandleRepository>();
         }
         else
