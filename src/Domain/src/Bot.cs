@@ -5,11 +5,13 @@ using BotTrade.Domain.Strategies;
 
 using Microsoft.Extensions.Logging;
 
+using Reactive.Bindings;
+
 namespace BotTrade.Domain;
 
 public class Bot : IDisposable
 {
-    public decimal Capital { get; private set; }
+    public ReactiveProperty<decimal> Capital { get; private set; }
     public bool IsStarted { get; private set; } = false;
 
     protected IExchange Exchange { get; init; }
@@ -28,7 +30,7 @@ public class Bot : IDisposable
         Strategies = strategies;
         TradeLogger = tradeLogger;
         Logger = logger;
-        Capital = setting.Capital;
+        Capital = new ReactiveProperty<decimal>();
 
         Subscriptions = [
             Exchange.OnPulled
@@ -64,7 +66,12 @@ public class Bot : IDisposable
             ).Subscribe(
                 async datas => await Trade(datas)
             ),
+            Exchange.OnPulled.CombineLatest(Capital)
+                .Select(e => new CapitalFlow() { DateTime = e.First.Date, Capital = (double)e.Second})
+                .Subscribe(TradeLogger.Log),
         ];
+
+        Capital.Value = setting.Capital;
     }
 
     public void Start()
@@ -76,7 +83,7 @@ public class Bot : IDisposable
 
     public async Task Stop()
     {
-        Capital += await Exchange.ClosePositionAll();
+        Capital.Value += await Exchange.ClosePositionAll();
         IsStarted = false;
         UnSubscribe();
         TradeLogger.Stop();
@@ -94,7 +101,7 @@ public class Bot : IDisposable
         {
             if (Exchange.Positions.Count > 0)
             {
-                Capital += await Exchange.ClosePositionAll();
+                Capital.Value += await Exchange.ClosePositionAll();
                 return;
             }
             var position = await Exchange.Buy(1);
@@ -104,7 +111,7 @@ public class Bot : IDisposable
         {
             if (Exchange.Positions.Count > 0)
             {
-                Capital += await Exchange.ClosePositionAll();
+                Capital.Value += await Exchange.ClosePositionAll();
                 return;
             }
             var position = await Exchange.Sell(1);

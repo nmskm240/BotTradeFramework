@@ -4,27 +4,30 @@ using System.Reactive.Linq;
 using BotTrade.Domain;
 using BotTrade.Domain.Strategies;
 
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-
 using ScottPlot;
-using ScottPlot.DataSources;
 using ScottPlot.Plottables;
 
 namespace BotTrade.Infra;
 
-public class TradeHistoryGraphPrinter : ITradeLogger
+public class TradeHistoryReporter : ITradeLogger
 {
-    private const string GRAPTH_TITLE = "TradeHistory";
     private const string CANDLE_SERIES_LABEL = "candles";
     private const string VOLUME_SERIES_LABEL = "volumes";
+    private const string CAPITAL_SERIES_LABEL = "capitals";
     private const float ARROW_SIZE = 10f;
 
+    private decimal HighestPrice { get; set; } = decimal.MinValue;
+    private decimal LowestPrice { get; set; } = decimal.MaxValue;
+    private int ChartWidht { get { return ChartAndSeries[OHLCChart][CANDLE_SERIES_LABEL].Count / 10; } }
+    private int ChartHeight { get { return (int)(HighestPrice - LowestPrice) / 5; } }
     private Plot OHLCChart { get; init; }
     private Plot VolumeChart { get; init; }
     private Dictionary</*描画先*/Plot, Dictionary<string, IList>> ChartAndSeries { get; init; }
+    private Plot CapitalFlowChart { get; init; }
+    private List<double> CapitalFlow { get; init; }
+    private List<double> DateTimeSeries { get; init; }
 
-    public TradeHistoryGraphPrinter()
+    public TradeHistoryReporter()
     {
         OHLCChart = new Plot();
         var candles = new List<OHLC>();
@@ -35,6 +38,7 @@ public class TradeHistoryGraphPrinter : ITradeLogger
         OHLCChart.Add.Candlestick(candles);
         OHLCChart.Axes.DateTimeTicksBottom();
         OHLCChart.Axes.Margins(bottom: 0);
+        OHLCChart.Title(CANDLE_SERIES_LABEL);
 
         VolumeChart = new Plot();
         var volumes = new List<Bar>();
@@ -45,6 +49,14 @@ public class TradeHistoryGraphPrinter : ITradeLogger
         VolumeChart.Add.Bars(volumes);
         VolumeChart.Axes.DateTimeTicksBottom();
         VolumeChart.Axes.Margins(bottom: 0);
+        VolumeChart.Title(VOLUME_SERIES_LABEL);
+
+        CapitalFlow = new List<double>();
+        DateTimeSeries = new List<double>();
+        CapitalFlowChart = new Plot();
+        CapitalFlowChart.Axes.DateTimeTicksBottom();
+        CapitalFlowChart.Axes.Margins(bottom: 0);
+        CapitalFlowChart.Title(CAPITAL_SERIES_LABEL);
 
         ChartAndSeries = new Dictionary<Plot, Dictionary<string, IList>>()
         {
@@ -64,6 +76,8 @@ public class TradeHistoryGraphPrinter : ITradeLogger
             candle.Timeframe.ToTimeSpan()
         );
         ChartAndSeries[OHLCChart][CANDLE_SERIES_LABEL].Add(item);
+        HighestPrice = HighestPrice < candle.High ? candle.High : HighestPrice;
+        LowestPrice = LowestPrice > candle.Low ? candle.Low : LowestPrice;
     }
 
     private void PlotVolume(Candle candle)
@@ -157,13 +171,21 @@ public class TradeHistoryGraphPrinter : ITradeLogger
         PlotPositionInfo(position, false);
     }
 
+    public void Log(CapitalFlow flow)
+    {
+        CapitalFlow.Add(flow.Capital);
+        DateTimeSeries.Add(flow.DateTime.ToOADate());
+    }
+
     public void Stop()
     {
-        var i = 0;
+        var area = CapitalFlowChart.Add.Scatter(DateTimeSeries.ToArray(), CapitalFlow.ToArray());
+        area.FillYColor = area.Color.WithAlpha(.2);
+        area.FillY = true;
+        CapitalFlowChart.Save($"{CapitalFlowChart.Axes.Title.Label.Text}.png", ChartWidht, ChartHeight);
         foreach (var (chart, series) in ChartAndSeries)
         {
-            chart.Save($"export_{i}.png", 6000, 2000);
-            i++;
+            chart.Save($"{chart.Axes.Title.Label.Text}.png", ChartWidht, ChartHeight);
         }
     }
 }
