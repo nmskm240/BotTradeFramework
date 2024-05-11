@@ -8,6 +8,14 @@
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "dotnet restore",
 	"remoteUser": "root",
+	"mounts": [
+		{
+			"type": "bind",
+			"source": ".",
+			"target": "/workspace"
+		}
+	],
+	"workspaceFolder": "/workspace",
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -19,7 +27,8 @@
 				"ms-dotnettools.dotnet-interactive-vscode",
 				"ms-toolsai.jupyter",
 				"EditorConfig.EditorConfig",
-				"tomoki1207.pdf"
+				"tomoki1207.pdf",
+				"VisualStudioExptTeam.vscodeintellicode"
 			]
 		}
 	}

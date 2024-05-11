@@ -1,21 +1,8 @@
-using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 
 using Skender.Stock.Indicators;
 
 namespace BotTrade.Domain.Strategies;
-
-public record MACrossParameter : StrategyParameter
-{
-    public MACrossParameter(Symbol symbol, Timeframe timeframe, int shortSpan, int longSpan) : base(symbol, timeframe)
-    {
-        ShortSpan = shortSpan;
-        LongSpan = longSpan;
-    }
-
-    public int ShortSpan { get; init; }
-    public int LongSpan { get; init; }
-
-}
 
 /// <summary>
 /// ゴールデンクロスで買い、デッドクロスで売る
@@ -24,55 +11,56 @@ public record MACrossParameter : StrategyParameter
 /// 単一ポジションの取引にのみ対応しているため、稼働後最初にしかポジションをとらない仕様
 /// （最初にロングすると停止するまでショートはしない）
 /// </remarks>
-public class MACross : Strategy<MACrossParameter>
+public class MACross : Strategy
 {
     private const string ShortMALabel = "ShortMA";
     private const string LongMALabel = "LongMA";
 
-    public override int NeedDataCountForAnalysis => Parameter.LongSpan;
+    public override int NeedDataCountForAnalysis => Parameters.LastOrDefault(int.MaxValue);
     public override int NeedDataCountForTrade => 2;
+    public override StrategyKind KInd => StrategyKind.MACross;
 
-    public MACross(Exchange exchange, MACrossParameter parameter, ITradeLogger logger) : base(exchange, parameter, logger) { }
+    public MACross(Timeframe timeframe, IEnumerable<int> parameters) : base(timeframe, parameters)
+    {
+        Debug.Assert(parameters.Count() == 2, "MACrossではパラメーターを2つ設定しなければならない");
+        Debug.Assert(parameters.First() < parameters.Last(), "パラメーターの先頭要素が最後尾の要素の数より小さくなければならない");
+    }
 
-    protected override AnalysisData Analysis(IEnumerable<Candle> candles)
+    public override void Analysis(IEnumerable<Candle> candles)
     {
         var indicators = new Dictionary<string, AnalysisValue>();
-        foreach (var (label, span) in Enumerable.Zip([ShortMALabel, LongMALabel], [Parameter.ShortSpan, Parameter.LongSpan]))
+        var date = candles.MaxBy(candle => candle.Date)?.Date ?? DateTime.UtcNow;
+        foreach (var (label, span) in Enumerable.Zip([ShortMALabel, LongMALabel], [Parameters.FirstOrDefault(0), Parameters.LastOrDefault(0)]))
         {
             var ma = candles.GetSma(span).LastOrDefault()?.Sma;
             if (ma != null)
             {
-                indicators.Add(label, new AnalysisValue((decimal)ma, GraphType.Line));
+                var value =new AnalysisValue((decimal)ma, GraphType.Line);
+                indicators.Add(label, value);
             }
         }
+        var data = new AnalysisData(date, candleIndicators: indicators);
 
-        return new AnalysisData(candles.Last(), indicators);
+        AnalysisSubject.OnNext(data);
     }
 
-    protected override async Task Trade(IEnumerable<AnalysisData> analyses)
+    public override StrategyActionType RecommendedAction(IEnumerable<AnalysisData> datas)
     {
-        var recentryAnalysises = analyses.SelectMany(data => data.ChartPlotValues)
-            .GroupBy(pair => pair.Key)
-            .ToDictionary(
-                group => group.Key,
-                group => group.Select(pair => pair.Value.Value)
-            ) ?? [];
-        var shortMa = Enumerable.Empty<decimal>();
-        var longMa = Enumerable.Empty<decimal>();
+        var prevShortMa = datas.First().ChartPlotValues[ShortMALabel].Value;
+        var prevLongMa = datas.First().ChartPlotValues[LongMALabel].Value;
+        var currentShortMa = datas.Last().ChartPlotValues[ShortMALabel].Value;
+        var currentLongMa = datas.Last().ChartPlotValues[LongMALabel].Value;
 
-        recentryAnalysises.TryGetValue(ShortMALabel, out shortMa);
-        recentryAnalysises.TryGetValue(LongMALabel, out longMa);
-
-        if (StrategyUtilty.IsGoldenCross(shortMa, longMa))
+        if(StrategyUtilty.IsGoldenCross([prevShortMa, currentShortMa], [prevLongMa, currentLongMa]))
         {
-            await Buy(1);
-            return;
+            return StrategyActionType.Buy;
         }
 
-        if (StrategyUtilty.IsDeadCross(shortMa, longMa))
+        if(StrategyUtilty.IsDeadCross([prevShortMa, currentShortMa], [prevLongMa, currentLongMa]))
         {
-            await Sell(1);
-            return;
+            return StrategyActionType.Sell;
         }
+
+        return StrategyActionType.Neutral;
     }
 }

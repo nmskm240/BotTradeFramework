@@ -1,4 +1,4 @@
-﻿using System.Diagnostics;
+using System.Diagnostics;
 
 using Skender.Stock.Indicators;
 
@@ -12,7 +12,7 @@ public class Candle : IQuote
     public decimal Low { get; init; }
     public decimal Close { get; init; }
     public decimal Volume { get; init; }
-    public Timeframe Timeframe{ get; init; }
+    public Timeframe Timeframe { get; init; }
 
     public Candle(Symbol symbol, DateTime date, decimal open, decimal high, decimal low, decimal close, decimal volume, Timeframe timeframe = Timeframe.OneMinute)
     {
@@ -38,6 +38,7 @@ public class Candle : IQuote
         var low = candles.MinBy(e => e.Low)?.Low ?? decimal.MinusOne;
         var close = candles.Last().Close;
         var volume = candles.Sum(e => e.Volume);
+
         return new Candle(symbol, date, open, high, low, close, volume, timeframe);
     }
 }

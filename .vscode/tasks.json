@@ -7,7 +7,7 @@
             "type": "process",
             "args": [
                 "build",
-                "${workspaceFolder}/BotTrade/BotTrade.csproj",
+                "${workspaceFolder}/src/BotTrade.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -19,7 +19,7 @@
             "type": "process",
             "args": [
                 "publish",
-                "${workspaceFolder}/BotTrade/BotTrade.csproj",
+                "${workspaceFolder}/src/BotTrade.sln",
                 "/property:GenerateFullPaths=true",
                 "/consoleloggerparameters:NoSummary;ForceNoAlign"
             ],
@@ -33,7 +33,7 @@
                 "watch",
                 "run",
                 "--project",
-                "${workspaceFolder}/BotTrade/BotTrade.csproj"
+                "${workspaceFolder}/src/BotTrade.sln"
             ],
             "problemMatcher": "$msCompile"
         }

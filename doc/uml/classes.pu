@@ -6,24 +6,27 @@ package BotTrade
     {
         package Strategies
         {
+            enum StrategyKind
             abstract Strategy
-            class StrategyParameter <<record>>
             class CustomStrategy
-            class CustomStrategyParameter <<record>>
+        }
+        package Settings
+        {
+            class Setting <<record>>
+            class APISetting <<record>>
+            class BotSetting <<record>>
+            class ExchangeSetting <<record>>
+            class StrategySetting <<record>>
         }
         enum Symbol
         enum Timeframe
+        class Bot
         class Candle
         class Position
         abstract Exchange
         interface ICandleRepository
+        interface IUpdatableCandleRepository
         interface ITradeLogger
-
-        CustomStrategy -[hidden]left- CustomStrategyParameter 
-        Strategy -[hidden]left- StrategyParameter 
-        Strategy -[hidden]- Exchange
-        Exchange -[hidden] ICandleRepository
-        Exchange -[hidden] ITradeLogger
     }
     package Application
     {
@@ -31,6 +34,7 @@ package BotTrade
     }
     package Infra
     {
+        class BotFactory
         class PastCandleRepository
         class TradeHistoryGraphPrinter
 
@@ -42,19 +46,26 @@ package BotTrade
     }
 }
 
-Strategy <|-up- CustomStrategy
-StrategyParameter <|-up- CustomStrategyParameter
-Exchange <|-down- BacktestExchange
-Exchange <|-down- RealExchnage
+Exchange <|-- BacktestExchange
+Exchange <|-- RealExchnage
+ICandleRepository <|-- IUpdatableCandleRepository
 
-ITradeLogger <|... TradeHistoryGraphPrinter
-ICandleRepository <|... PastCandleRepository
+Strategy <|.. CustomStrategy
+ITradeLogger <|.. TradeHistoryGraphPrinter
+IUpdatableCandleRepository <|.. PastCandleRepository
 
-StrategyParameter <.. Strategy
-CustomStrategyParameter <.. CustomStrategy
-ITradeLogger <.. Strategy 
-Exchange <.. Strategy : order and fetch candle
+Bot <.. BotFactory : DI resolve and create
+BotSetting <.. BotFactory : read
+APISetting <.. BotFactory : read
+Strategy <.. Bot
+ITradeLogger <.. Bot 
+Exchange <.. Bot : order and fetch candle
 Candle <.. ICandleRepository : fetch and store
 Position <.. Exchange : make and close
+
+Setting "1" o-- "*" APISetting 
+Setting "1" o-- "*" BotSetting
+BotSetting "1" o-- "1" ExchangeSetting
+BotSetting "1" o-- "*" StrategySetting
 
 @enduml

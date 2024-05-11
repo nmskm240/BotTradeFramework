@@ -6,5 +6,7 @@
         "editor.colorDecorators": true
     },
     "polyglot-notebook.defaultNotebookLanguage": "csharp",
-    "polyglot-notebook.defaultNotebookExtension": ".ipynb"
+    "polyglot-notebook.defaultNotebookExtension": ".ipynb",
+    "notebook.diff.ignoreOutputs": true,
+    "notebook.diff.ignoreMetadata": true
 }

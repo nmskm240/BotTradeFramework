@@ -1,4 +1,4 @@
-namespace BotTrade.Domain;
+namespace BotTrade.Domain.Strategies;
 
 public record class AnalysisValue
 {

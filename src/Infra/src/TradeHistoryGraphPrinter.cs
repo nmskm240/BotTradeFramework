@@ -1,18 +1,15 @@
-﻿using System.Collections;
+using System.Collections;
 using System.Reactive.Linq;
-using System.Security.AccessControl;
 
 using BotTrade.Domain;
+using BotTrade.Domain.Strategies;
 
 using Microsoft.Extensions.Logging;
-
-using Nethereum.ABI.CompilationMetadata;
+using Microsoft.Extensions.Logging.Abstractions;
 
 using ScottPlot;
 using ScottPlot.DataSources;
 using ScottPlot.Plottables;
-
-using SQLitePCL;
 
 namespace BotTrade.Infra;
 
@@ -82,7 +79,7 @@ public class TradeHistoryGraphPrinter : ITradeLogger
     private void PlotIndicators(AnalysisData analysis)
     {
         var zipped = ChartAndSeries.Zip(analysis.Indicators);
-        var x = analysis.Candle.Date.ToOADate();
+        var x = analysis.Date.ToOADate();
         foreach (var (chartAndSeries, indicatorValues) in zipped)
         {
             var chart = chartAndSeries.Key;
@@ -139,14 +136,18 @@ public class TradeHistoryGraphPrinter : ITradeLogger
         OHLCChart.Add.Marker(x, y, shape, ARROW_SIZE, color);
     }
 
-    public void WriteCandleAndIndicators(AnalysisData analysis)
+    public void Log(Candle candle)
     {
-        PlotOHLC(analysis.Candle);
-        PlotVolume(analysis.Candle);
+        PlotOHLC(candle);
+        PlotVolume(candle);
+    }
+
+    public void Log(AnalysisData analysis)
+    {
         PlotIndicators(analysis);
     }
 
-    public void WritePositionHistory(Position position)
+    public void Log(Position position)
     {
         var entry = new Coordinates(position.EntryDate.ToOADate(), (double)position.Entry);
         var exit = new Coordinates(position.ExitDate.ToOADate(), (double)position.Exit);
@@ -156,10 +157,10 @@ public class TradeHistoryGraphPrinter : ITradeLogger
         PlotPositionInfo(position, false);
     }
 
-    public void Close()
+    public void Stop()
     {
         var i = 0;
-        foreach(var (chart, series) in ChartAndSeries)
+        foreach (var (chart, series) in ChartAndSeries)
         {
             chart.Save($"export_{i}.png", 6000, 2000);
             i++;

@@ -18,7 +18,7 @@ public static class StrategyUtilty
     /// </returns>
     public static bool IsGoldenCross(IEnumerable<decimal> shorts, IEnumerable<decimal> longs)
     {
-        if(shorts.Count() < 2 || longs.Count() < 2)
+        if (shorts.Count() < 2 || longs.Count() < 2)
             return false;
         var s = shorts.TakeLast(2);
         var l = longs.TakeLast(2);
@@ -41,7 +41,7 @@ public static class StrategyUtilty
     /// </returns>
     public static bool IsDeadCross(IEnumerable<decimal> shorts, IEnumerable<decimal> longs)
     {
-        if(shorts.Count() < 2 || longs.Count() < 2)
+        if (shorts.Count() < 2 || longs.Count() < 2)
             return false;
         var s = shorts.TakeLast(2);
         var l = longs.TakeLast(2);
