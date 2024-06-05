@@ -1,0 +1,18 @@
+@startuml
+abstract class Strategy {
+    + {abstract} NeedDataCountForAnalysis : int <<get>>
+    + {abstract} NeedDataCountForTrade : int <<get>>
+    + Strategy(timeframe:Timeframe, parameters:IEnumerable<int>)
+    + {abstract} Analysis(candles:IEnumerable<Candle>) : void
+    + {abstract} RecommendedAction(datas:IEnumerable<AnalysisData>) : StrategyActionType
+    + {static} FromSetting(setting:Setting.Strategy) : Strategy
+}
+class "IEnumerable`1"<T> {
+}
+class "IObservable`1"<T> {
+}
+Strategy --> "KInd" StrategyKind
+Strategy --> "Timeframe" Timeframe
+Strategy --> "Parameters<int>" "IEnumerable`1"
+Strategy --> "OnAnalysised<AnalysisData>" "IObservable`1"
+@enduml

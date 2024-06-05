@@ -1,0 +1,15 @@
+@startuml
+class Candle {
+    + Open : decimal <<get>> <<init>>
+    + High : decimal <<get>> <<init>>
+    + Low : decimal <<get>> <<init>>
+    + Close : decimal <<get>> <<init>>
+    + Volume : decimal <<get>> <<init>>
+    + Candle(symbol:Symbol, date:DateTime, open:decimal, high:decimal, low:decimal, close:decimal, volume:decimal, timeframe:Timeframe)
+    + {static} Aggregate(candles:IEnumerable<Candle>, timeframe:Timeframe) : Candle
+}
+IQuote <|-- Candle
+Candle --> "Symbol" Symbol
+Candle --> "Date" DateTime
+Candle --> "Timeframe" Timeframe
+@enduml

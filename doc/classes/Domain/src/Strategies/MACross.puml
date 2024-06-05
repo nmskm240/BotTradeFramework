@@ -1,0 +1,11 @@
+@startuml
+class MACross {
+    + <<override>> NeedDataCountForAnalysis : int <<get>>
+    + <<override>> NeedDataCountForTrade : int <<get>>
+    + MACross(timeframe:Timeframe, parameters:IEnumerable<int>)
+    + <<override>> Analysis(candles:IEnumerable<Candle>) : void
+    + <<override>> RecommendedAction(datas:IEnumerable<AnalysisData>) : StrategyActionType
+}
+Strategy <|-- MACross
+MACross --> "KInd" StrategyKind
+@enduml

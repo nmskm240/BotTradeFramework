@@ -1,0 +1,6 @@
+@startuml
+class StrategyUtilty <<static>> {
+    + {static} IsGoldenCross(shorts:IEnumerable<decimal>, longs:IEnumerable<decimal>) : bool
+    + {static} IsDeadCross(shorts:IEnumerable<decimal>, longs:IEnumerable<decimal>) : bool
+}
+@enduml

@@ -1,0 +1,10 @@
+@startuml
+class EnumStringAttribute {
+    + StringValue : string <<get>> <<protected set>>
+    + EnumStringAttribute(value:string)
+}
+class EnumString <<static>> {
+    + {static} GetStringValue(value:Enum) : string
+}
+Attribute <|-- EnumStringAttribute
+@enduml

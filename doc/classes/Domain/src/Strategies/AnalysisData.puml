@@ -1,0 +1,12 @@
+@startuml
+class AnalysisData <<record>> {
+    + AnalysisData(date:DateTime, candleIndicators:Dictionary<string, AnalysisValue>?, volumeIndicators:Dictionary<string, AnalysisValue>?, customChartIndicators:IEnumerable<Dictionary<string, AnalysisValue>>?)
+}
+class "IEnumerable`1"<T> {
+}
+class "Dictionary`2"<T1,T2> {
+}
+AnalysisData --> "Indicators<Dictionary<string, AnalysisValue>>" "IEnumerable`1"
+AnalysisData --> "Date" DateTime
+AnalysisData --> "ChartPlotValues<string,AnalysisValue>" "Dictionary`2"
+@enduml

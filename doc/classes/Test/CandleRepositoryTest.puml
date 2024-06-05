@@ -1,0 +1,5 @@
+@startuml
+class CnadleRepositoryTest {
+    + <<async>> FetchHistoricalData(symbol:Symbol, place:ExchangePlace) : Task
+}
+@enduml

@@ -2,7 +2,7 @@
     "files.associations": {
         "*.json": "jsonc"
     },
-    "plantuml.exportIncludeFolderHeirarchy": true,
+    "plantuml.exportIncludeFolderHeirarchy": false,
     "plantuml.exportSubFolder": false,
     "notebook.insertFinalNewline": true,
     "notebook.editorOptionsCustomizations": {
@@ -11,5 +11,11 @@
     "polyglot-notebook.defaultNotebookLanguage": "csharp",
     "polyglot-notebook.defaultNotebookExtension": ".ipynb",
     "notebook.diff.ignoreOutputs": true,
-    "notebook.diff.ignoreMetadata": true
+    "notebook.diff.ignoreMetadata": true,
+    "workbench.editorLargeFileConfirmation": 1000,
+    "csharp2plantuml.outputPath": "doc/classes",
+    "plantuml.render": "Local",
+    "plantuml.exportOutDir": "doc",
+    "csharp2plantuml.excludePath": "",
+    "csharp2plantuml.inputPath": "src"
 }

@@ -1,0 +1,11 @@
+@startuml
+class TradeHistoryReporter {
+    + TradeHistoryReporter()
+    + Log(candle:Candle) : void
+    + Log(analysis:AnalysisData) : void
+    + Log(position:Position) : void
+    + Log(flow:CapitalFlow) : void
+    + Stop() : void
+}
+ITradeLogger <|-- TradeHistoryReporter
+@enduml

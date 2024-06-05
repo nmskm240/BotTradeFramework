@@ -1,0 +1,25 @@
+@startuml
+enum PositionStatus {
+    Open,
+    Close,
+}
+enum PositionType {
+    Long,
+    Short,
+}
+class Position {
+    + Id : string <<get>> <<init>>
+    + Quantity : float <<get>> <<init>>
+    + Entry : decimal <<get>> <<init>>
+    + Exit : decimal <<get>>
+    +  <<event>> OnClosed : Action<Position>? 
+    + Profit : decimal <<get>>
+    + Position(symbol:Symbol, type:PositionType, quantity:float, entry:decimal, entryDate:DateTime, id:string?)
+    + Close(exitPrice:decimal, exitDate:DateTime) : void
+}
+Position --> "Symbol" Symbol
+Position --> "Type" PositionType
+Position --> "EntryDate" DateTime
+Position --> "ExitDate" DateTime
+Position o-> "Status" PositionStatus
+@enduml

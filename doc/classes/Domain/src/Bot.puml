@@ -1,0 +1,13 @@
+@startuml
+class Bot {
+    + IsStarted : bool <<get>> = false
+    + Bot(setting:Setting.Bot, exchange:IExchange, strategies:IEnumerable<Strategy>, tradeLogger:ITradeLogger, logger:ILogger<Bot>)
+    + Start() : void
+    + <<async>> Stop() : Task
+    + Dispose() : void
+}
+class "ReactiveProperty`1"<T> {
+}
+IDisposable <|-- Bot
+Bot --> "Capital<decimal>" "ReactiveProperty`1"
+@enduml

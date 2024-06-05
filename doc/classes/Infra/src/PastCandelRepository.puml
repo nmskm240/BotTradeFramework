@@ -1,0 +1,10 @@
+@startuml
+class PastCandleRepository {
+    + PastCandleRepository(setting:Setting.Exchange, logger:ILogger<PastCandleRepository>)
+    + Dispose() : void
+    + <<async>> Fetch() : Task
+    + <<async>> Pull() : IAsyncEnumerable<Candle>
+}
+IUpdatableCandleRepository <|-- PastCandleRepository
+IDisposable <|-- PastCandleRepository
+@enduml
