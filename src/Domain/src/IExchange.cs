@@ -14,8 +14,8 @@ public interface IExchange
     public IConnectableObservable<Candle> OnPulled { get; init; }
     public Symbol Symbol { get; init; }
 
-    public Task<Position> Buy(decimal quantity);
-    public Task<Position> Sell(decimal quantity);
+    public Task<Position> Buy(float quantity);
+    public Task<Position> Sell(float quantity);
     public abstract Task<decimal> ClosePosition(Position position);
     public abstract Task<decimal> ClosePositionAll();
 }
