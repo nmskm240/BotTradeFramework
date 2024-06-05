@@ -43,7 +43,7 @@ public class Backtest : IExchange
         }).Publish();
     }
 
-    public async Task<Position> Buy(decimal quantity)
+    public async Task<Position> Buy(float quantity)
     {
         var position = new Position(Symbol, PositionType.Long, quantity, _currentCandle!.Close, _currentCandle!.Date);
         Positions.Add(position);
@@ -72,7 +72,7 @@ public class Backtest : IExchange
     }
 
 
-    public async Task<Position> Sell(decimal quantity)
+    public async Task<Position> Sell(float quantity)
     {
         var position = new Position(Symbol, PositionType.Short, quantity, _currentCandle!.Close, _currentCandle!.Date);
         Positions.Add(position);

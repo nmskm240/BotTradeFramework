@@ -1,0 +1,8 @@
+@startuml
+enum ExchangePlace {
+    Bybit,
+    BybitTestnet,
+    Binance,
+    BinanceTestnet,
+}
+@enduml

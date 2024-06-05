@@ -1,0 +1,7 @@
+@startuml
+class AnalysisValue <<record>> {
+    + Value : decimal <<get>> <<init>>
+    + AnalysisValue(value:decimal, graphType:GraphType)
+}
+AnalysisValue --> "GraphType" GraphType
+@enduml

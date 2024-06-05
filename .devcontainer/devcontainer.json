@@ -28,7 +28,9 @@
 				"ms-toolsai.jupyter",
 				"EditorConfig.EditorConfig",
 				"tomoki1207.pdf",
-				"VisualStudioExptTeam.vscodeintellicode"
+				"VisualStudioExptTeam.vscodeintellicode",
+				"jock.svg",
+				"pierre3.csharp-to-plantuml"
 			]
 		}
 	}

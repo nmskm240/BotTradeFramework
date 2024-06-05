@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 
 namespace BotTrade.Domain;
 
@@ -19,7 +20,7 @@ public class Position
     public string Id { get; init; }
     public Symbol Symbol { get; init; }
     public PositionType Type { get; init; }
-    public decimal Quantity { get; init; }
+    public float Quantity { get; init; }
     public decimal Entry { get; init; }
     public DateTime EntryDate { get; init; }
     public decimal Exit { get; private set; }
@@ -37,12 +38,12 @@ public class Position
     /// </summary>
     public decimal Profit
     {
-        get { return Status == PositionStatus.Open ? 0 : (Exit - Entry) * Quantity; }
+        get { return Status == PositionStatus.Open ? 0 : (Exit - Entry) * (decimal)Quantity; }
     }
 
-    public Position(Symbol symbol, PositionType type, decimal quantity, decimal entry, DateTime entryDate)
+    public Position(Symbol symbol, PositionType type, float quantity, decimal entry, DateTime entryDate, string? id = null)
     {
-        Id = Guid.NewGuid().ToString();
+        Id = id ?? Guid.NewGuid().ToString();
         Symbol = symbol;
         Type = type;
         Quantity = quantity;

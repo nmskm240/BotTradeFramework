@@ -1,0 +1,9 @@
+@startuml
+enum Symbol {
+    Future_BTCUSDT,
+    Future_ETHUSDT,
+    Spot_BTCUSDT,
+    Spot_ETHUSDT,
+    Spot_ETHBTC,
+}
+@enduml

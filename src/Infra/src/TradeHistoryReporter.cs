@@ -182,10 +182,10 @@ public class TradeHistoryReporter : ITradeLogger
         var area = CapitalFlowChart.Add.Scatter(DateTimeSeries.ToArray(), CapitalFlow.ToArray());
         area.FillYColor = area.Color.WithAlpha(.2);
         area.FillY = true;
-        CapitalFlowChart.Save($"{CapitalFlowChart.Axes.Title.Label.Text}.png", ChartWidht, ChartHeight);
+        CapitalFlowChart.SaveSvg($"{CapitalFlowChart.Axes.Title.Label.Text}.svg", ChartWidht, ChartHeight);
         foreach (var (chart, series) in ChartAndSeries)
         {
-            chart.Save($"{chart.Axes.Title.Label.Text}.png", ChartWidht, ChartHeight);
+            chart.SaveSvg($"{chart.Axes.Title.Label.Text}.svg", ChartWidht, ChartHeight);
         }
     }
 }

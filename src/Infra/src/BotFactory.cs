@@ -85,6 +85,7 @@ public class BotFactory
         else
         {
             services.AddSingleton<IExchange, RealExchange>();
+            services.AddSingleton<ITradeLogger, TradeHistoryReporter>();
             services.AddSingleton<ccxt.Exchange>(ExchangeMap[setting.Exchange.Place]);
         }
 
@@ -92,3 +93,4 @@ public class BotFactory
         return provider.GetRequiredService<Bot>();
     }
 }
+

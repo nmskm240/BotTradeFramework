@@ -104,7 +104,7 @@ public class Bot : IDisposable
                 Capital.Value += await Exchange.ClosePositionAll();
                 return;
             }
-            var position = await Exchange.Buy(1);
+            var position = await Exchange.Buy(0.01f);
             position.OnClosed += TradeLogger.Log;
         }
         else if (recommendedActions.All(action => action == StrategyActionType.Sell))
@@ -114,7 +114,7 @@ public class Bot : IDisposable
                 Capital.Value += await Exchange.ClosePositionAll();
                 return;
             }
-            var position = await Exchange.Sell(1);
+            var position = await Exchange.Sell(0.01f);
             position.OnClosed += TradeLogger.Log;
         }
     }
