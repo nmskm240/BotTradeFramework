@@ -24,8 +24,8 @@ public record class AnalysisData
         Date = date;
         Indicators = [
             candleIndicators ?? new Dictionary<string, AnalysisValue>(),
-            volumeIndicators ?? new Dictionary<string,AnalysisValue>(),
-            ..customChartIndicators ?? [],
+            volumeIndicators ?? new Dictionary<string, AnalysisValue>(),
+            .. customChartIndicators ?? [],
         ];
     }
 }

@@ -1,4 +1,4 @@
-﻿using BotTrade.Domain;
+using BotTrade.Domain;
 using BotTrade.Domain.Strategies;
 using BotTrade.Infra.Exchanges;
 
