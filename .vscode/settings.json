@@ -17,5 +17,7 @@
     "plantuml.render": "Local",
     "plantuml.exportOutDir": "doc",
     "csharp2plantuml.excludePath": "",
-    "csharp2plantuml.inputPath": "src"
+    "csharp2plantuml.inputPath": "src",
+    "notebook.defaultFormatter": "ms-dotnettools.csharp",
+    "editor.defaultFormatter": "ms-dotnettools.csharp"
 }

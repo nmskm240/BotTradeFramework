@@ -10,7 +10,7 @@ namespace BotTrade.Infra.Exchanges;
 public class RealExchange : IExchange
 {
     private ccxt.Exchange Exchange { get; init; }
-    private ILogger<IExchange> Logger { get; init;}
+    private ILogger<IExchange> Logger { get; init; }
     public List<Position> Positions { get; init; }
     public Symbol Symbol { get; init; }
     public IConnectableObservable<Candle> OnPulled { get; init; }
@@ -62,7 +62,7 @@ public class RealExchange : IExchange
     public async Task<decimal> ClosePositionAll()
     {
         decimal profit = 0;
-        foreach(var position in Positions)
+        foreach (var position in Positions)
         {
             profit += await ClosePosition(position);
         }

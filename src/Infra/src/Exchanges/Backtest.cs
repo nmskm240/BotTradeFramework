@@ -64,7 +64,7 @@ public class Backtest : IExchange
     public async Task<decimal> ClosePositionAll()
     {
         decimal profit = 0;
-        foreach(var position in Positions.ToList())
+        foreach (var position in Positions.ToList())
         {
             profit += await ClosePosition(position);
         }

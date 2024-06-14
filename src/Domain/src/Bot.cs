@@ -50,8 +50,9 @@ public class Bot : IDisposable
                     strategy.OnAnalysised
                 )
             ).Subscribe(
-                datas => {
-                    foreach(var data in datas)
+                datas =>
+                {
+                    foreach (var data in datas)
                     {
                         TradeLogger.Log(data);
                     }
@@ -67,7 +68,7 @@ public class Bot : IDisposable
                 async datas => await Trade(datas)
             ),
             Exchange.OnPulled.CombineLatest(Capital)
-                .Select(e => new CapitalFlow() { DateTime = e.First.Date, Capital = (double)e.Second})
+                .Select(e => new CapitalFlow() { DateTime = e.First.Date, Capital = (double)e.Second })
                 .Subscribe(TradeLogger.Log),
         ];
 
