@@ -18,7 +18,7 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
 
     public PastCandleRepository(Setting.Exchange setting, ILogger<PastCandleRepository> logger)
     {
-        var path = $"{setting.Place.GetStringValue()}.sqlite3";
+        var path = $"/workspace/data/{setting.Place.GetStringValue()}.sqlite3";
         var builder = new SqliteConnectionStringBuilder
         {
             DataSource = Path.GetFullPath(path),
