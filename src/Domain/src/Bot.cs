@@ -11,7 +11,8 @@ namespace BotTrade.Domain;
 
 public class Bot : IDisposable
 {
-    public ReactiveProperty<decimal> Capital { get; private set; }
+    public ReactiveProperty<decimal> StartCapital { get; private set; }
+    public ReactiveProperty<decimal> NowCapital { get; private set; }
     public bool IsStarted { get; private set; } = false;
 
     protected IExchange Exchange { get; init; }
@@ -30,7 +31,8 @@ public class Bot : IDisposable
         Strategies = strategies;
         TradeLogger = tradeLogger;
         Logger = logger;
-        Capital = new ReactiveProperty<decimal>();
+        NowCapital = new ReactiveProperty<decimal>();
+        StartCapital = new ReactiveProperty<decimal>();
 
         Subscriptions = [
             Exchange.OnPulled
@@ -67,24 +69,35 @@ public class Bot : IDisposable
             ).Subscribe(
                 async datas => await Trade(datas)
             ),
-            Exchange.OnPulled.CombineLatest(Capital)
+            Exchange.OnPulled.CombineLatest(NowCapital)
                 .Select(e => new CapitalFlow() { DateTime = e.First.Date, Capital = (double)e.Second })
                 .Subscribe(TradeLogger.Log),
         ];
 
-        Capital.Value = setting.Capital;
+        NowCapital.Value = setting.Capital;
+        StartCapital.Value = setting.Capital;
     }
 
     public void Start()
     {
         if (IsStarted) return;
+        Logger.LogInformation("Bot start at [{strategies}] from {capital} in {exchange}_{symbol}_{timeframe}",
+            string.Join(", ", Strategies.Select(strategy => strategy.ToString())),
+            StartCapital.Value,
+            Exchange.Place,
+            Exchange.Symbol.GetStringValue(),
+            SmallestTimeframe.GetStringValue()
+        );
         IsStarted = true;
         Exchange.OnPulled.Connect();
     }
 
     public async Task Stop()
     {
-        Capital.Value += await Exchange.ClosePositionAll();
+        NowCapital.Value += await Exchange.ClosePositionAll();
+        Logger.LogInformation("Bot stoped. Profit/loss {pl}",
+            StartCapital.Value - NowCapital.Value
+        );
         IsStarted = false;
         UnSubscribe();
         TradeLogger.Stop();
@@ -102,7 +115,7 @@ public class Bot : IDisposable
         {
             if (Exchange.Positions.Count > 0)
             {
-                Capital.Value += await Exchange.ClosePositionAll();
+                NowCapital.Value += await Exchange.ClosePositionAll();
                 return;
             }
             var position = await Exchange.Buy(0.01f);
@@ -112,7 +125,7 @@ public class Bot : IDisposable
         {
             if (Exchange.Positions.Count > 0)
             {
-                Capital.Value += await Exchange.ClosePositionAll();
+                NowCapital.Value += await Exchange.ClosePositionAll();
                 return;
             }
             var position = await Exchange.Sell(0.01f);

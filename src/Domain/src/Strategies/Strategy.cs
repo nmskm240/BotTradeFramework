@@ -30,4 +30,10 @@ public abstract class Strategy
             _ => throw new ArgumentException("未対応の戦略", nameof(setting.Kind)),
         };
     }
+
+    public override string ToString()
+    {
+        var parameters = string.Join(", ", Parameters);
+        return $"{KInd.GetStringValue()}({parameters})";
+    }
 }

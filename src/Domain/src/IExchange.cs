@@ -10,6 +10,7 @@ namespace BotTrade.Domain;
 /// </remarks>
 public interface IExchange
 {
+    public ExchangePlace Place { get; init; }
     public List<Position> Positions { get; init; }
     public IConnectableObservable<Candle> OnPulled { get; init; }
     public Symbol Symbol { get; init; }
