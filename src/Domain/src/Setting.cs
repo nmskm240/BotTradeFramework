@@ -16,6 +16,16 @@ public record class Setting
         public decimal Capital { get; set; }
         public required Exchange Exchange { get; set; }
         public required IEnumerable<Strategy> Strategies { get; set; }
+
+        public string ReportDir
+        {
+            get
+            {
+                var strategy = string.Join("_", Strategies.Select(s => $"{Enum.GetName(s.Kind)}_{string.Join("_", s.Parameters)}"));
+                var timeframe = Strategies.MaxBy(s => s.Timeframe)?.Timeframe ?? Timeframe.OneMinute;
+                return $"{strategy}/{Enum.GetName(Exchange.Place)}_{Enum.GetName(Exchange.Symbol)}_{timeframe.GetStringValue()}";
+            }
+        }
     }
 
     public record Exchange

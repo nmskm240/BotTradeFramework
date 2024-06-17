@@ -8,11 +8,8 @@ public record class CapitalFlow
     public double Capital { get; set; }
 }
 
-public interface ITradeLogger
+public interface IStrategyReporter
 {
-    void Log(Candle candle);
-    void Log(AnalysisData analysis);
-    void Log(Position position);
     void Log(CapitalFlow flow);
     void Stop();
 }
