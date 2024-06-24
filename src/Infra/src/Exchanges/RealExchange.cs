@@ -11,12 +11,14 @@ public class RealExchange : IExchange
 {
     private ccxt.Exchange Exchange { get; init; }
     private ILogger<IExchange> Logger { get; init; }
+    public ExchangePlace Place { get; init; }
     public List<Position> Positions { get; init; }
     public Symbol Symbol { get; init; }
     public IConnectableObservable<Candle> OnPulled { get; init; }
 
     public RealExchange(ccxt.Exchange exchange, Setting.Exchange setting, ILogger<IExchange> logger)
     {
+        Place = setting.Place;
         Exchange = exchange;
         Logger = logger;
         Positions = new List<Position>();

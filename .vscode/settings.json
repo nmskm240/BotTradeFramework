@@ -19,5 +19,8 @@
     "csharp2plantuml.excludePath": "",
     "csharp2plantuml.inputPath": "src",
     "notebook.defaultFormatter": "ms-dotnettools.csharp",
-    "editor.defaultFormatter": "ms-dotnettools.csharp"
+    "editor.defaultFormatter": "ms-dotnettools.csharp",
+    "files.exclude": {
+        "**/.gitkeep": true
+    }
 }

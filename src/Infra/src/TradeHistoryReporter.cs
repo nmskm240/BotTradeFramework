@@ -9,23 +9,17 @@ using ScottPlot.Plottables;
 
 namespace BotTrade.Infra;
 
-public class TradeHistoryReporter : ITradeLogger
+public class TradeHistoryReporter : IChartMaker
 {
     private const string CANDLE_SERIES_LABEL = "candles";
     private const string VOLUME_SERIES_LABEL = "volumes";
-    private const string CAPITAL_SERIES_LABEL = "capitals";
     private const float ARROW_SIZE = 10f;
 
     private decimal HighestPrice { get; set; } = decimal.MinValue;
     private decimal LowestPrice { get; set; } = decimal.MaxValue;
-    private int ChartWidht { get { return ChartAndSeries[OHLCChart][CANDLE_SERIES_LABEL].Count / 10; } }
-    private int ChartHeight { get { return (int)(HighestPrice - LowestPrice) / 5; } }
     private Plot OHLCChart { get; init; }
     private Plot VolumeChart { get; init; }
     private Dictionary</*描画先*/Plot, Dictionary<string, IList>> ChartAndSeries { get; init; }
-    private Plot CapitalFlowChart { get; init; }
-    private List<double> CapitalFlow { get; init; }
-    private List<double> DateTimeSeries { get; init; }
 
     public TradeHistoryReporter()
     {
@@ -50,13 +44,6 @@ public class TradeHistoryReporter : ITradeLogger
         VolumeChart.Axes.DateTimeTicksBottom();
         VolumeChart.Axes.Margins(bottom: 0);
         VolumeChart.Title(VOLUME_SERIES_LABEL);
-
-        CapitalFlow = new List<double>();
-        DateTimeSeries = new List<double>();
-        CapitalFlowChart = new Plot();
-        CapitalFlowChart.Axes.DateTimeTicksBottom();
-        CapitalFlowChart.Axes.Margins(bottom: 0);
-        CapitalFlowChart.Title(CAPITAL_SERIES_LABEL);
 
         ChartAndSeries = new Dictionary<Plot, Dictionary<string, IList>>()
         {
@@ -141,7 +128,7 @@ public class TradeHistoryReporter : ITradeLogger
 
     private void PlotPositionInfo(Position position, bool isEntry)
     {
-        var x = (isEntry ? position.EntryDate : position.ExitDate).ToOADate();
+        var x = (isEntry ? position.EntryAt : position.ExitAt).ToOADate();
         var y = (double)(isEntry ? position.Entry : position.Exit);
         var isBuyOrder = (position.Type == PositionType.Long && isEntry) ||
                         (position.Type == PositionType.Short && !isEntry);
@@ -150,42 +137,44 @@ public class TradeHistoryReporter : ITradeLogger
         OHLCChart.Add.Marker(x, y, shape, ARROW_SIZE, color);
     }
 
-    public void Log(Candle candle)
+    public void Plot(Candle candle)
     {
         PlotOHLC(candle);
         PlotVolume(candle);
     }
 
-    public void Log(AnalysisData analysis)
+    public void Plot(AnalysisData analysis)
     {
         PlotIndicators(analysis);
     }
 
     public void Log(Position position)
     {
-        var entry = new Coordinates(position.EntryDate.ToOADate(), (double)position.Entry);
-        var exit = new Coordinates(position.ExitDate.ToOADate(), (double)position.Exit);
+        var entry = new Coordinates(position.EntryAt.ToOADate(), (double)position.Entry);
+        var exit = new Coordinates(position.ExitAt.ToOADate(), (double)position.Exit);
         var line = OHLCChart.Add.Line(entry, exit);
         line.LineColor = position.Type == PositionType.Long ? Colors.Green : Colors.Red;
         PlotPositionInfo(position, true);
         PlotPositionInfo(position, false);
     }
 
-    public void Log(CapitalFlow flow)
+    public IEnumerable<object> Output()
     {
-        CapitalFlow.Add(flow.Capital);
-        DateTimeSeries.Add(flow.DateTime.ToOADate());
+        return ChartAndSeries.Select(pair => pair.Key);
     }
 
-    public void Stop()
+    public void Dispose()
     {
-        var area = CapitalFlowChart.Add.Scatter(DateTimeSeries.ToArray(), CapitalFlow.ToArray());
-        area.FillYColor = area.Color.WithAlpha(.2);
-        area.FillY = true;
-        CapitalFlowChart.SaveSvg($"{CapitalFlowChart.Axes.Title.Label.Text}.svg", ChartWidht, ChartHeight);
-        foreach (var (chart, series) in ChartAndSeries)
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected void Dispose(bool disposing)
+    {
+        if (disposing)
         {
-            chart.SaveSvg($"{chart.Axes.Title.Label.Text}.svg", ChartWidht, ChartHeight);
+            OHLCChart.Dispose();
+            VolumeChart.Dispose();
         }
     }
 }

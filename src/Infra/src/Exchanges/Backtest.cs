@@ -14,14 +14,16 @@ namespace BotTrade.Infra.Exchanges;
 public class Backtest : IExchange
 {
     private Candle? _currentCandle;
-    public List<Position> Positions { get; init; }
-    public IConnectableObservable<Candle> OnPulled { get; init; }
     private ICandleRepository Repository { get; init; }
+    public List<Position> Positions { get; init; }
+    public ExchangePlace Place { get; init; }
+    public IConnectableObservable<Candle> OnPulled { get; init; }
     public Symbol Symbol { get; init; }
 
     // TODO: 手数料を設定できるように
     public Backtest(Setting.Exchange setting, ICandleRepository repository)
     {
+        Place = setting.Place;
         Symbol = setting.Symbol;
         Repository = repository;
         Positions = new List<Position>();

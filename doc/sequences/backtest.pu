@@ -1,0 +1,42 @@
+@startuml backtest
+
+actor User
+boundary JupyterNotebook
+control Bot
+control Strategy
+control Exchange
+control Reporter
+database Candles
+database Positions
+
+User --> JupyterNotebook : パラメータ調整
+
+User --> JupyterNotebook : 実行
+JupyterNotebook --> Bot : 設定を適用
+activate Bot
+    par
+        Bot --> Strategy : 設定をもとに作成
+        activate Strategy
+        Bot --> Exchange : 設定をもとに作成
+        activate Exchange
+    end
+    loop 最小検証時間 <= t && t <= 最大検証時間
+        Bot --> Candles : 時間tの過去データを取得
+        Candles --> Bot
+        opt 分析に必要なデータ数 <= 取得データ数
+            Bot --> Strategy : 分析
+            Strategy --> Bot : 結果
+        end
+        Bot --> Exchange : 売買処理
+        Exchange --> Positions : 売買データを保存
+    end
+    Bot --> Reporter : 検証依頼
+deactivate Exchange
+deactivate Strategy
+deactivate Bot
+activate Reporter
+    Positions --> Reporter : 検証に必要なデータを取得
+    Reporter --> JupyterNotebook : 検証結果
+deactivate Reporter
+JupyterNotebook --> User : 表示
+@enduml

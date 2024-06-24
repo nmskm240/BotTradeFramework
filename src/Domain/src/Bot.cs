@@ -11,39 +11,35 @@ namespace BotTrade.Domain;
 
 public class Bot : IDisposable
 {
-    public ReactiveProperty<decimal> Capital { get; private set; }
+    public ReactiveProperty<decimal> StartCapital { get; private set; }
+    public ReactiveProperty<decimal> NowCapital { get; private set; }
     public bool IsStarted { get; private set; } = false;
 
+    public IStrategyReporter? Reporter { get; init; }
+    public IChartMaker? ChartMaker { get; init; }
     protected IExchange Exchange { get; init; }
-    //MEMO: 複数戦略でAND/OR判定できるように多次元構造にしたい
     protected IEnumerable<Strategy> Strategies { get; init; }
-    protected ITradeLogger TradeLogger { get; init; }
     protected ILogger<Bot> Logger { get; init; }
     protected Timeframe SmallestTimeframe => Strategies.MaxBy(strategy =>
             (int)strategy.Timeframe)?.Timeframe ?? Timeframe.OneMinute;
 
     private IList<IDisposable> Subscriptions { get; init; }
 
-    public Bot(Setting.Bot setting, IExchange exchange, IEnumerable<Strategy> strategies, ITradeLogger tradeLogger, ILogger<Bot> logger)
+    public Bot(Setting.Bot setting, IExchange exchange, IEnumerable<Strategy> strategies, ILogger<Bot> logger, IStrategyReporter? reporter = null, IChartMaker? chartMaker = null)
     {
         Exchange = exchange;
         Strategies = strategies;
-        TradeLogger = tradeLogger;
         Logger = logger;
-        Capital = new ReactiveProperty<decimal>();
+        NowCapital = new ReactiveProperty<decimal>();
+        StartCapital = new ReactiveProperty<decimal>();
+        Reporter = reporter;
+        ChartMaker = chartMaker;
 
         Subscriptions = [
             Exchange.OnPulled
                 .Subscribe(
-                    TradeLogger.Log,
+                    ChartMaker!.Plot,
                     async () => await Stop()
-                ),
-            .. Strategies.Select(strategy =>
-                Exchange.OnPulled
-                    .Buffer((int)strategy.Timeframe)
-                    .Select(candles => Candle.Aggregate(candles, strategy.Timeframe))
-                    .Buffer(strategy.NeedDataCountForAnalysis, 1)
-                    .Subscribe(strategy.Analysis)
                 ),
             Observable.CombineLatest(
                 Strategies.Select(strategy =>
@@ -54,10 +50,17 @@ public class Bot : IDisposable
                 {
                     foreach (var data in datas)
                     {
-                        TradeLogger.Log(data);
+                        ChartMaker?.Plot(data);
                     }
                 }
             ),
+            .. Strategies.Select(strategy =>
+                Exchange.OnPulled
+                    .Buffer((int)strategy.Timeframe)
+                    .Select(candles => Candle.Aggregate(candles, strategy.Timeframe))
+                    .Buffer(strategy.NeedDataCountForAnalysis, 1)
+                    .Subscribe(strategy.Analysis)
+                ),
             Observable.CombineLatest(
                 Strategies.Select(strategy =>
                     strategy.OnAnalysised
@@ -67,32 +70,38 @@ public class Bot : IDisposable
             ).Subscribe(
                 async datas => await Trade(datas)
             ),
-            Exchange.OnPulled.CombineLatest(Capital)
-                .Select(e => new CapitalFlow() { DateTime = e.First.Date, Capital = (double)e.Second })
-                .Subscribe(TradeLogger.Log),
         ];
 
-        Capital.Value = setting.Capital;
+        NowCapital.Value = setting.Capital;
+        StartCapital.Value = setting.Capital;
     }
 
     public void Start()
     {
         if (IsStarted) return;
+        Logger.LogInformation("Bot start at [{strategies}] from {capital} in {exchange}_{symbol}_{timeframe}",
+            string.Join(", ", Strategies.Select(strategy => strategy.ToString())),
+            StartCapital.Value,
+            Exchange.Place,
+            Exchange.Symbol.GetStringValue(),
+            SmallestTimeframe.GetStringValue()
+        );
         IsStarted = true;
         Exchange.OnPulled.Connect();
     }
 
     public async Task Stop()
     {
-        Capital.Value += await Exchange.ClosePositionAll();
+        NowCapital.Value += await Exchange.ClosePositionAll();
         IsStarted = false;
         UnSubscribe();
-        TradeLogger.Stop();
     }
 
     public void Dispose()
     {
         if (IsStarted) UnSubscribe();
+        ChartMaker?.Dispose();
+        Reporter?.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -102,21 +111,21 @@ public class Bot : IDisposable
         {
             if (Exchange.Positions.Count > 0)
             {
-                Capital.Value += await Exchange.ClosePositionAll();
+                NowCapital.Value += await Exchange.ClosePositionAll();
                 return;
             }
             var position = await Exchange.Buy(0.01f);
-            position.OnClosed += TradeLogger.Log;
+            position.OnClosed += (position) => Reporter?.Log(position);
         }
         else if (recommendedActions.All(action => action == StrategyActionType.Sell))
         {
             if (Exchange.Positions.Count > 0)
             {
-                Capital.Value += await Exchange.ClosePositionAll();
+                NowCapital.Value += await Exchange.ClosePositionAll();
                 return;
             }
             var position = await Exchange.Sell(0.01f);
-            position.OnClosed += TradeLogger.Log;
+            position.OnClosed += (position) => Reporter?.Log(position);
         }
     }
 

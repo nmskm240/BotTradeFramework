@@ -78,14 +78,14 @@ public class BotFactory
         services.AddSingleton<Setting.Bot>(setting);
         if (IsBacktest)
         {
+            services.AddSingleton<IStrategyReporter, StrategyReporter>();
+            services.AddSingleton<IChartMaker, TradeHistoryReporter>();
             services.AddSingleton<IExchange, Backtest>();
-            services.AddSingleton<ITradeLogger, TradeHistoryReporter>();
             services.AddSingleton<ICandleRepository, PastCandleRepository>();
         }
         else
         {
             services.AddSingleton<IExchange, RealExchange>();
-            services.AddSingleton<ITradeLogger, TradeHistoryReporter>();
             services.AddSingleton<ccxt.Exchange>(ExchangeMap[setting.Exchange.Place]);
         }
 
