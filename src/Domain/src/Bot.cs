@@ -11,8 +11,7 @@ namespace BotTrade.Domain;
 
 public class Bot : IDisposable
 {
-    public ReactiveProperty<decimal> StartCapital { get; private set; }
-    public ReactiveProperty<decimal> NowCapital { get; private set; }
+    public float Lot { get; init; }
     public bool IsStarted { get; private set; } = false;
 
     public IStrategyReporter? Reporter { get; init; }
@@ -30,8 +29,7 @@ public class Bot : IDisposable
         Exchange = exchange;
         Strategies = strategies;
         Logger = logger;
-        NowCapital = new ReactiveProperty<decimal>();
-        StartCapital = new ReactiveProperty<decimal>();
+        Lot = setting.Lot;
         Reporter = reporter;
         ChartMaker = chartMaker;
 
@@ -71,17 +69,13 @@ public class Bot : IDisposable
                 async datas => await Trade(datas)
             ),
         ];
-
-        NowCapital.Value = setting.Capital;
-        StartCapital.Value = setting.Capital;
     }
 
     public void Start()
     {
         if (IsStarted) return;
-        Logger.LogInformation("Bot start at [{strategies}] from {capital} in {exchange}_{symbol}_{timeframe}",
+        Logger.LogInformation("Bot start at [{strategies}] in {exchange}_{symbol}_{timeframe}",
             string.Join(", ", Strategies.Select(strategy => strategy.ToString())),
-            StartCapital.Value,
             Exchange.Place,
             Exchange.Symbol.GetStringValue(),
             SmallestTimeframe.GetStringValue()
@@ -92,7 +86,7 @@ public class Bot : IDisposable
 
     public async Task Stop()
     {
-        NowCapital.Value += await Exchange.ClosePositionAll();
+        await Exchange.ClosePositionAll();
         IsStarted = false;
         UnSubscribe();
     }
@@ -111,20 +105,24 @@ public class Bot : IDisposable
         {
             if (Exchange.Positions.Count > 0)
             {
-                NowCapital.Value += await Exchange.ClosePositionAll();
+                var pl = await Exchange.ClosePositionAll();
+                Logger.LogInformation("Position close. P/L: {pl}", pl);
                 return;
             }
-            var position = await Exchange.Buy(0.01f);
+            var position = await Exchange.Buy(Lot);
+            Logger.LogInformation("Buy order. price: {entryPrice}, quantity: {lot}", position.Entry, Lot);
             position.OnClosed += (position) => Reporter?.Log(position);
         }
         else if (recommendedActions.All(action => action == StrategyActionType.Sell))
         {
             if (Exchange.Positions.Count > 0)
             {
-                NowCapital.Value += await Exchange.ClosePositionAll();
+                var pl = await Exchange.ClosePositionAll();
+                Logger.LogInformation("Position close. P/L: {pl}", pl);
                 return;
             }
-            var position = await Exchange.Sell(0.01f);
+            var position = await Exchange.Sell(Lot);
+            Logger.LogInformation("Sell order. price: {entryPrice}, quantity: {lot}", position.Entry, Lot);
             position.OnClosed += (position) => Reporter?.Log(position);
         }
     }

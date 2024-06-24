@@ -13,7 +13,7 @@ public record class Setting
 
     public record class Bot
     {
-        public decimal Capital { get; set; }
+        public float Lot { get; set; }
         public required Exchange Exchange { get; set; }
         public required IEnumerable<Strategy> Strategies { get; set; }
 
