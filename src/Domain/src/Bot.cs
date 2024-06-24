@@ -15,10 +15,9 @@ public class Bot : IDisposable
     public ReactiveProperty<decimal> NowCapital { get; private set; }
     public bool IsStarted { get; private set; } = false;
 
-    protected IStrategyReporter? Reporter { get; init; }
+    public IStrategyReporter? Reporter { get; init; }
     public IChartMaker? ChartMaker { get; init; }
     protected IExchange Exchange { get; init; }
-    //MEMO: 複数戦略でAND/OR判定できるように多次元構造にしたい
     protected IEnumerable<Strategy> Strategies { get; init; }
     protected ILogger<Bot> Logger { get; init; }
     protected Timeframe SmallestTimeframe => Strategies.MaxBy(strategy =>
@@ -94,9 +93,6 @@ public class Bot : IDisposable
     public async Task Stop()
     {
         NowCapital.Value += await Exchange.ClosePositionAll();
-        Logger.LogInformation("Bot stoped. Profit/loss {pl}",
-            StartCapital.Value - NowCapital.Value
-        );
         IsStarted = false;
         UnSubscribe();
     }
@@ -104,6 +100,8 @@ public class Bot : IDisposable
     public void Dispose()
     {
         if (IsStarted) UnSubscribe();
+        ChartMaker?.Dispose();
+        Reporter?.Dispose();
         GC.SuppressFinalize(this);
     }
 
@@ -117,7 +115,7 @@ public class Bot : IDisposable
                 return;
             }
             var position = await Exchange.Buy(0.01f);
-            // position.OnClosed += Reporter.Log;
+            position.OnClosed += (position) => Reporter?.Log(position);
         }
         else if (recommendedActions.All(action => action == StrategyActionType.Sell))
         {
@@ -127,7 +125,7 @@ public class Bot : IDisposable
                 return;
             }
             var position = await Exchange.Sell(0.01f);
-            // position.OnClosed += Reporter.Log;
+            position.OnClosed += (position) => Reporter?.Log(position);
         }
     }
 

@@ -2,8 +2,6 @@ namespace BotTrade.Domain;
 
 public enum ExchangePlace
 {
-    [EnumString("Backtest")]
-    Backtest,
     [EnumString("Bybit")]
     Bybit,
     [EnumString("BybitTestnet")]

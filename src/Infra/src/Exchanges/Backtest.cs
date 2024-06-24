@@ -23,7 +23,7 @@ public class Backtest : IExchange
     // TODO: 手数料を設定できるように
     public Backtest(Setting.Exchange setting, ICandleRepository repository)
     {
-        Place = ExchangePlace.Backtest;
+        Place = setting.Place;
         Symbol = setting.Symbol;
         Repository = repository;
         Positions = new List<Position>();

@@ -22,10 +22,10 @@ public class Position
     public PositionType Type { get; init; }
     public float Quantity { get; init; }
     public decimal Entry { get; init; }
-    public DateTime EntryDate { get; init; }
+    public DateTime EntryAt { get; init; }
     public decimal Exit { get; private set; }
-    public DateTime ExitDate { get; private set; }
-    public PositionStatus Status { get; private set; } = PositionStatus.Open;
+    public DateTime ExitAt { get; private set; }
+    public PositionStatus Status { get; private set; }
     /// <summary>
     /// ポジションが閉じられたときに通知される
     /// </summary>
@@ -41,14 +41,17 @@ public class Position
         get { return Status == PositionStatus.Open ? 0 : (Exit - Entry) * (decimal)Quantity; }
     }
 
-    public Position(Symbol symbol, PositionType type, float quantity, decimal entry, DateTime entryDate, string? id = null)
+    public Position(Symbol symbol, PositionType type, float quantity, decimal entry, DateTime entryAt, string? id = null, decimal? exit = null, DateTime? exitAt = null)
     {
         Id = id ?? Guid.NewGuid().ToString();
         Symbol = symbol;
         Type = type;
         Quantity = quantity;
         Entry = entry;
-        EntryDate = entryDate;
+        EntryAt = entryAt;
+        if (exit != null) Exit = (decimal)exit;
+        if (exitAt != null) ExitAt = (DateTime)exitAt;
+        Status = (exit == null && exitAt == null) ? PositionStatus.Open : PositionStatus.Close;
     }
 
     public void Close(decimal exitPrice, DateTime exitDate)
@@ -57,7 +60,7 @@ public class Position
 
         Status = PositionStatus.Close;
         Exit = exitPrice;
-        ExitDate = exitDate;
+        ExitAt = exitDate;
         OnClosed?.Invoke(this);
         OnClosed = null;
     }

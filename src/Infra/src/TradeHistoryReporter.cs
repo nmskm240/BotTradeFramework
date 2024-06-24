@@ -128,7 +128,7 @@ public class TradeHistoryReporter : IChartMaker
 
     private void PlotPositionInfo(Position position, bool isEntry)
     {
-        var x = (isEntry ? position.EntryDate : position.ExitDate).ToOADate();
+        var x = (isEntry ? position.EntryAt : position.ExitAt).ToOADate();
         var y = (double)(isEntry ? position.Entry : position.Exit);
         var isBuyOrder = (position.Type == PositionType.Long && isEntry) ||
                         (position.Type == PositionType.Short && !isEntry);
@@ -150,8 +150,8 @@ public class TradeHistoryReporter : IChartMaker
 
     public void Log(Position position)
     {
-        var entry = new Coordinates(position.EntryDate.ToOADate(), (double)position.Entry);
-        var exit = new Coordinates(position.ExitDate.ToOADate(), (double)position.Exit);
+        var entry = new Coordinates(position.EntryAt.ToOADate(), (double)position.Entry);
+        var exit = new Coordinates(position.ExitAt.ToOADate(), (double)position.Exit);
         var line = OHLCChart.Add.Line(entry, exit);
         line.LineColor = position.Type == PositionType.Long ? Colors.Green : Colors.Red;
         PlotPositionInfo(position, true);
@@ -161,5 +161,20 @@ public class TradeHistoryReporter : IChartMaker
     public IEnumerable<object> Output()
     {
         return ChartAndSeries.Select(pair => pair.Key);
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected void Dispose(bool disposing)
+    {
+        if (disposing)
+        {
+            OHLCChart.Dispose();
+            VolumeChart.Dispose();
+        }
     }
 }

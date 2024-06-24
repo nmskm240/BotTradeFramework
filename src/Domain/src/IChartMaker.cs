@@ -2,7 +2,7 @@ using BotTrade.Domain.Strategies;
 
 namespace BotTrade.Domain;
 
-public interface IChartMaker
+public interface IChartMaker : IDisposable
 {
     void Plot(Candle candle);
     void Plot(AnalysisData analysis);
