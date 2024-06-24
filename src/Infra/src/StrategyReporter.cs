@@ -82,12 +82,12 @@ public class StrategyReporter : IStrategyReporter, IDisposable
             select * from {TABLE_NAME}
         """;
         var trades = new List<Position>();
-        var capitalFlow = new Plot();
+        var totalProfit = new Plot();
         var xAxis = new List<DateTime>();
         var yAxis = new List<decimal>();
         var capital = decimal.Zero;
-        capitalFlow.Add.Scatter(xAxis, yAxis);
-        capitalFlow.Axes.DateTimeTicksBottom();
+        totalProfit.Add.Scatter(xAxis, yAxis);
+        totalProfit.Axes.DateTimeTicksBottom();
 
         try
         {
@@ -120,7 +120,7 @@ public class StrategyReporter : IStrategyReporter, IDisposable
             Logger.LogError("{message}", e.Message);
             return null;
         }
-        return new StrategyReport(trades, capitalFlow);
+        return new StrategyReport(trades, totalProfit);
     }
 
     public void Dispose()

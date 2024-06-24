@@ -5,7 +5,7 @@ namespace BotTrade.Domain;
 public class StrategyReport
 {
     public IEnumerable<Position> Trades { get; init; }
-    public object CapitalFlowChart { get; init; }
+    public object TotalProfitChart { get; init; }
     /// <summary>
     /// 損益
     /// </summary>
@@ -69,11 +69,30 @@ public class StrategyReport
             return win / Trades.Count() * 100;
         }
     }
+    /// <summary>
+    /// 最大ドローダウン
+    /// </summary>
+    public decimal MaxDrawdown
+    {
+        get
+        {
+            var sumProfit = decimal.Zero;
+            var maxProfit = decimal.Zero;
+            var maxDrawdown = decimal.Zero;
+            foreach (var trade in Trades)
+            {
+                sumProfit += trade.Profit;
+                maxProfit = Math.Max(sumProfit, maxProfit);
+                maxDrawdown = Math.Min(maxDrawdown, sumProfit - maxProfit);
+            }
+            return maxDrawdown;
+        }
+    }
 
     public StrategyReport(IEnumerable<Position> trades, object capitalFlowChart)
     {
         Trades = trades;
-        CapitalFlowChart = capitalFlowChart;
+        TotalProfitChart = capitalFlowChart;
     }
 }
 
