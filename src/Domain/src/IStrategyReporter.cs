@@ -89,6 +89,21 @@ public class StrategyReport
         }
     }
 
+    /// <summary>
+    /// リスクリワードレシオ
+    /// </summary>
+    public decimal RiskReward
+    {
+        get
+        {
+            var avgProfit = Trades.Where(p => p.Profit > 0)
+                            .Average(p => p.Profit);
+            var avgLoss = Trades.Where(p => p.Profit <= 0)
+                            .Average(p => p.Profit);
+            return Math.Abs(avgProfit / avgLoss);
+        }
+    }
+
     public StrategyReport(IEnumerable<Position> trades, object capitalFlowChart)
     {
         Trades = trades;
