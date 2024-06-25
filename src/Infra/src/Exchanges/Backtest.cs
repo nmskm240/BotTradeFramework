@@ -31,7 +31,7 @@ public class Backtest : IExchange
         {
             try
             {
-                await foreach (var candle in Repository.Pull())
+                await foreach (var candle in Repository.Pull(setting.Range?.StartAt, setting.Range?.EndAt))
                 {
                     _currentCandle = candle;
                     observer.OnNext(candle);

@@ -32,6 +32,14 @@ public record class Setting
     {
         public ExchangePlace Place { get; set; }
         public Symbol Symbol { get; set; }
+        //バックテスト用
+        public DateTimeRange? Range { get; set; }
+
+        public record DateTimeRange
+        {
+            public DateTimeOffset StartAt { get; set; }
+            public DateTimeOffset EndAt { get; set; }
+        }
     }
 
     public record class Strategy

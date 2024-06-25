@@ -1,5 +1,4 @@
 using System.Reactive.Linq;
-using System.Reactive.Subjects;
 
 using BotTrade.Domain;
 
@@ -140,11 +139,13 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
         Logger.LogWarning("ccxtに対応していない取引所");
     }
 
-    public async IAsyncEnumerable<Candle> Pull()
+    public async IAsyncEnumerable<Candle> Pull(DateTimeOffset? startAt = null, DateTimeOffset? endAt = null)
     {
         var sql = $"""
             select * from {TABLE_NAME}
             where symbol='{Symbol.GetStringValue()}'
+                and {startAt?.ToUnixTimeMilliseconds() ?? long.MinValue} <= timestamp
+                and timestamp <= {endAt?.ToUnixTimeMilliseconds() ?? long.MaxValue}
             order by timestamp asc
         """;
 
