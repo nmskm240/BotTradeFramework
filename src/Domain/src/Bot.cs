@@ -57,7 +57,7 @@ public class Bot : IDisposable
                     .Buffer((int)strategy.Timeframe)
                     .Select(candles => Candle.Aggregate(candles, strategy.Timeframe))
                     .Buffer(strategy.NeedDataCountForAnalysis, 1)
-                    .Subscribe(strategy.Analysis)
+                    .Subscribe(async candles => await strategy.OnAnalysis(candles))
                 ),
             Observable.CombineLatest(
                 Strategies.Select(strategy =>
