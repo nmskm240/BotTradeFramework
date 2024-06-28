@@ -26,7 +26,7 @@ public class MACross : Strategy
         Debug.Assert(parameters.First() < parameters.Last(), "パラメーターの先頭要素が最後尾の要素の数より小さくなければならない");
     }
 
-    public override void Analysis(IEnumerable<Candle> candles)
+    protected override async Task<AnalysisData> Analysis(IEnumerable<Candle> candles)
     {
         var indicators = new Dictionary<string, AnalysisValue>();
         var date = candles.MaxBy(candle => candle.Date)?.Date ?? DateTime.UtcNow;
@@ -40,8 +40,7 @@ public class MACross : Strategy
             }
         }
         var data = new AnalysisData(date, candleIndicators: indicators);
-
-        AnalysisSubject.OnNext(data);
+        return await Task.FromResult(data);
     }
 
     public override StrategyActionType RecommendedAction(IEnumerable<AnalysisData> datas)

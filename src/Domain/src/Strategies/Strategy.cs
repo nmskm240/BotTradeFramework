@@ -19,8 +19,14 @@ public abstract class Strategy
         Parameters = parameters;
     }
 
-    public abstract void Analysis(IEnumerable<Candle> candles);
+    protected abstract Task<AnalysisData> Analysis(IEnumerable<Candle> candles);
     public abstract StrategyActionType RecommendedAction(IEnumerable<AnalysisData> datas);
+
+    internal async Task OnAnalysis(IEnumerable<Candle> candles)
+    {
+        var data = await Analysis(candles);
+        AnalysisSubject.OnNext(data);
+    }
 
     public static Strategy FromSetting(Setting.Strategy setting)
     {
