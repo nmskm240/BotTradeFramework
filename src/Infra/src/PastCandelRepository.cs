@@ -69,7 +69,7 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
             if (reader.Read())
             {
                 lastTime = DateTimeOffset.UnixEpoch.AddMilliseconds(reader.GetDouble(0)).ToUnixTimeMilliseconds();
-                Logger.LogInformation($"前回更新時: {lastTime}");
+                Logger.LogInformation("前回更新時: {lastime}", lastTime);
             }
         }
         catch
@@ -92,7 +92,7 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
                 if (!ohlcvs.Any())
                     break;
 
-                Logger.LogInformation($"Fetched since: {DateTimeOffset.FromUnixTimeMilliseconds(since)}, count: {ohlcvs.Count()}");
+                Logger.LogInformation("Fetched since: {since}, count: {size}", DateTimeOffset.FromUnixTimeMilliseconds(since), ohlcvs.Count());
 
                 var values = ohlcvs.Select(e => $"""
                     ('{Symbol.GetStringValue()}',
