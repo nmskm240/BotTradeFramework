@@ -12,6 +12,7 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
 {
     private const string TABLE_NAME = "candles";
     private Symbol Symbol { get; init; }
+    private ExchangePlace Place { get; init; }
     private SqliteConnection Connection { get; init; }
     private ILogger<PastCandleRepository> Logger { get; init; }
 
@@ -23,6 +24,7 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
             DataSource = Path.GetFullPath(path),
         };
         Symbol = setting.Symbol;
+        Place = setting.Place;
         Logger = logger;
         Connection = new SqliteConnection(builder.ConnectionString);
         Connection.Open();
@@ -76,8 +78,8 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
         {
             Logger.LogWarning("前回更新のデータが存在しないため、取引所から取得可能なデータをすべて取得する。これにはかなり時間がかかる。");
         }
-        var constructor = typeof(ccxt.bybit).GetConstructor([typeof(object)]);
-        if (constructor?.Invoke([null]) is ccxt.Exchange exchange)
+
+        if (Place.Reflection<Exchange>([null]) is Exchange exchange)
         {
             var limit = 1000;
             // 確定足情報を取得するため１分前の情報から取得していく

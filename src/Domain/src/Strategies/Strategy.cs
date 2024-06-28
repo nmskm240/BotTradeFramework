@@ -24,11 +24,12 @@ public abstract class Strategy
 
     public static Strategy FromSetting(Setting.Strategy setting)
     {
-        return setting.Kind switch
+        if (setting.Kind.Reflection<Strategy>(setting.Timeframe, setting.Parameters) is not Strategy strategy)
         {
-            StrategyKind.MACross => new MACross(setting.Timeframe, setting.Parameters),
-            _ => throw new ArgumentException("未対応の戦略", nameof(setting.Kind)),
-        };
+            throw new ArgumentException("生成できない戦略", nameof(setting));
+        }
+
+        return strategy;
     }
 
     public override string ToString()

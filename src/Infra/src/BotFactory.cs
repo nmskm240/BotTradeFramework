@@ -27,26 +27,14 @@ public class BotFactory
     /// <param name="settings"></param>
     public BotFactory(IEnumerable<Setting.API> settings)
     {
-        ExchangeMap = settings.Select(api =>
+        ExchangeMap = new Dictionary<ExchangePlace, Exchange>();
+        foreach (var api in settings)
         {
-            ccxt.Exchange value;
-            switch (api.Place)
-            {
-                case ExchangePlace.Bybit:
-                case ExchangePlace.BybitTestnet:
-                    {
-                        value = new Bybit() { apiKey = api.Key, secret = api.Secret };
-                        if (api.Place == ExchangePlace.BybitTestnet)
-                            value.setSandboxMode(true);
-                        break;
-                    }
-                default:
-                    {
-                        throw new ArgumentException("未対応の取引所", nameof(api.Place));
-                    }
-            }
-            return new KeyValuePair<ExchangePlace, ccxt.Exchange>(api.Place, value);
-        }).ToDictionary();
+            var exchange = api.Place.Reflection<Exchange>([null]);
+            if (exchange == null)
+                continue;
+            ExchangeMap.Add(api.Place, exchange);
+        }
     }
 
     /// <summary>
