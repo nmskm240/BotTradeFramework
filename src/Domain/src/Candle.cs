@@ -28,8 +28,8 @@ public class Candle : IQuote
 
     public static Candle Aggregate(IEnumerable<Candle> candles, Timeframe timeframe)
     {
-        Debug.Assert(candles.GroupBy(e => e.Symbol).Count() == 1, "別銘柄の統合はできない");
-        Debug.Assert(candles.Count() == (int)timeframe, "統合する時間足の個数がおかしい");
+        if (candles.Any(candle => candle.Symbol != candles.FirstOrDefault()?.Symbol))
+            throw new ArgumentException("別銘柄の統合はできない", nameof(candles));
 
         var symbol = candles.First().Symbol;
         var date = candles.Last().Date;
