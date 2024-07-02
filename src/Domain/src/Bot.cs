@@ -35,8 +35,11 @@ public class Bot : IDisposable
 
         Subscriptions = [
             Exchange.OnPulled
+                .Buffer((int)SmallestTimeframe)
+                .Select(candles => Candle.Aggregate(candles, SmallestTimeframe))
                 .Subscribe(
                     ChartMaker!.Plot,
+                    async (e) => await Stop(),
                     async () => await Stop()
                 ),
             Observable.CombineLatest(
