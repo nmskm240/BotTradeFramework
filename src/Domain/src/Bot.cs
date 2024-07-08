@@ -36,8 +36,7 @@ public class Bot : IDisposable
         Subscriptions = [
             Exchange.OnPulled
                 .Subscribe(
-                    ChartMaker!.Plot,
-                    async () => await Stop()
+                    ChartMaker!.Plot
                 ),
             Observable.CombineLatest(
                 Strategies.Select(strategy =>
@@ -57,7 +56,8 @@ public class Bot : IDisposable
                     strategy.OnComfirmedNextAction
                 )
             ).Subscribe(
-                async datas => await Trade(datas)
+                async datas => await Trade(datas),
+                async () => await Stop()
             ),
         ];
     }
