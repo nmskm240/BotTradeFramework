@@ -22,8 +22,10 @@ public class MACross : Strategy
 
     public MACross(IObservable<Candle> candleStream, Timeframe timeframe, IEnumerable<int> parameters) : base(candleStream, timeframe, parameters)
     {
-        Debug.Assert(parameters.Count() == 2, "MACrossではパラメーターを2つ設定しなければならない");
-        Debug.Assert(parameters.First() < parameters.Last(), "パラメーターの先頭要素が最後尾の要素の数より小さくなければならない");
+        if (parameters.Count() != 2)
+            throw new ArgumentException($"{nameof(MACross)}ではパラメーターを2つ設定しなければならない", nameof(parameters));
+        if (parameters.First() >= parameters.Last())
+            throw new ArgumentException("パラメーターの先頭要素が最後尾の要素の数より小さくなければならない", nameof(parameters));
     }
 
     protected override async Task<AnalysisData> OnAnalysis(IEnumerable<Candle> candles)
