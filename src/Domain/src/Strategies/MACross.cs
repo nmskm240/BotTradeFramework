@@ -20,12 +20,12 @@ public class MACross : Strategy
     protected override int NeedDataCountForTrade => 2;
     public override StrategyKind KInd => StrategyKind.MACross;
 
-    public MACross(IObservable<Candle> candleStream, Timeframe timeframe, IEnumerable<int> parameters) : base(candleStream, timeframe, parameters)
+    public MACross(IObservable<Candle> candleStream, Setting.Strategy setting) : base(candleStream, setting)
     {
-        if (parameters.Count() != 2)
-            throw new ArgumentException($"{nameof(MACross)}ではパラメーターを2つ設定しなければならない", nameof(parameters));
-        if (parameters.First() >= parameters.Last())
-            throw new ArgumentException("パラメーターの先頭要素が最後尾の要素の数より小さくなければならない", nameof(parameters));
+        if (Parameters.Count() != 2)
+            throw new ArgumentException($"{nameof(MACross)}ではパラメーターを2つ設定しなければならない", nameof(setting));
+        if (Parameters.First() >= Parameters.Last())
+            throw new ArgumentException("パラメーターの先頭要素が最後尾の要素の数より小さくなければならない", nameof(setting));
     }
 
     protected override async Task<AnalysisData> OnAnalysis(IEnumerable<Candle> candles)

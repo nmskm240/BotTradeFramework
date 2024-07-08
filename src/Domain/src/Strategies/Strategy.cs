@@ -16,10 +16,10 @@ public abstract class Strategy : IDisposable
     public IObservable<AnalysisData> OnAnalysised => AnalysisSubject;
     public IObservable<StrategyActionType> OnComfirmedNextAction => NextActionSubject;
 
-    public Strategy(IObservable<Candle> candleStream, Timeframe timeframe, IEnumerable<int> parameters)
+    public Strategy(IObservable<Candle> candleStream, Setting.Strategy setting)
     {
-        Timeframe = timeframe;
-        Parameters = parameters;
+        Timeframe = setting.Timeframe;
+        Parameters = setting.Parameters;
         AnalysisSubject = new();
         NextActionSubject = new();
 
@@ -29,8 +29,7 @@ public abstract class Strategy : IDisposable
                 .Select(candles => Candle.Aggregate(candles, Timeframe))
                 .Buffer(NeedDataCountForAnalysis, 1)
                 .Subscribe(
-                    async candles => await Analysis(candles),
-                    UnSubscribe
+                    async candles => await Analysis(candles)
                 ),
             OnAnalysised
                 .Buffer(NeedDataCountForTrade)
@@ -72,7 +71,7 @@ public abstract class Strategy : IDisposable
 
     public static Strategy FromSetting(Setting.Strategy setting, IObservable<Candle> stream)
     {
-        if (setting.Kind.Reflection<Strategy>(stream, setting.Timeframe, setting.Parameters) is not Strategy strategy)
+        if (setting.Kind.Reflection<Strategy>(stream, setting) is not Strategy strategy)
         {
             throw new ArgumentException("生成できない戦略", nameof(setting));
         }
