@@ -7,6 +7,6 @@ public enum StrategyKind
 {
     [ReflectableEnum(
         typeof(MACross),
-        [typeof(Timeframe), typeof(IEnumerable<int>)])]
+        [typeof(IObservable<Candle>), typeof(Timeframe), typeof(IEnumerable<int>)])]
     MACross,
 }

@@ -52,18 +52,9 @@ public class Bot : IDisposable
                     }
                 }
             ),
-            .. Strategies.Select(strategy =>
-                Exchange.OnPulled
-                    .Buffer((int)strategy.Timeframe)
-                    .Select(candles => Candle.Aggregate(candles, strategy.Timeframe))
-                    .Buffer(strategy.NeedDataCountForAnalysis, 1)
-                    .Subscribe(async candles => await strategy.OnAnalysis(candles))
-                ),
             Observable.CombineLatest(
                 Strategies.Select(strategy =>
-                    strategy.OnAnalysised
-                        .Buffer(strategy.NeedDataCountForTrade)
-                        .Select(strategy.RecommendedAction)
+                    strategy.OnComfirmedNextAction
                 )
             ).Subscribe(
                 async datas => await Trade(datas)
@@ -93,10 +84,25 @@ public class Bot : IDisposable
 
     public void Dispose()
     {
-        if (IsStarted) UnSubscribe();
-        ChartMaker?.Dispose();
-        Reporter?.Dispose();
+        Dispose(true);
         GC.SuppressFinalize(this);
+    }
+
+    protected void Dispose(bool disposable)
+    {
+        if (IsStarted)
+            UnSubscribe();
+
+        if (disposable)
+        {
+            ChartMaker?.Dispose();
+            Reporter?.Dispose();
+
+            foreach (var strategy in Strategies)
+            {
+                strategy.Dispose();
+            }
+        }
     }
 
     private async Task Trade(IEnumerable<StrategyActionType> recommendedActions)

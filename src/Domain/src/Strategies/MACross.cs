@@ -16,17 +16,17 @@ public class MACross : Strategy
     private const string ShortMALabel = "ShortMA";
     private const string LongMALabel = "LongMA";
 
-    public override int NeedDataCountForAnalysis => Parameters.LastOrDefault(int.MaxValue);
-    public override int NeedDataCountForTrade => 2;
+    protected override int NeedDataCountForAnalysis => Parameters.LastOrDefault(int.MaxValue);
+    protected override int NeedDataCountForTrade => 2;
     public override StrategyKind KInd => StrategyKind.MACross;
 
-    public MACross(Timeframe timeframe, IEnumerable<int> parameters) : base(timeframe, parameters)
+    public MACross(IObservable<Candle> candleStream, Timeframe timeframe, IEnumerable<int> parameters) : base(candleStream, timeframe, parameters)
     {
         Debug.Assert(parameters.Count() == 2, "MACrossではパラメーターを2つ設定しなければならない");
         Debug.Assert(parameters.First() < parameters.Last(), "パラメーターの先頭要素が最後尾の要素の数より小さくなければならない");
     }
 
-    protected override async Task<AnalysisData> Analysis(IEnumerable<Candle> candles)
+    protected override async Task<AnalysisData> OnAnalysis(IEnumerable<Candle> candles)
     {
         var indicators = new Dictionary<string, AnalysisValue>();
         var date = candles.MaxBy(candle => candle.Date)?.Date ?? DateTime.UtcNow;
@@ -43,7 +43,7 @@ public class MACross : Strategy
         return await Task.FromResult(data);
     }
 
-    public override StrategyActionType RecommendedAction(IEnumerable<AnalysisData> datas)
+    public override StrategyActionType OnNextAction(IEnumerable<AnalysisData> datas)
     {
         var prevShortMa = datas.First().ChartPlotValues[ShortMALabel].Value;
         var prevLongMa = datas.First().ChartPlotValues[LongMALabel].Value;
