@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 using Skender.Stock.Indicators;
 
 namespace BotTrade.Domain;
@@ -26,10 +24,24 @@ public class Candle : IQuote
         Timeframe = timeframe;
     }
 
+    /// <summary>
+    /// １分足を指定足データに変換する
+    /// </summary>
+    /// <remarks>
+    /// <c>candles</c>の要素数が時間足変換に必要な個数に達していなくても変換する<br/>
+    /// <c>candles</c>の要素数が時間足変換に必要な個数以上ある場合は先頭から必要な個数抽出して変換する
+    /// </remarks>
+    /// <param name="candles">1分足の列挙型</param>
+    /// <param name="timeframe"></param>
+    /// <returns><c>timeframe</c>で指定した時間足に変換された<c>Candle</c></returns>
     public static Candle Aggregate(IEnumerable<Candle> candles, Timeframe timeframe)
     {
-        Debug.Assert(candles.GroupBy(e => e.Symbol).Count() == 1, "別銘柄の統合はできない");
-        Debug.Assert(candles.Count() == (int)timeframe, "統合する時間足の個数がおかしい");
+        if (candles.GroupBy(candle => candle.Timeframe).Any(group => group.Key != Timeframe.OneMinute))
+            throw new ArgumentException($"{nameof(candles)}はすべて１分足でなければならない", nameof(candles));
+        if (candles.GroupBy(candle => candle.Symbol).Count() > 1)
+            throw new ArgumentException($"{nameof(candles)}はすべて同じ{nameof(Symbol)}でなければならない", nameof(candles));
+
+        candles = candles.Take((int)timeframe);
 
         var symbol = candles.First().Symbol;
         var date = candles.Last().Date;
