@@ -29,9 +29,10 @@ public class Backtest : IExchange
         Positions = new List<Position>();
         OnPulled = Observable.Create<Candle>(async observer =>
         {
+            using var cancellation = new CancellationTokenSource();
             try
             {
-                await foreach (var candle in Repository.Pull(setting.Range?.StartAt, setting.Range?.EndAt))
+                await foreach (var candle in Repository.Pull(setting.Range?.StartAt, setting.Range?.EndAt).WithCancellation(cancellation.Token))
                 {
                     _currentCandle = candle;
                     observer.OnNext(candle);
@@ -40,6 +41,7 @@ public class Backtest : IExchange
             }
             catch (Exception e)
             {
+                cancellation.Cancel();
                 observer.OnError(e);
             }
         }).Publish();
