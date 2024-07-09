@@ -1,11 +1,8 @@
-using System.Diagnostics;
 using System.Reactive.Linq;
 
 using BotTrade.Domain.Strategies;
 
 using Microsoft.Extensions.Logging;
-
-using Reactive.Bindings;
 
 namespace BotTrade.Domain;
 
@@ -16,6 +13,7 @@ public class Bot : IDisposable
 
     public IStrategyReporter? Reporter { get; init; }
     public IChartMaker? ChartMaker { get; init; }
+    protected bool IsTakeableMultiPosition { get; init; }
     protected IExchange Exchange { get; init; }
     protected IEnumerable<Strategy> Strategies { get; init; }
     protected ILogger<Bot> Logger { get; init; }
@@ -30,6 +28,7 @@ public class Bot : IDisposable
         Strategies = strategies;
         Logger = logger;
         Lot = setting.Lot;
+        IsTakeableMultiPosition = setting.IsTakeableMultiPosition;
         Reporter = reporter;
         ChartMaker = chartMaker;
 
@@ -105,32 +104,47 @@ public class Bot : IDisposable
         }
     }
 
-    private async Task Trade(IEnumerable<StrategyActionType> recommendedActions)
+    /// <summary>
+    /// 戦略の分析に基づいて取引所で売買を行う
+    /// </summary>
+    /// <remarks>
+    /// 分析結果で1つでも<c>StrategyActionType.Neutral</c>があれば売買は行わない。
+    /// </remarks>
+    /// <param name="actions"></param>
+    /// <returns></returns>
+    private async Task Trade(IEnumerable<StrategyActionType> actions)
     {
-        if (recommendedActions.All(action => action == StrategyActionType.Buy))
+        if (actions.Any(action => action == StrategyActionType.Neutral))
+            return;
+
+        var action = actions.First();
+        var currentPosition = Exchange.Positions.FirstOrDefault();
+
+        if (currentPosition != null)
         {
-            if (Exchange.Positions.Count > 0)
+            var shouldClosePostion = (currentPosition.Type == PositionType.Long && action == StrategyActionType.Sell) ||
+                                        (currentPosition.Type == PositionType.Short && action == StrategyActionType.Buy);
+            if (shouldClosePostion)
             {
                 var pl = await Exchange.ClosePositionAll();
                 Logger.LogInformation("Position close. P/L: {pl}", pl);
                 return;
             }
-            var position = await Exchange.Buy(Lot);
-            Logger.LogInformation("Buy order. price: {entryPrice}, quantity: {lot}", position.Entry, Lot);
-            position.OnClosed += (position) => Reporter?.Log(position);
-        }
-        else if (recommendedActions.All(action => action == StrategyActionType.Sell))
-        {
-            if (Exchange.Positions.Count > 0)
+            else if (!IsTakeableMultiPosition)
             {
-                var pl = await Exchange.ClosePositionAll();
-                Logger.LogInformation("Position close. P/L: {pl}", pl);
                 return;
             }
-            var position = await Exchange.Sell(Lot);
-            Logger.LogInformation("Sell order. price: {entryPrice}, quantity: {lot}", position.Entry, Lot);
-            position.OnClosed += (position) => Reporter?.Log(position);
         }
+
+        var newPosition = action switch
+        {
+            StrategyActionType.Buy => await Exchange.Buy(Lot),
+            StrategyActionType.Sell => await Exchange.Sell(Lot),
+            _ => throw new NotSupportedException(),
+        };
+
+        Logger.LogInformation("Sell order. price: {entryPrice}, quantity: {lot}", newPosition.Entry, Lot);
+        newPosition.OnClosed += (p) => Reporter?.Log(p);
     }
 
     private void UnSubscribe()
