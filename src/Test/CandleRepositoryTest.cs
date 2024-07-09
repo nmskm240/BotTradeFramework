@@ -15,25 +15,27 @@ public class CnadleRepositoryTest
     [InlineData(Symbol.Spot_ETHBTC, ExchangePlace.Bybit)]
     public async Task FetchHistoricalData(Symbol symbol, ExchangePlace place)
     {
+        using var cancellation = new CancellationTokenSource();
         var logger = new LoggerFactory().CreateLogger<PastCandleRepository>();
         var setting = new Setting.Exchange() { Place = place, Symbol = symbol };
         var repository = new PastCandleRepository(setting, logger);
         var candles = new List<Candle>();
 
-        await foreach (var candle in repository.Pull())
+        await foreach (var candle in repository.Pull().WithCancellation(cancellation.Token))
         {
             candles.Add(candle);
             if (candles.Count == 2)
-                break;
+                cancellation.Cancel();
         }
 
         var a = candles.First();
         var b = candles.Last();
         var span = b.Date - a.Date;
+        Assert.Equal(candles.Count, 2);
         Assert.Equal(a.Symbol, b.Symbol);
         Assert.NotEqual(0, a.Date.Ticks);
         Assert.NotEqual(0, b.Date.Ticks);
-        Assert.Equal(span.Ticks, (int)Timeframe.OneMinute * TimeSpan.TicksPerMinute);
+        Assert.Equal((int)Timeframe.OneMinute * TimeSpan.TicksPerMinute, span.Ticks);
         // リサンプリンjグ失敗などを考慮しておく
         Assert.True(a.Open > 0);
         Assert.True(b.Open > 0);
