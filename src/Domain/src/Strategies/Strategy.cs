@@ -32,7 +32,7 @@ public abstract class Strategy : IDisposable
                     async candles => await Analysis(candles)
                 ),
             OnAnalysised
-                .Buffer(NeedDataCountForTrade)
+                .Buffer(NeedDataCountForTrade, 1)
                 .Subscribe(
                     NextAction,
                     UnSubscribe

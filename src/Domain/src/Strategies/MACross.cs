@@ -47,20 +47,14 @@ public class MACross : Strategy
 
     public override StrategyActionType OnNextAction(IEnumerable<AnalysisData> datas)
     {
-        var prevShortMa = datas.First().ChartPlotValues[ShortMALabel].Value;
-        var prevLongMa = datas.First().ChartPlotValues[LongMALabel].Value;
-        var currentShortMa = datas.Last().ChartPlotValues[ShortMALabel].Value;
-        var currentLongMa = datas.Last().ChartPlotValues[LongMALabel].Value;
+        var shortMa = datas.Select(analysis => analysis.ChartPlotValues[ShortMALabel].Value);
+        var longMa = datas.Select(analysis => analysis.ChartPlotValues[LongMALabel].Value);
 
-        if (StrategyUtilty.IsGoldenCross([prevShortMa, currentShortMa], [prevLongMa, currentLongMa]))
-        {
+        if (StrategyUtilty.IsGoldenCross(shortMa, longMa))
             return StrategyActionType.Buy;
-        }
 
-        if (StrategyUtilty.IsDeadCross([prevShortMa, currentShortMa], [prevLongMa, currentLongMa]))
-        {
+        if (StrategyUtilty.IsDeadCross(shortMa, longMa))
             return StrategyActionType.Sell;
-        }
 
         return StrategyActionType.Neutral;
     }
