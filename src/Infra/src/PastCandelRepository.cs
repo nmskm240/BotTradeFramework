@@ -88,7 +88,7 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
             IEnumerable<OHLCV> ohlcvs;
             while (true)
             {
-                var since = latest.Subtract(TimeSpan.FromMinutes(limit)).ToUnixTimeMilliseconds();
+                var since = latest.Subtract(TimeSpan.FromMinutes(limit - 1)).ToUnixTimeMilliseconds();
                 ohlcvs = await exchange.FetchOHLCV(Symbol.GetStringValue(), since2: since, limit2: limit);
                 ohlcvs = ohlcvs.Where(e => lastTime < e.timestamp && e.timestamp <= latest.ToUnixTimeMilliseconds());
 

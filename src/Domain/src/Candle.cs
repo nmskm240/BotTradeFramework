@@ -44,7 +44,7 @@ public class Candle : IQuote
         candles = candles.Take((int)timeframe);
 
         var symbol = candles.First().Symbol;
-        var date = candles.Last().Date;
+        var date = candles.First().Date;
         var open = candles.First().Open;
         var high = candles.MaxBy(e => e.High)?.High ?? decimal.MinusOne;
         var low = candles.MinBy(e => e.Low)?.Low ?? decimal.MinusOne;
