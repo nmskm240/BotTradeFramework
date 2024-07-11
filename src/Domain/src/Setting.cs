@@ -17,6 +17,7 @@ public record class Setting
         public float Lot { get; set; }
         public required Exchange Exchange { get; set; }
         public required IEnumerable<Strategy> Strategies { get; set; }
+        public bool IsTakeableMultiPosition { get; set; }
 
         public string ReportDir
         {

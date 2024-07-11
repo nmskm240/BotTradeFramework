@@ -1,11 +1,8 @@
-using System.Diagnostics;
 using System.Reactive.Linq;
 
 using BotTrade.Domain.Strategies;
 
 using Microsoft.Extensions.Logging;
-
-using Reactive.Bindings;
 
 namespace BotTrade.Domain;
 
@@ -16,6 +13,7 @@ public class Bot : IDisposable
 
     public IStrategyReporter? Reporter { get; init; }
     public IChartMaker? ChartMaker { get; init; }
+    protected bool IsTakeableMultiPosition { get; init; }
     protected IExchange Exchange { get; init; }
     protected IEnumerable<Strategy> Strategies { get; init; }
     protected ILogger<Bot> Logger { get; init; }
@@ -30,6 +28,7 @@ public class Bot : IDisposable
         Strategies = strategies;
         Logger = logger;
         Lot = setting.Lot;
+        IsTakeableMultiPosition = setting.IsTakeableMultiPosition;
         Reporter = reporter;
         ChartMaker = chartMaker;
 
@@ -38,9 +37,7 @@ public class Bot : IDisposable
                 .Buffer((int)SmallestTimeframe)
                 .Select(candles => Candle.Aggregate(candles, SmallestTimeframe))
                 .Subscribe(
-                    ChartMaker!.Plot,
-                    async (e) => await Stop(),
-                    async () => await Stop()
+                    ChartMaker!.Plot
                 ),
             Observable.CombineLatest(
                 Strategies.Select(strategy =>
@@ -55,21 +52,13 @@ public class Bot : IDisposable
                     }
                 }
             ),
-            .. Strategies.Select(strategy =>
-                Exchange.OnPulled
-                    .Buffer((int)strategy.Timeframe)
-                    .Select(candles => Candle.Aggregate(candles, strategy.Timeframe))
-                    .Buffer(strategy.NeedDataCountForAnalysis, 1)
-                    .Subscribe(async candles => await strategy.OnAnalysis(candles))
-                ),
             Observable.CombineLatest(
                 Strategies.Select(strategy =>
-                    strategy.OnAnalysised
-                        .Buffer(strategy.NeedDataCountForTrade)
-                        .Select(strategy.RecommendedAction)
+                    strategy.OnComfirmedNextAction
                 )
             ).Subscribe(
-                async datas => await Trade(datas)
+                async datas => await Trade(datas),
+                async () => await Stop()
             ),
         ];
     }
@@ -96,38 +85,68 @@ public class Bot : IDisposable
 
     public void Dispose()
     {
-        if (IsStarted) UnSubscribe();
-        ChartMaker?.Dispose();
-        Reporter?.Dispose();
+        Dispose(true);
         GC.SuppressFinalize(this);
     }
 
-    private async Task Trade(IEnumerable<StrategyActionType> recommendedActions)
+    protected void Dispose(bool disposable)
     {
-        if (recommendedActions.All(action => action == StrategyActionType.Buy))
+        if (IsStarted)
+            UnSubscribe();
+
+        if (disposable)
         {
-            if (Exchange.Positions.Count > 0)
+            ChartMaker?.Dispose();
+            Reporter?.Dispose();
+
+            foreach (var strategy in Strategies)
+            {
+                strategy.Dispose();
+            }
+        }
+    }
+
+    /// <summary>
+    /// 戦略の分析に基づいて取引所で売買を行う
+    /// </summary>
+    /// <remarks>
+    /// 分析結果で1つでも<c>StrategyActionType.Neutral</c>があれば売買は行わない。
+    /// </remarks>
+    /// <param name="actions"></param>
+    /// <returns></returns>
+    private async Task Trade(IEnumerable<StrategyActionType> actions)
+    {
+        if (actions.Any(action => action == StrategyActionType.Neutral))
+            return;
+
+        var action = actions.First();
+        var currentPosition = Exchange.Positions.FirstOrDefault();
+
+        if (currentPosition != null)
+        {
+            var shouldClosePostion = (currentPosition.Type == PositionType.Long && action == StrategyActionType.Sell) ||
+                                        (currentPosition.Type == PositionType.Short && action == StrategyActionType.Buy);
+            if (shouldClosePostion)
             {
                 var pl = await Exchange.ClosePositionAll();
                 Logger.LogInformation("Position close. P/L: {pl}", pl);
                 return;
             }
-            var position = await Exchange.Buy(Lot);
-            Logger.LogInformation("Buy order. price: {entryPrice}, quantity: {lot}", position.Entry, Lot);
-            position.OnClosed += (position) => Reporter?.Log(position);
-        }
-        else if (recommendedActions.All(action => action == StrategyActionType.Sell))
-        {
-            if (Exchange.Positions.Count > 0)
+            else if (!IsTakeableMultiPosition)
             {
-                var pl = await Exchange.ClosePositionAll();
-                Logger.LogInformation("Position close. P/L: {pl}", pl);
                 return;
             }
-            var position = await Exchange.Sell(Lot);
-            Logger.LogInformation("Sell order. price: {entryPrice}, quantity: {lot}", position.Entry, Lot);
-            position.OnClosed += (position) => Reporter?.Log(position);
         }
+
+        var newPosition = action switch
+        {
+            StrategyActionType.Buy => await Exchange.Buy(Lot),
+            StrategyActionType.Sell => await Exchange.Sell(Lot),
+            _ => throw new NotSupportedException(),
+        };
+
+        Logger.LogInformation("Sell order. price: {entryPrice}, quantity: {lot}", newPosition.Entry, Lot);
+        newPosition.OnClosed += (p) => Reporter?.Log(p);
     }
 
     private void UnSubscribe()

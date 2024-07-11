@@ -1,36 +1,77 @@
+using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
 namespace BotTrade.Domain.Strategies;
 
-public abstract class Strategy
+public abstract class Strategy : IDisposable
 {
-    protected Subject<AnalysisData> AnalysisSubject = new();
-
+    private Subject<AnalysisData> AnalysisSubject { get; init; }
+    private Subject<StrategyActionType> NextActionSubject { get; init; }
+    protected IList<IDisposable> Subscriptions { get; init; }
+    protected abstract int NeedDataCountForAnalysis { get; }
+    protected abstract int NeedDataCountForTrade { get; }
     public abstract StrategyKind KInd { get; }
     public Timeframe Timeframe { get; init; }
     public IEnumerable<int> Parameters { get; init; }
-    public abstract int NeedDataCountForAnalysis { get; }
-    public abstract int NeedDataCountForTrade { get; }
     public IObservable<AnalysisData> OnAnalysised => AnalysisSubject;
+    public IObservable<StrategyActionType> OnComfirmedNextAction => NextActionSubject;
 
-    public Strategy(Timeframe timeframe, IEnumerable<int> parameters)
+    public Strategy(IObservable<Candle> candleStream, Setting.Strategy setting)
     {
-        Timeframe = timeframe;
-        Parameters = parameters;
+        Timeframe = setting.Timeframe;
+        Parameters = setting.Parameters;
+        AnalysisSubject = new();
+        NextActionSubject = new();
+
+        Subscriptions = [
+            candleStream
+                .Buffer((int)Timeframe)
+                .Select(candles => Candle.Aggregate(candles, Timeframe))
+                .Buffer(NeedDataCountForAnalysis, 1)
+                .Subscribe(
+                    async candles => await Analysis(candles)
+                ),
+            OnAnalysised
+                .Buffer(NeedDataCountForTrade, 1)
+                .Subscribe(
+                    NextAction,
+                    UnSubscribe
+                )
+        ];
     }
 
-    protected abstract Task<AnalysisData> Analysis(IEnumerable<Candle> candles);
-    public abstract StrategyActionType RecommendedAction(IEnumerable<AnalysisData> datas);
+    protected abstract Task<AnalysisData> OnAnalysis(IEnumerable<Candle> candles);
+    public abstract StrategyActionType OnNextAction(IEnumerable<AnalysisData> datas);
 
-    internal async Task OnAnalysis(IEnumerable<Candle> candles)
+    private async Task Analysis(IEnumerable<Candle> candles)
     {
-        var data = await Analysis(candles);
-        AnalysisSubject.OnNext(data);
+        if (candles.Count() < NeedDataCountForAnalysis)
+        {
+            AnalysisSubject.OnCompleted();
+        }
+        else
+        {
+            var data = await OnAnalysis(candles);
+            AnalysisSubject.OnNext(data);
+        }
     }
 
-    public static Strategy FromSetting(Setting.Strategy setting)
+    private void NextAction(IEnumerable<AnalysisData> analyses)
     {
-        if (setting.Kind.Reflection<Strategy>(setting.Timeframe, setting.Parameters) is not Strategy strategy)
+        if (analyses.Count() < NeedDataCountForTrade)
+        {
+            NextActionSubject.OnCompleted();
+        }
+        else
+        {
+            var action = OnNextAction(analyses);
+            NextActionSubject.OnNext(action);
+        }
+    }
+
+    public static Strategy FromSetting(Setting.Strategy setting, IObservable<Candle> stream)
+    {
+        if (setting.Kind.Reflection<Strategy>(stream, setting) is not Strategy strategy)
         {
             throw new ArgumentException("生成できない戦略", nameof(setting));
         }
@@ -42,5 +83,31 @@ public abstract class Strategy
     {
         var parameters = string.Join(", ", Parameters);
         return $"{KInd.GetStringValue()}({parameters})";
+    }
+
+    private void UnSubscribe()
+    {
+        foreach (var subscription in Subscriptions)
+        {
+            subscription.Dispose();
+        }
+        Subscriptions.Clear();
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    protected void Dispose(bool disposable)
+    {
+        if (disposable)
+        {
+            AnalysisSubject.OnCompleted();
+            NextActionSubject.OnCompleted();
+
+            UnSubscribe();
+        }
     }
 }

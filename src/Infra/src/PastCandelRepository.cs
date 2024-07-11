@@ -1,4 +1,5 @@
 using System.Reactive.Linq;
+using System.Runtime.CompilerServices;
 
 using BotTrade.Domain;
 
@@ -52,7 +53,7 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
         GC.SuppressFinalize(this);
     }
 
-    public async Task Fetch()
+    public async Task Fetch(CancellationToken token = default)
     {
         var fetchLastTimestampSQL = $"""
             select timestamp from {TABLE_NAME}
@@ -67,7 +68,7 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
         try
         {
             using var command = new SqliteCommand(fetchLastTimestampSQL, Connection);
-            using var reader = await command.ExecuteReaderAsync();
+            using var reader = await command.ExecuteReaderAsync(token);
             if (reader.Read())
             {
                 lastTime = DateTimeOffset.UnixEpoch.AddMilliseconds(reader.GetDouble(0)).ToUnixTimeMilliseconds();
@@ -87,11 +88,11 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
             IEnumerable<OHLCV> ohlcvs;
             while (true)
             {
-                var since = latest.Subtract(TimeSpan.FromMinutes(limit)).ToUnixTimeMilliseconds();
+                var since = latest.Subtract(TimeSpan.FromMinutes(limit - 1)).ToUnixTimeMilliseconds();
                 ohlcvs = await exchange.FetchOHLCV(Symbol.GetStringValue(), since2: since, limit2: limit);
                 ohlcvs = ohlcvs.Where(e => lastTime < e.timestamp && e.timestamp <= latest.ToUnixTimeMilliseconds());
 
-                if (!ohlcvs.Any())
+                if (!ohlcvs.Any() || token.IsCancellationRequested)
                     break;
 
                 Logger.LogInformation("Fetched since: {since}, count: {size}", DateTimeOffset.FromUnixTimeMilliseconds(since), ohlcvs.Count());
@@ -132,7 +133,7 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
                 }
 
                 latest = DateTimeOffset.FromUnixTimeMilliseconds(since);
-                await Task.Delay(TimeSpan.FromMilliseconds(exchange.rateLimit));
+                await Task.Delay(TimeSpan.FromMilliseconds(exchange.rateLimit), token);
             }
             Logger.LogInformation("データベース更新完了");
             return;
@@ -141,7 +142,7 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
         Logger.LogWarning("ccxtに対応していない取引所");
     }
 
-    public async IAsyncEnumerable<Candle> Pull(DateTimeOffset? startAt = null, DateTimeOffset? endAt = null)
+    public async IAsyncEnumerable<Candle> Pull(DateTimeOffset? startAt = null, DateTimeOffset? endAt = null, [EnumeratorCancellation] CancellationToken token = default)
     {
         var sql = $"""
             select * from {TABLE_NAME}
@@ -152,9 +153,9 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
         """;
 
         using var command = new SqliteCommand(sql, Connection);
-        using var reader = await command.ExecuteReaderAsync();
+        using var reader = await command.ExecuteReaderAsync(token);
 
-        while (reader.Read())
+        while (reader.Read() && !token.IsCancellationRequested)
         {
             var index = 1;
             var date = DateTime.UnixEpoch.AddMilliseconds(reader.GetDouble(index++));
