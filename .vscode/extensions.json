@@ -1,0 +1,9 @@
+{
+    "recommendations": [
+        "pierre3.csharp-to-plantuml",
+        "mhutchie.git-graph",
+        "github.vscode-pull-request-github",
+        "eamodio.gitlens",
+        "jebbs.plantuml"
+    ]
+}

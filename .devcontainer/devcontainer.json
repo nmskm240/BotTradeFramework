@@ -1,9 +1,9 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
-	"name": "C# (.NET)",
+	"name": "BotTrade",
 	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"dockerFile": "Dockerfile",
+	"dockerFile": ".Dockerfile",
 	"features": {},
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "dotnet restore",
@@ -23,14 +23,11 @@
 				"ms-dotnettools.csharp",
 				"k--kato.docomment",
 				"ms-dotnettools.vscodeintellicode-csharp",
-				"jebbs.plantuml",
 				"ms-dotnettools.dotnet-interactive-vscode",
 				"ms-toolsai.jupyter",
 				"EditorConfig.EditorConfig",
-				"tomoki1207.pdf",
 				"VisualStudioExptTeam.vscodeintellicode",
-				"jock.svg",
-				"pierre3.csharp-to-plantuml"
+				"alexcvzz.vscode-sqlite"
 			]
 		}
 	}
