@@ -34,6 +34,8 @@ public class Bot : IDisposable
 
         Subscriptions = [
             Exchange.OnPulled
+                .Buffer((int)SmallestTimeframe)
+                .Select(candles => Candle.Aggregate(candles, SmallestTimeframe))
                 .Subscribe(
                     ChartMaker!.Plot
                 ),

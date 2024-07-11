@@ -56,7 +56,8 @@ public class Position
 
     public void Close(decimal exitPrice, DateTime exitDate)
     {
-        Debug.Assert(Status == PositionStatus.Open);
+        if (Status == PositionStatus.Close)
+            return;
 
         Status = PositionStatus.Close;
         Exit = exitPrice;
