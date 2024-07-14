@@ -1,8 +1,7 @@
 FROM mcr.microsoft.com/dotnet/sdk:8.0
 
-ENV DONT_PROMPT_WSL_INSTALL=1 
-
 RUN apt-get update \
+    && DEBIAN_FRONTEND=noninteractive \
     && apt-get install -y \
         sqlite3 \
         libsqlite3-dev \

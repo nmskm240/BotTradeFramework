@@ -2,20 +2,22 @@
 // README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
 	"name": "BotTrade",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"dockerFile": ".Dockerfile",
-	"features": {},
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "dotnet restore",
-	"remoteUser": "root",
+	"dockerComposeFile": "./docker-compose.yaml",
+	"service": "workspace",
 	"mounts": [
 		{
 			"type": "bind",
-			"source": ".",
+			"source": "../",
 			"target": "/workspace"
 		}
 	],
 	"workspaceFolder": "/workspace",
+	"remoteEnv": {
+		"CONTAINER_NAME": "BotTrade"
+	},
+	"containerEnv": {
+		"DONT_PROMPT_WSL_INSTALL": "1"
+	},
 	"customizations": {
 		"vscode": {
 			"extensions": [
@@ -27,7 +29,8 @@
 				"ms-toolsai.jupyter",
 				"EditorConfig.EditorConfig",
 				"VisualStudioExptTeam.vscodeintellicode",
-				"alexcvzz.vscode-sqlite"
+				"alexcvzz.vscode-sqlite",
+				"jebbs.plantuml"
 			]
 		}
 	}

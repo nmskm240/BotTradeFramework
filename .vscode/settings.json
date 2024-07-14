@@ -16,11 +16,23 @@
     "csharp2plantuml.outputPath": "doc/classes",
     "plantuml.render": "Local",
     "plantuml.exportOutDir": "doc",
-    "csharp2plantuml.excludePath": "",
+    "csharp2plantuml.excludePath": "Application/obj/**, Comman/obj/**, Domain/obj/**, Infra/obj/**, Presentation/obj/**, Test",
     "csharp2plantuml.inputPath": "src",
     "notebook.defaultFormatter": "ms-dotnettools.csharp",
     "editor.defaultFormatter": "ms-dotnettools.csharp",
+    "dotnet.server.useOmnisharp": true,
     "files.exclude": {
         "**/.gitkeep": true
-    }
+    },
+    "csharp2plantuml.allInOne": true,
+    "csharp2plantuml.createAssociation": true,
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.profiles.linux": {
+        "bash": {
+            "path": "bash",
+            "args": [
+                "-l"
+            ]
+        }
+    },
 }
