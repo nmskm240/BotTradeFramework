@@ -9,7 +9,36 @@ public class StrategyReport
     /// <summary>
     /// 損益
     /// </summary>
-    public decimal PnL { get { return Trades.Sum(p => p.Profit); } }
+    public decimal PnL { get { return Trades.Sum(trade => trade.PnL); } }
+
+    /// <summary>
+    /// 利益の平均リターン
+    /// </summary>
+    public decimal ProfitAverage
+    {
+        get
+        {
+            var winTrades = Trades.Where(trade => trade.IsWin);
+            var total = winTrades.Sum(trade => trade.PnL);
+            var count = winTrades.Count();
+            return total / count;
+        }
+    }
+
+    /// <summary>
+    /// 損失の平均リターン
+    /// </summary>
+    public decimal LossAverage
+    {
+        get
+        {
+            var loseTrades = Trades.Where(trade => !trade.IsWin);
+            var total = loseTrades.Sum(trade => trade.PnL);
+            var count = loseTrades.Count();
+            return total / count;
+        }
+    }
+
     /// <summary>
     /// 最大連勝数
     /// </summary>
@@ -21,7 +50,7 @@ public class StrategyReport
             var max = 0;
             foreach (var trade in Trades)
             {
-                if (0 < trade.Profit)
+                if (trade.IsWin)
                 {
                     streak++;
                 }
@@ -45,7 +74,7 @@ public class StrategyReport
             var max = 0;
             foreach (var trade in Trades)
             {
-                if (trade.Profit <= 0)
+                if (!trade.IsWin)
                 {
                     streak++;
                 }
@@ -65,7 +94,7 @@ public class StrategyReport
     {
         get
         {
-            var win = (float)Trades.Count(p => 0 < p.Profit);
+            var win = (float)Trades.Count(trade => trade.IsWin);
             return win / Trades.Count() * 100;
         }
     }
@@ -81,7 +110,7 @@ public class StrategyReport
             var maxDrawdown = decimal.Zero;
             foreach (var trade in Trades)
             {
-                sumProfit += trade.Profit;
+                sumProfit += trade.PnL;
                 maxProfit = Math.Max(sumProfit, maxProfit);
                 maxDrawdown = Math.Min(maxDrawdown, sumProfit - maxProfit);
             }
@@ -96,10 +125,10 @@ public class StrategyReport
     {
         get
         {
-            var avgProfit = Trades.Where(p => p.Profit > 0)
-                            .Average(p => p.Profit);
-            var avgLoss = Trades.Where(p => p.Profit <= 0)
-                            .Average(p => p.Profit);
+            var avgProfit = Trades.Where(trade => trade.IsWin)
+                            .Average(trade => trade.PnL);
+            var avgLoss = Trades.Where(trade => !trade.IsWin)
+                            .Average(trade => trade.PnL);
             return Math.Abs(avgProfit / avgLoss);
         }
     }

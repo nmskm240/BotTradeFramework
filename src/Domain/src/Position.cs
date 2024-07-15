@@ -36,9 +36,13 @@ public class Position
     /// <summary>
     /// ポジション利益
     /// </summary>
-    public decimal Profit
+    public decimal PnL
     {
         get { return Status == PositionStatus.Open ? 0 : (Exit - Entry) * (decimal)Quantity; }
+    }
+    public bool IsWin
+    {
+        get { return PnL > 0; }
     }
 
     public Position(Symbol symbol, PositionType type, float quantity, decimal entry, DateTime entryAt, string? id = null, decimal? exit = null, DateTime? exitAt = null)

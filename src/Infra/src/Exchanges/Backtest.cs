@@ -60,7 +60,7 @@ public class Backtest : IExchange
         {
             position.Close(_currentCandle!.Close, _currentCandle!.Date);
             Positions.Remove(position);
-            return await Task.FromResult(position.Profit);
+            return await Task.FromResult(position.PnL);
         }
         return await Task.FromResult(0);
     }

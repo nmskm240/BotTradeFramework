@@ -112,7 +112,7 @@ public class StrategyReporter : IStrategyReporter, IDisposable
                 xAxis.Add(trade.EntryAt);
                 yAxis.Add(capital);
                 xAxis.Add(trade.ExitAt);
-                yAxis.Add(capital += trade.Profit);
+                yAxis.Add(capital += trade.PnL);
             }
         }
         catch (Exception e)
