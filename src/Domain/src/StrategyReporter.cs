@@ -9,7 +9,7 @@ public class StrategyReport
     /// <summary>
     /// 損益
     /// </summary>
-    public decimal Profit { get { return Trades.Sum(p => p.Profit); } }
+    public decimal PnL { get { return Trades.Sum(p => p.Profit); } }
     /// <summary>
     /// 最大連勝数
     /// </summary>
