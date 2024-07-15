@@ -96,8 +96,16 @@ public class PastCandleRepository : IUpdatableCandleRepository
             while (true)
             {
                 var since = latest.Subtract(TimeSpan.FromMinutes(limit - 1)).ToUnixTimeMilliseconds();
-                ohlcvs = await exchange.FetchOHLCV(Symbol.GetStringValue(), since2: since, limit2: limit);
-                ohlcvs = ohlcvs.Where(e => lastTime < e.timestamp && e.timestamp <= latest.ToUnixTimeMilliseconds());
+                try
+                {
+                    ohlcvs = await exchange.FetchOHLCV(Symbol.GetStringValue(), since2: since, limit2: limit);
+                    ohlcvs = ohlcvs.Where(e => lastTime < e.timestamp && e.timestamp <= latest.ToUnixTimeMilliseconds());
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e.Message);
+                    break;
+                }
 
                 if (!ohlcvs.Any() || token.IsCancellationRequested)
                     break;
