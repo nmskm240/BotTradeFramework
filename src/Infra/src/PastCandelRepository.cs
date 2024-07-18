@@ -9,28 +9,11 @@ using Microsoft.Data.Sqlite;
 using Microsoft.Extensions.Logging;
 
 namespace BotTrade.Infra;
-public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
+public class PastCandleRepository : IUpdatableCandleRepository
 {
+    private const string PATH_FORMAT = "/workspace/data/{0}.sqlite3";
     private const string TABLE_NAME = "candles";
-    private Symbol Symbol { get; init; }
-    private ExchangePlace Place { get; init; }
-    private SqliteConnection Connection { get; init; }
-    private ILogger<PastCandleRepository> Logger { get; init; }
-
-    public PastCandleRepository(Setting.Exchange setting, ILogger<PastCandleRepository> logger)
-    {
-        var path = $"/workspace/data/{setting.Place.GetStringValue()}.sqlite3";
-        var builder = new SqliteConnectionStringBuilder
-        {
-            DataSource = Path.GetFullPath(path),
-        };
-        Symbol = setting.Symbol;
-        Place = setting.Place;
-        Logger = logger;
-        Connection = new SqliteConnection(builder.ConnectionString);
-        Connection.Open();
-
-        var sql = $"""
+    private const string CREATE_TABLE_SQL = $"""
             create table if not exists {TABLE_NAME} (
                 symbol TEXT NOT NULL,
                 timestamp BIGINT NOT NULL,
@@ -42,15 +25,30 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
                 PRIMARY KEY(symbol,timestamp)
             )
         """;
-        using var command = new SqliteCommand(sql, Connection);
-        command.ExecuteReader();
+    private Symbol Symbol { get; init; }
+    private ExchangePlace Place { get; init; }
+    private ILogger<PastCandleRepository> Logger { get; init; }
+    private string DatabasPath { get { return string.Format(PATH_FORMAT, Place.GetStringValue()); } }
+
+    public PastCandleRepository(Setting.Exchange setting, ILogger<PastCandleRepository> logger)
+    {
+        Symbol = setting.Symbol;
+        Place = setting.Place;
+        Logger = logger;
     }
 
-    public void Dispose()
+    private SqliteConnection MakeConnection(SqliteOpenMode mode)
     {
-        Connection.Close();
-        Connection.Dispose();
-        GC.SuppressFinalize(this);
+        var builder = new SqliteConnectionStringBuilder
+        {
+            DataSource = Path.GetFullPath(DatabasPath),
+            Mode = mode,
+        };
+        var connection = new SqliteConnection(builder.ConnectionString);
+        connection.Open();
+        using var command = new SqliteCommand(CREATE_TABLE_SQL, connection);
+        command.ExecuteReader();
+        return connection;
     }
 
     public async Task Fetch(CancellationToken token = default)
@@ -64,10 +62,11 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
         // TODO: Configに切り出す
         // MEMO: 前回更新時の最新時間。存在しない場合はとりあえず2018/1/1
         var lastTime = new DateTimeOffset(new DateTime(2018, 1, 1)).ToUnixTimeSeconds();
+        using var connection = MakeConnection(SqliteOpenMode.ReadWrite);
 
         try
         {
-            using var command = new SqliteCommand(fetchLastTimestampSQL, Connection);
+            using var command = new SqliteCommand(fetchLastTimestampSQL, connection);
             using var reader = await command.ExecuteReaderAsync(token);
             if (reader.Read())
             {
@@ -118,8 +117,8 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
                     ) values {string.Join(", ", values)}
                 """;
 
-                using var transaction = Connection.BeginTransaction();
-                using var command = new SqliteCommand(insertOhlcvSQL, Connection, transaction);
+                using var transaction = connection.BeginTransaction();
+                using var command = new SqliteCommand(insertOhlcvSQL, connection, transaction);
                 try
                 {
                     command.ExecuteNonQuery();
@@ -128,6 +127,7 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
                 catch
                 {
                     transaction.Rollback();
+                    connection.Close();
                     Logger.LogError("データ更新に失敗");
                     throw;
                 }
@@ -136,14 +136,17 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
                 await Task.Delay(TimeSpan.FromMilliseconds(exchange.rateLimit), token);
             }
             Logger.LogInformation("データベース更新完了");
+            connection.Close();
             return;
         }
 
         Logger.LogWarning("ccxtに対応していない取引所");
+        connection.Close();
     }
 
     public async IAsyncEnumerable<Candle> Pull(DateTimeOffset? startAt = null, DateTimeOffset? endAt = null, [EnumeratorCancellation] CancellationToken token = default)
     {
+
         var sql = $"""
             select * from {TABLE_NAME}
             where symbol='{Symbol.GetStringValue()}'
@@ -152,7 +155,8 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
             order by timestamp asc
         """;
 
-        using var command = new SqliteCommand(sql, Connection);
+        using var connection = MakeConnection(SqliteOpenMode.ReadOnly);
+        using var command = new SqliteCommand(sql, connection);
         using var reader = await command.ExecuteReaderAsync(token);
 
         while (reader.Read() && !token.IsCancellationRequested)
@@ -166,5 +170,6 @@ public class PastCandleRepository : IUpdatableCandleRepository, IDisposable
             var volume = reader.GetDecimal(index++);
             yield return new Candle(Symbol, date, open, high, low, close, volume);
         }
+        connection.Close();
     }
 }
