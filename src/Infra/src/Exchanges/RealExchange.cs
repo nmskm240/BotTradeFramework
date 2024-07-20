@@ -23,7 +23,6 @@ public class RealExchange : IExchange
         Logger = logger;
         Positions = new List<Position>();
         Symbol = setting.Symbol;
-        Console.WriteLine(Exchange.balance.ToString());
         OnPulled = Observable.Timer(TimeSpan.FromMinutes(1), TimeSpan.FromMinutes(1))
             .SelectMany(async _ =>
             {

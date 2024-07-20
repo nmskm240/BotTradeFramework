@@ -1,36 +1,35 @@
 using BotTrade.Domain;
 
 using Microsoft.Data.Sqlite;
-using Microsoft.Extensions.Logging;
 
 using ScottPlot;
 
-using Skender.Stock.Indicators;
-
 namespace BotTrade.Infra;
 
-public class StrategyReporter : IStrategyReporter, IDisposable
+public static class StrategyReporter
 {
     private const string TABLE_NAME = "positions";
-    private SqliteConnection Connection { get; init; }
-    private ILogger<StrategyReporter> Logger { get; init; }
+    private const string OUT_DIR_PATH = "/workspace/out";
+    private const string TRADE_HISTORY_FILE_NAME = "trrade.sqlite3";
 
-
-    public StrategyReporter(Setting.Bot setting, ILogger<StrategyReporter> logger)
+    public static async Task<Plot> Export(string directoryName, StrategyReport report, bool shouldExportTradesToDB = true, CancellationToken cancellation = default)
     {
-        Logger = logger;
-        var path = $"/workspace/out/{setting.ReportDir}";
-        if (Directory.Exists(path))
-        {
-            Directory.Delete(path, true);
-        }
-        Directory.CreateDirectory(path);
+        var path = FindOrCreateReportDirectory(directoryName);
+
+        if (shouldExportTradesToDB)
+            await TryExportTradeDB(path, report.Trades, cancellation);
+
+        return ExportProfitGraph(report.Trades);
+    }
+
+    private static async Task<SqliteConnection> MakeConnection(string path, CancellationToken cancellation)
+    {
         var builder = new SqliteConnectionStringBuilder
         {
-            DataSource = Path.GetFullPath($"{path}/trade.sqlite3"),
+            DataSource = Path.GetFullPath(Path.Combine(path, TRADE_HISTORY_FILE_NAME)),
         };
-        Connection = new SqliteConnection(builder.ConnectionString);
-        Connection.Open();
+        var connection = new SqliteConnection(builder.ConnectionString);
+        await connection.OpenAsync(cancellation);
 
         var sql = $"""
             create table if not exists {TABLE_NAME} (
@@ -45,96 +44,68 @@ public class StrategyReporter : IStrategyReporter, IDisposable
                 PRIMARY KEY(id)
             )
         """;
-        using var command = new SqliteCommand(sql, Connection);
-        command.ExecuteNonQuery();
+        using var command = new SqliteCommand(sql, connection);
+        await command.ExecuteNonQueryAsync(cancellation);
+        return connection;
     }
 
-    public void Log(Position position)
+    private static string FindOrCreateReportDirectory(string directoryName)
     {
-        var values = $"""
-            '{position.Id}',
-            '{position.Symbol.GetStringValue()}',
-            '{position.Type}',
-            '{position.Quantity}',
-            '{position.Entry}',
-            '{new DateTimeOffset(position.EntryAt).ToUnixTimeMilliseconds()}',
-            '{position.Exit}',
-            '{new DateTimeOffset(position.ExitAt).ToUnixTimeMilliseconds()}'
-        """;
-        var sql = $"""
-            insert into {TABLE_NAME} (id, symbol, type, quantity, entry, entry_at, exit, exit_at)
-            values ({values})
-        """;
-        try
+        var path = Path.Combine(OUT_DIR_PATH, directoryName);
+        if (Directory.Exists(path))
         {
-            using var command = new SqliteCommand(sql, Connection);
-            command.ExecuteNonQuery();
+            return Path.GetFullPath(path);
         }
-        catch (Exception e)
-        {
-            Logger.LogError("{message}", e.Message);
-        }
+        var dir = Directory.CreateDirectory(path);
+        return dir.FullName;
     }
 
-    public StrategyReport? Report()
+    private static async Task TryExportTradeDB(string path, IEnumerable<Position> trades, CancellationToken cancellation)
     {
+        using var connection = await MakeConnection(path, cancellation);
+        var values = string.Join(",", trades.Select(trade => $"""
+        (
+            '{trade.Id}',
+            '{trade.Symbol.GetStringValue()}',
+            '{trade.Type}',
+            '{trade.Quantity}',
+            '{trade.Entry}',
+            '{new DateTimeOffset(trade.EntryAt).ToUnixTimeMilliseconds()}',
+            '{trade.Exit}',
+            '{new DateTimeOffset(trade.ExitAt).ToUnixTimeMilliseconds()}'
+        )
+        """));
         var sql = $"""
-            select * from {TABLE_NAME}
+            insert into {TABLE_NAME} (
+                id,
+                symbol,
+                type,
+                quantity,
+                entry,
+                entry_at,
+                exit,
+                exit_at
+            ) values {values}
         """;
-        var trades = new List<Position>();
+        using var command = new SqliteCommand(sql, connection);
+        await command.ExecuteNonQueryAsync(cancellation);
+    }
+
+    private static Plot ExportProfitGraph(IEnumerable<Position> trades)
+    {
         var totalProfit = new Plot();
         var xAxis = new List<DateTime>();
         var yAxis = new List<decimal>();
         var capital = decimal.Zero;
+        foreach (var trade in trades)
+        {
+            xAxis.Add(trade.EntryAt);
+            yAxis.Add(capital);
+            xAxis.Add(trade.ExitAt);
+            yAxis.Add(capital += trade.PnL);
+        }
         totalProfit.Add.Scatter(xAxis, yAxis);
         totalProfit.Axes.DateTimeTicksBottom();
-
-        try
-        {
-            using var command = new SqliteCommand(sql, Connection);
-            using var reader = command.ExecuteReader();
-            while (reader.Read())
-            {
-                var index = 0;
-                var id = reader.GetString(index++);
-                var symbol = reader.GetString(index++);
-                var trade = new Position(
-                    Enum.GetValues<Symbol>().FirstOrDefault(s => s.GetStringValue() == symbol),
-                    (PositionType)reader.GetInt64(index++),
-                    reader.GetFloat(index++),
-                    reader.GetDecimal(index++),
-                    DateTimeOffset.FromUnixTimeMilliseconds(reader.GetInt64(index++)).DateTime,
-                    id,
-                    reader.GetDecimal(index++),
-                    DateTimeOffset.FromUnixTimeMilliseconds(reader.GetInt64(index++)).DateTime
-                );
-                trades.Add(trade);
-                xAxis.Add(trade.EntryAt);
-                yAxis.Add(capital);
-                xAxis.Add(trade.ExitAt);
-                yAxis.Add(capital += trade.PnL);
-            }
-        }
-        catch (Exception e)
-        {
-            Logger.LogError("{message}", e.Message);
-            return null;
-        }
-        return new StrategyReport(trades, totalProfit);
-    }
-
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
-    protected void Dispose(bool disposing)
-    {
-        if (disposing)
-        {
-            Connection.Close();
-            Connection.Dispose();
-        }
+        return totalProfit;
     }
 }

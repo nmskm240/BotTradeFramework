@@ -11,8 +11,7 @@ public class Bot : IDisposable
     public float Lot { get; init; }
     public bool IsStarted { get; private set; } = false;
 
-    public IStrategyReporter? Reporter { get; init; }
-    public IChartMaker? ChartMaker { get; init; }
+    public StrategyReport Report { get; init; }
     protected bool IsTakeableMultiPosition { get; init; }
     protected IExchange Exchange { get; init; }
     protected IEnumerable<Strategy> Strategies { get; init; }
@@ -22,36 +21,16 @@ public class Bot : IDisposable
 
     private IList<IDisposable> Subscriptions { get; init; }
 
-    public Bot(Setting.Bot setting, IExchange exchange, IEnumerable<Strategy> strategies, ILogger<Bot> logger, IStrategyReporter? reporter = null, IChartMaker? chartMaker = null)
+    public Bot(Setting.Bot setting, IExchange exchange, IEnumerable<Strategy> strategies, ILogger<Bot> logger)
     {
         Exchange = exchange;
         Strategies = strategies;
         Logger = logger;
         Lot = setting.Lot;
         IsTakeableMultiPosition = setting.IsTakeableMultiPosition;
-        Reporter = reporter;
-        ChartMaker = chartMaker;
+        Report = new();
 
         Subscriptions = [
-            Exchange.OnPulled
-                .Buffer((int)SmallestTimeframe)
-                .Select(candles => Candle.Aggregate(candles, SmallestTimeframe))
-                .Subscribe(
-                    ChartMaker!.Plot
-                ),
-            Observable.CombineLatest(
-                Strategies.Select(strategy =>
-                    strategy.OnAnalysised
-                )
-            ).Subscribe(
-                datas =>
-                {
-                    foreach (var data in datas)
-                    {
-                        ChartMaker?.Plot(data);
-                    }
-                }
-            ),
             Observable.CombineLatest(
                 Strategies.Select(strategy =>
                     strategy.OnComfirmedNextAction
@@ -96,9 +75,6 @@ public class Bot : IDisposable
 
         if (disposable)
         {
-            ChartMaker?.Dispose();
-            Reporter?.Dispose();
-
             foreach (var strategy in Strategies)
             {
                 strategy.Dispose();
@@ -129,7 +105,6 @@ public class Bot : IDisposable
             if (shouldClosePostion)
             {
                 var pl = await Exchange.ClosePositionAll();
-                Logger.LogInformation("Position close. P/L: {pl}", pl);
                 return;
             }
             else if (!IsTakeableMultiPosition)
@@ -144,9 +119,7 @@ public class Bot : IDisposable
             StrategyActionType.Sell => await Exchange.Sell(Lot),
             _ => throw new NotSupportedException(),
         };
-
-        Logger.LogInformation("Sell order. price: {entryPrice}, quantity: {lot}", newPosition.Entry, Lot);
-        newPosition.OnClosed += (p) => Reporter?.Log(p);
+        newPosition.OnClosed += Report.Log;
     }
 
     private void UnSubscribe()

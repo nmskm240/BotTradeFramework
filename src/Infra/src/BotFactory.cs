@@ -63,8 +63,6 @@ public class BotFactory
         services.AddSingleton<Setting.Bot>(setting);
         if (IsBacktest)
         {
-            services.AddSingleton<IStrategyReporter, StrategyReporter>();
-            services.AddSingleton<IChartMaker, TradeHistoryReporter>();
             services.AddSingleton<IExchange, Backtest>();
             services.AddSingleton<ICandleRepository, PastCandleRepository>();
         }

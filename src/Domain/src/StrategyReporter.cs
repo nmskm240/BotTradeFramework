@@ -4,8 +4,9 @@ namespace BotTrade.Domain;
 
 public class StrategyReport
 {
-    public IEnumerable<Position> Trades { get; init; }
-    public object TotalProfitChart { get; init; }
+    private List<Position> _trades;
+
+    public IEnumerable<Position> Trades => _trades;
     /// <summary>
     /// 損益
     /// </summary>
@@ -18,10 +19,8 @@ public class StrategyReport
     {
         get
         {
-            var winTrades = Trades.Where(trade => trade.IsWin);
-            var total = winTrades.Sum(trade => trade.PnL);
-            var count = winTrades.Count();
-            return total / count;
+            return Trades.Where(trade => trade.IsWin)
+                    .Average(trade => trade.PnL);
         }
     }
 
@@ -32,10 +31,8 @@ public class StrategyReport
     {
         get
         {
-            var loseTrades = Trades.Where(trade => !trade.IsWin);
-            var total = loseTrades.Sum(trade => trade.PnL);
-            var count = loseTrades.Count();
-            return total / count;
+            return Trades.Where(trade => !trade.IsWin)
+                    .Average(trade => trade.PnL);
         }
     }
 
@@ -125,23 +122,17 @@ public class StrategyReport
     {
         get
         {
-            var avgProfit = Trades.Where(trade => trade.IsWin)
-                            .Average(trade => trade.PnL);
-            var avgLoss = Trades.Where(trade => !trade.IsWin)
-                            .Average(trade => trade.PnL);
-            return Math.Abs(avgProfit / avgLoss);
+            return Math.Abs(ProfitAverage / LossAverage);
         }
     }
 
-    public StrategyReport(IEnumerable<Position> trades, object capitalFlowChart)
+    public StrategyReport(IEnumerable<Position>? trades = null)
     {
-        Trades = trades;
-        TotalProfitChart = capitalFlowChart;
+        _trades = trades?.ToList() ?? [];
     }
-}
 
-public interface IStrategyReporter : IDisposable
-{
-    void Log(Position position);
-    StrategyReport? Report();
+    public void Log(Position position)
+    {
+        _trades.Add(position);
+    }
 }
