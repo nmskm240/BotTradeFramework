@@ -1,6 +1,3 @@
-using System.Diagnostics;
-using System.Runtime.InteropServices;
-
 namespace BotTrade.Domain;
 
 public enum PositionStatus
@@ -42,7 +39,7 @@ public class Position
     }
     public bool IsWin
     {
-        get { return PnL > 0; }
+        get { return PnL > decimal.Zero; }
     }
 
     public Position(Symbol symbol, PositionType type, float quantity, decimal entry, DateTime entryAt, string? id = null, decimal? exit = null, DateTime? exitAt = null)
