@@ -1,5 +1,3 @@
-using System.Diagnostics;
-
 using Skender.Stock.Indicators;
 
 namespace BotTrade.Domain.Strategies;
@@ -20,6 +18,9 @@ public class MACross : Strategy
     protected override int NeedDataCountForTrade => 2;
     public override StrategyKind KInd => StrategyKind.MACross;
 
+    protected int ShortMASpan => Parameters.FirstOrDefault(0);
+    protected int LongMASpan => Parameters.LastOrDefault(0);
+
     public MACross(IObservable<Candle> candleStream, Setting.Strategy setting) : base(candleStream, setting)
     {
         if (Parameters.Count() != 2)
@@ -28,27 +29,22 @@ public class MACross : Strategy
             throw new ArgumentException("パラメーターの先頭要素が最後尾の要素の数より小さくなければならない", nameof(setting));
     }
 
-    protected override async Task<AnalysisData> OnAnalysis(IEnumerable<Candle> candles)
+    protected override Task<Dictionary<string, decimal>> OnAnalysis(IEnumerable<Candle> candles)
     {
-        var indicators = new Dictionary<string, AnalysisValue>();
-        var date = candles.MaxBy(candle => candle.Date)?.Date ?? DateTime.UtcNow;
-        foreach (var (label, span) in Enumerable.Zip([ShortMALabel, LongMALabel], [Parameters.FirstOrDefault(0), Parameters.LastOrDefault(0)]))
+        var shortMa = candles.GetSma(ShortMASpan).Last()?.Sma ?? 0;
+        var longMa = candles.GetSma(LongMASpan).Last()?.Sma ?? 0;
+        var values = new Dictionary<string, decimal>()
         {
-            var ma = candles.GetSma(span).LastOrDefault()?.Sma;
-            if (ma != null)
-            {
-                var value = new AnalysisValue((decimal)ma, GraphType.Line);
-                indicators.Add(label, value);
-            }
-        }
-        var data = new AnalysisData(date, candleIndicators: indicators);
-        return await Task.FromResult(data);
+            { ShortMALabel, (decimal)shortMa },
+            { LongMALabel, (decimal)longMa },
+        };
+        return Task.FromResult(values);
     }
 
     public override StrategyActionType OnNextAction(IEnumerable<AnalysisData> datas)
     {
-        var shortMa = datas.Select(analysis => analysis.ChartPlotValues[ShortMALabel].Value);
-        var longMa = datas.Select(analysis => analysis.ChartPlotValues[LongMALabel].Value);
+        var shortMa = datas.Select(analysis => analysis.Values[ShortMALabel]);
+        var longMa = datas.Select(analysis => analysis.Values[LongMALabel]);
 
         if (StrategyUtilty.IsGoldenCross(shortMa, longMa))
             return StrategyActionType.Buy;

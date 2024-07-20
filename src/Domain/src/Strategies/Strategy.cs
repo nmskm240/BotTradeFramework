@@ -40,7 +40,7 @@ public abstract class Strategy : IDisposable
         ];
     }
 
-    protected abstract Task<AnalysisData> OnAnalysis(IEnumerable<Candle> candles);
+    protected abstract Task<Dictionary<string, decimal>> OnAnalysis(IEnumerable<Candle> candles);
     public abstract StrategyActionType OnNextAction(IEnumerable<AnalysisData> datas);
 
     private async Task Analysis(IEnumerable<Candle> candles)
@@ -51,8 +51,10 @@ public abstract class Strategy : IDisposable
         }
         else
         {
+            var date = candles.MaxBy(candle => candle.Date)?.Date ?? DateTime.UtcNow;
             var data = await OnAnalysis(candles);
-            AnalysisSubject.OnNext(data);
+            var analysis = new AnalysisData(date, data);
+            AnalysisSubject.OnNext(analysis);
         }
     }
 
