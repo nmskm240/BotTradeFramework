@@ -159,7 +159,7 @@ public class PastCandleRepository : IUpdatableCandleRepository
         using var command = new SqliteCommand(sql, connection);
         using var reader = await command.ExecuteReaderAsync(token);
 
-        while (reader.Read() && !token.IsCancellationRequested)
+        while (await reader.ReadAsync(token))
         {
             var index = 1;
             var date = DateTime.UnixEpoch.AddMilliseconds(reader.GetDouble(index++));

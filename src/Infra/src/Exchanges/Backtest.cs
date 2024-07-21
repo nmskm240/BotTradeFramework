@@ -47,39 +47,39 @@ public class Backtest : IExchange
         }).Publish();
     }
 
-    public async Task<Position> Buy(float quantity)
+    public Task<Position> Buy(float quantity)
     {
         var position = new Position(Symbol, PositionType.Long, quantity, _currentCandle!.Close, _currentCandle!.Date);
         Positions.Add(position);
-        return await Task.FromResult(position);
+        return Task.FromResult(position);
     }
 
-    public async Task<decimal> ClosePosition(Position position)
+    public Task<decimal> ClosePosition(Position position)
     {
         if (position?.Status == PositionStatus.Open)
         {
             position.Close(_currentCandle!.Close, _currentCandle!.Date);
             Positions.Remove(position);
-            return await Task.FromResult(position.PnL);
+            return Task.FromResult(position.PnL);
         }
-        return await Task.FromResult(0);
+        return Task.FromResult(decimal.Zero);
     }
 
-    public async Task<decimal> ClosePositionAll()
+    public Task<decimal> ClosePositionAll()
     {
         decimal profit = 0;
         foreach (var position in Positions.ToList())
         {
-            profit += await ClosePosition(position);
+            profit += ClosePosition(position).Result;
         }
-        return profit;
+        return Task.FromResult(profit);
     }
 
 
-    public async Task<Position> Sell(float quantity)
+    public Task<Position> Sell(float quantity)
     {
         var position = new Position(Symbol, PositionType.Short, quantity, _currentCandle!.Close, _currentCandle!.Date);
         Positions.Add(position);
-        return await Task.FromResult(position);
+        return Task.FromResult(position);
     }
 }
