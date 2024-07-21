@@ -1,0 +1,12 @@
+@startuml
+class ExchangeSetting <<record>> {
+}
+class DateTimeRange <<record>> {
+}
+ExchangeSetting --> "Place" ExchangePlace
+ExchangeSetting --> "Symbol" Symbol
+ExchangeSetting --> "Range" DateTimeRange
+ExchangeSetting +-- DateTimeRange
+DateTimeRange --> "StartAt" DateTimeOffset
+DateTimeRange --> "EndAt" DateTimeOffset
+@enduml

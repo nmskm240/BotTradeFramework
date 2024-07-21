@@ -1,0 +1,9 @@
+@startuml
+class StrategySetting <<record>> {
+}
+class "IEnumerable`1"<T> {
+}
+StrategySetting --> "Kind" StrategyKind
+StrategySetting --> "Timeframe" Timeframe
+StrategySetting --> "Parameters<int>" "IEnumerable`1"
+@enduml

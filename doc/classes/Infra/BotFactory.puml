@@ -1,0 +1,8 @@
+@startuml
+class BotFactory {
+    + IsBacktest : bool <<get>> = false
+    + BotFactory(settings:IEnumerable<ApiSetting>)
+    + BotFactory()
+    + Create(setting:BotSetting) : Bot
+}
+@enduml

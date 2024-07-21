@@ -1,0 +1,19 @@
+@startuml
+abstract class Strategy {
+    + Strategy(candleStream:IObservable<Candle>, setting:StrategySetting)
+    + {abstract} OnNextAction(datas:IEnumerable<AnalysisData>) : StrategyActionType
+    + {static} FromSetting(setting:StrategySetting, stream:IObservable<Candle>) : Strategy
+    + <<override>> ToString() : string
+    + Dispose() : void
+}
+class "IEnumerable`1"<T> {
+}
+class "IObservable`1"<T> {
+}
+IDisposable <|-- Strategy
+Strategy --> "KInd" StrategyKind
+Strategy --> "Timeframe" Timeframe
+Strategy --> "Parameters<int>" "IEnumerable`1"
+Strategy --> "OnAnalysised<AnalysisData>" "IObservable`1"
+Strategy --> "OnComfirmedNextAction<StrategyActionType>" "IObservable`1"
+@enduml

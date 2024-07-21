@@ -1,0 +1,8 @@
+@startuml
+class MACross {
+    + MACross(candleStream:IObservable<Candle>, setting:StrategySetting)
+    + <<override>> OnNextAction(datas:IEnumerable<AnalysisData>) : StrategyActionType
+}
+Strategy <|-- MACross
+MACross --> "KInd" StrategyKind
+@enduml

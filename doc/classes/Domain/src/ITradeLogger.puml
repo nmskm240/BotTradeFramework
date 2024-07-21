@@ -1,8 +1,0 @@
-@startuml
-class CapitalFlow <<record>> {
-    + Capital : double <<get>> <<set>>
-}
-interface ITradeLogger {
-}
-CapitalFlow --> "DateTime" DateTime
-@enduml

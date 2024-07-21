@@ -1,7 +1,8 @@
 using System.Reactive.Linq;
 
 using BotTrade.Domain;
-using BotTrade.Infra;
+using BotTrade.Domain.Settings;
+using BotTrade.Infra.Repositories;
 
 using Microsoft.Extensions.Logging;
 
@@ -17,7 +18,7 @@ public class CnadleRepositoryTest
     {
         using var cancellation = new CancellationTokenSource();
         var logger = new LoggerFactory().CreateLogger<PastCandleRepository>();
-        var setting = new Setting.Exchange() { Place = place, Symbol = symbol };
+        var setting = new ExchangeSetting() { Place = place, Symbol = symbol };
         var repository = new PastCandleRepository(setting, logger);
         var candles = new List<Candle>();
 
