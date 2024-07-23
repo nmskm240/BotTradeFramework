@@ -1,7 +1,6 @@
 using System.Reactive.Linq;
 
 using BotTrade.Domain.Settings;
-using BotTrade.Domain.Strategies;
 
 using Microsoft.Extensions.Logging;
 
@@ -10,9 +9,8 @@ namespace BotTrade.Domain;
 public class Bot : IDisposable
 {
     public float Lot { get; init; }
-    public bool IsStarted { get; private set; } = false;
-
-    public StrategyReport Report { get; init; }
+    public bool IsRunning { get; private set; } = false;
+    protected ITradeHistoryRepository TradeHistory { get; init; }
     protected bool IsTakeableMultiPosition { get; init; }
     protected IExchange Exchange { get; init; }
     protected IEnumerable<Strategy> Strategies { get; init; }
@@ -22,14 +20,14 @@ public class Bot : IDisposable
 
     private IList<IDisposable> Subscriptions { get; init; }
 
-    public Bot(BotSetting setting, IExchange exchange, IEnumerable<Strategy> strategies, ILogger<Bot> logger)
+    public Bot(BotSetting setting, IExchange exchange, IEnumerable<Strategy> strategies, ITradeHistoryRepository tradeHistory, ILogger<Bot> logger)
     {
         Exchange = exchange;
         Strategies = strategies;
         Logger = logger;
         Lot = setting.Lot;
         IsTakeableMultiPosition = setting.IsTakeableMultiPosition;
-        Report = new();
+        TradeHistory = tradeHistory;
 
         Subscriptions = [
             Observable.CombineLatest(
@@ -43,24 +41,37 @@ public class Bot : IDisposable
         ];
     }
 
-    public void Start()
+    public async Task Start()
     {
-        if (IsStarted) return;
+        if (IsRunning)
+            return;
         Logger.LogInformation("Bot start at [{strategies}] in {exchange}_{symbol}_{timeframe}",
             string.Join(", ", Strategies.Select(strategy => strategy.ToString())),
             Exchange.Place,
             Exchange.Symbol.GetStringValue(),
             SmallestTimeframe.GetStringValue()
         );
-        IsStarted = true;
-        Exchange.OnPulled.Connect();
+        IsRunning = true;
+        await Task.Run(async () =>
+        {
+            Exchange.OnPulled.Connect();
+
+            while (IsRunning)
+                await Task.Delay(100);
+        });
     }
 
     public async Task Stop()
     {
-        await Exchange.ClosePositionAll();
-        IsStarted = false;
         UnSubscribe();
+        await Exchange.ClosePositionAll();
+        IsRunning = false;
+    }
+
+    public async Task<StrategyReport> Report()
+    {
+        var trades = await TradeHistory.GetAll();
+        return new StrategyReport(trades);
     }
 
     public void Dispose()
@@ -71,11 +82,9 @@ public class Bot : IDisposable
 
     protected void Dispose(bool disposable)
     {
-        if (IsStarted)
-            UnSubscribe();
-
         if (disposable)
         {
+            UnSubscribe();
             foreach (var strategy in Strategies)
             {
                 strategy.Dispose();
@@ -120,7 +129,7 @@ public class Bot : IDisposable
             StrategyActionType.Sell => await Exchange.Sell(Lot),
             _ => throw new NotSupportedException(),
         };
-        newPosition.OnClosed += Report.Log;
+        newPosition.OnClosed += async (t) => await TradeHistory.AddHistory(t);
     }
 
     private void UnSubscribe()

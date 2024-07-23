@@ -1,12 +1,8 @@
-using BotTrade.Domain.Strategies;
-
 namespace BotTrade.Domain;
 
 public class StrategyReport
 {
-    private List<Position> _trades;
-
-    public IEnumerable<Position> Trades => _trades;
+    public IEnumerable<Position> Trades { get; init; }
     /// <summary>
     /// 損益
     /// </summary>
@@ -130,13 +126,8 @@ public class StrategyReport
         }
     }
 
-    public StrategyReport(IEnumerable<Position>? trades = null)
+    public StrategyReport(IEnumerable<Position> trades)
     {
-        _trades = trades?.ToList() ?? [];
-    }
-
-    public void Log(Position position)
-    {
-        _trades.Add(position);
+        Trades = trades;
     }
 }
