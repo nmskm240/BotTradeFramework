@@ -11,7 +11,7 @@ namespace BotTrade.Domain.Strategies;
 /// 単一ポジションの取引にのみ対応しているため、稼働後最初にしかポジションをとらない仕様
 /// （最初にロングすると停止するまでショートはしない）
 /// </remarks>
-public class MACross : Strategy
+internal class MACross : Strategy
 {
     private const string ShortMALabel = "ShortMA";
     private const string LongMALabel = "LongMA";

@@ -2,7 +2,7 @@ using Skender.Stock.Indicators;
 
 namespace BotTrade.Domain.Strategies;
 
-public static class StrategyUtilty
+internal static class StrategyUtilty
 {
     /// <summary>
     /// ゴールデンクロスしているかを確認する
