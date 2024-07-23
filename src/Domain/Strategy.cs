@@ -14,7 +14,7 @@ public abstract class Strategy : IDisposable
     protected abstract int NeedDataCountForTrade { get; }
     public abstract StrategyKind KInd { get; }
     public Timeframe Timeframe { get; init; }
-    public IEnumerable<int> Parameters { get; init; }
+    public IEnumerable<decimal> Parameters { get; init; }
     public IObservable<AnalysisData> OnAnalysised => AnalysisSubject;
     public IObservable<StrategyActionType> OnComfirmedNextAction => NextActionSubject;
 

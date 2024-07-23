@@ -21,12 +21,10 @@ public class BacktestBotFactory : IBotFactory
 
         services.AddLogging(logger => logger.AddConsole());
         services.AddSingleton<Bot>();
-        services.AddSingleton<IEnumerable<Strategy>>(provider =>
+        services.AddSingleton<Strategy>(provider =>
         {
             var exchange = provider.GetRequiredService<IExchange>();
-            return setting.Strategies
-                .Select(setting => Strategy.FromSetting(setting, exchange.OnPulled))
-                .ToList();
+            return Strategy.FromSetting(setting.Strategy, exchange.OnPulled);
         });
         services.AddSingleton<ExchangeSetting>(setting.Exchange);
         services.AddSingleton<BotSetting>(setting);

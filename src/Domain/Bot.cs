@@ -13,31 +13,26 @@ public class Bot : IDisposable
     protected ITradeHistoryRepository TradeHistory { get; init; }
     protected bool IsTakeableMultiPosition { get; init; }
     protected IExchange Exchange { get; init; }
-    protected IEnumerable<Strategy> Strategies { get; init; }
+    protected Strategy Strategy { get; init; }
     protected ILogger<Bot> Logger { get; init; }
-    protected Timeframe SmallestTimeframe => Strategies.MaxBy(strategy =>
-            (int)strategy.Timeframe)?.Timeframe ?? Timeframe.OneMinute;
 
     private IList<IDisposable> Subscriptions { get; init; }
 
-    public Bot(BotSetting setting, IExchange exchange, IEnumerable<Strategy> strategies, ITradeHistoryRepository tradeHistory, ILogger<Bot> logger)
+    public Bot(BotSetting setting, IExchange exchange, Strategy strategy, ITradeHistoryRepository tradeHistory, ILogger<Bot> logger)
     {
         Exchange = exchange;
-        Strategies = strategies;
+        Strategy = strategy;
         Logger = logger;
         Lot = setting.Lot;
         IsTakeableMultiPosition = setting.IsTakeableMultiPosition;
         TradeHistory = tradeHistory;
 
         Subscriptions = [
-            Observable.CombineLatest(
-                Strategies.Select(strategy =>
-                    strategy.OnComfirmedNextAction
-                )
-            ).Subscribe(
-                async datas => await Trade(datas),
-                async () => await Stop()
-            ),
+            Strategy.OnComfirmedNextAction
+                .Subscribe(
+                    async action => await Trade(action),
+                    async () => await Stop()
+                ),
         ];
     }
 
@@ -46,10 +41,10 @@ public class Bot : IDisposable
         if (IsRunning)
             return;
         Logger.LogInformation("Bot start at [{strategies}] in {exchange}_{symbol}_{timeframe}",
-            string.Join(", ", Strategies.Select(strategy => strategy.ToString())),
+            string.Join(", ", Strategy.ToString()),
             Exchange.Place,
             Exchange.Symbol.GetStringValue(),
-            SmallestTimeframe.GetStringValue()
+            Strategy.Timeframe.GetStringValue()
         );
         IsRunning = true;
         await Task.Run(async () =>
@@ -85,10 +80,7 @@ public class Bot : IDisposable
         if (disposable)
         {
             UnSubscribe();
-            foreach (var strategy in Strategies)
-            {
-                strategy.Dispose();
-            }
+            Strategy.Dispose();
         }
     }
 
@@ -98,14 +90,13 @@ public class Bot : IDisposable
     /// <remarks>
     /// 分析結果で1つでも<c>StrategyActionType.Neutral</c>があれば売買は行わない。
     /// </remarks>
-    /// <param name="actions"></param>
+    /// <param name="action"></param>
     /// <returns></returns>
-    private async Task Trade(IEnumerable<StrategyActionType> actions)
+    private async Task Trade(StrategyActionType action)
     {
-        if (actions.Any(action => action == StrategyActionType.Neutral))
+        if (action == StrategyActionType.Neutral)
             return;
 
-        var action = actions.First();
         var currentPosition = Exchange.Positions.FirstOrDefault();
 
         if (currentPosition != null)

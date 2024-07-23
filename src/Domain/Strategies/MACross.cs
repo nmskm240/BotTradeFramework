@@ -16,12 +16,12 @@ public class MACross : Strategy
     private const string ShortMALabel = "ShortMA";
     private const string LongMALabel = "LongMA";
 
-    protected override int NeedDataCountForAnalysis => Parameters.LastOrDefault(int.MaxValue);
+    protected override int NeedDataCountForAnalysis => (int)Parameters.LastOrDefault(decimal.MaxValue);
     protected override int NeedDataCountForTrade => 2;
     public override StrategyKind KInd => StrategyKind.MACross;
 
-    protected int ShortMASpan => Parameters.FirstOrDefault(0);
-    protected int LongMASpan => Parameters.LastOrDefault(0);
+    protected int ShortMASpan => (int)Parameters.FirstOrDefault(0);
+    protected int LongMASpan => (int)Parameters.LastOrDefault(0);
 
     public MACross(IObservable<Candle> candleStream, StrategySetting setting) : base(candleStream, setting)
     {
