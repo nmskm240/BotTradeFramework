@@ -18,6 +18,7 @@ public class Backtest : IExchange
     private ICandleRepository Repository { get; init; }
     public List<Position> Positions { get; init; }
     public ExchangePlace Place { get; init; }
+    // FIXME: OHLCVストリートであることがわかりやすい名前にしたい
     public IConnectableObservable<Candle> OnPulled { get; init; }
     public Symbol Symbol { get; init; }
 
@@ -30,6 +31,7 @@ public class Backtest : IExchange
         Positions = new List<Position>();
         OnPulled = Observable.Create<Candle>(async observer =>
         {
+            // FIXME: 途中キャンセルができてなさそう？
             using var cancellation = new CancellationTokenSource();
             try
             {

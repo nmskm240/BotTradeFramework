@@ -1,6 +1,6 @@
 namespace BotTrade.Domain;
 
-public class StrategyReport
+public record StrategyReport
 {
     public IEnumerable<Position> Trades { get; init; }
     /// <summary>
@@ -128,6 +128,6 @@ public class StrategyReport
 
     public StrategyReport(IEnumerable<Position> trades)
     {
-        Trades = trades;
+        Trades = trades.ToList();
     }
 }

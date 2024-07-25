@@ -455,3 +455,6 @@ $RECYCLE.BIN/
 !.vscode/extensions.json
 
 *.sqlite3
+
+out/*
+!out/.gitkeep
