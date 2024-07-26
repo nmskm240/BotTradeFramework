@@ -10,8 +10,17 @@ RUN apt-get update \
         graphviz \
         # vscode tunnel用
         curl \
+        # jupyter
+        pandoc \
+        texlive-xetex \
+        texlive-fonts-recommended \
+        texlive-plain-generic \
+        python3 \
+        python3-pip \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+RUN pip3 install --break-system-packages nbconvert
 
 RUN cd /tmp \
     && curl -Lk 'https://code.visualstudio.com/sha/download?build=stable&os=cli-alpine-x64' --output vscode_cli.tar.gz \

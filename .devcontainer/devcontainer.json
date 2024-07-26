@@ -30,7 +30,8 @@
 				"EditorConfig.EditorConfig",
 				"VisualStudioExptTeam.vscodeintellicode",
 				"alexcvzz.vscode-sqlite",
-				"jebbs.plantuml"
+				"jebbs.plantuml",
+				"ms-python.python"
 			]
 		}
 	}
