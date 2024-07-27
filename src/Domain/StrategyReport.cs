@@ -1,8 +1,62 @@
+using ScottPlot;
+
 namespace BotTrade.Domain;
 
 public record StrategyReport
 {
     public IEnumerable<Position> Trades { get; init; }
+
+    /// <summary>
+    /// 損益図
+    /// </summary>
+    /// <value></value>
+    public Plot PnLChart
+    {
+        get
+        {
+            var chart = new Plot();
+            var xAxis = new List<DateTime>();
+            var yAxis = new List<decimal>();
+            var capital = decimal.Zero;
+            foreach (var trade in Trades)
+            {
+                xAxis.Add(trade.EntryAt);
+                yAxis.Add(capital);
+                xAxis.Add(trade.ExitAt);
+                yAxis.Add(capital += trade.PnL);
+            }
+            var scatter = chart.Add.Scatter(xAxis, yAxis);
+            chart.Axes.DateTimeTicksBottom();
+            scatter.FillY = true;
+            scatter.FillYValue = 0;
+            scatter.FillYAboveColor = Colors.Green.WithAlpha(0.2f);
+            scatter.FillYBelowColor = Colors.Red.WithAlpha(0.2f);
+            return chart;
+        }
+    }
+
+    /// <summary>
+    /// 損益散布図
+    /// </summary>
+    /// <value></value>
+    public Plot PnLValueChart
+    {
+        get
+        {
+            var chart = new Plot();
+            var xAxis = new List<DateTime>();
+            var yAxis = new List<decimal>();
+            foreach (var trade in Trades)
+            {
+                xAxis.Add(trade.ExitAt);
+                yAxis.Add(trade.PnL);
+            }
+            chart.Add.ScatterPoints(xAxis, yAxis);
+            chart.Axes.DateTimeTicksBottom();
+            return chart;
+        }
+    }
+
     /// <summary>
     /// 損益
     /// </summary>

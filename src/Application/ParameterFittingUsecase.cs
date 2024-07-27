@@ -120,7 +120,19 @@ public class ParameterFittingUsecase
         var settings = ConvertToSettingFromRequest(request);
         var duringAtParameterEvaluationReports = await SortByBotPerformance(settings, request.WalkForwardTestableSize);
         var walkForwardTestSettings = duringAtParameterEvaluationReports.SelectMany(pair =>
-            pair.Value.Tops.Select(value => value.Setting));
+            pair.Value.Tops.Select(value =>
+                value.Setting with
+                {
+                    Exchange = value.Setting.Exchange with
+                    {
+                        Range = value.Setting.Exchange.Range! with
+                        {
+                            StartAt = value.Setting.Exchange.Range?.EndAt ?? DateTimeOffset.MinValue,
+                            EndAt = DateTimeOffset.MaxValue,
+                        }
+                    }
+                }
+            ));
         var afterWalkForwardTest = await SortByBotPerformance(walkForwardTestSettings, request.OptimalParameterSetSize);
 
         return new ParameterFittingResponse(
