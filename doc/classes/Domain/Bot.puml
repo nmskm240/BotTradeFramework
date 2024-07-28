@@ -1,0 +1,12 @@
+@startuml
+class Bot {
+    + Lot : float <<get>> <<init>>
+    + IsStarted : bool <<get>> = false
+    + Bot(setting:BotSetting, exchange:IExchange, strategies:IEnumerable<Strategy>, logger:ILogger<Bot>)
+    + Start() : void
+    + <<async>> Stop() : Task
+    + Dispose() : void
+}
+IDisposable <|-- Bot
+Bot --> "Report" StrategyReport
+@enduml

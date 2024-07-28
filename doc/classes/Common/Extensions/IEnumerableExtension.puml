@@ -1,0 +1,9 @@
+@startuml
+class IEnumerableExtentsion <<static>> {
+    + {static} Combination(source:IEnumerable<Source>, args:IEnumerable<Arg>, converter:Func<Source, Arg, Result>) : IEnumerable<Result>
+    + {static} Combination(source:IEnumerable<Source>, args1:IEnumerable<Arg1>, args2:IEnumerable<Arg2>, converter:Func<Source, Arg1, Arg2, Result>) : IEnumerable<Result>
+    + {static} Combination(source:IEnumerable<Source>, args1:IEnumerable<Arg1>, args2:IEnumerable<Arg2>, args3:IEnumerable<Arg3>, converter:Func<Source, Arg1, Arg2, Arg3, Result>) : IEnumerable<Result>
+    + {static} Combination(source:IEnumerable<Source>, args1:IEnumerable<Arg1>, args2:IEnumerable<Arg2>, args3:IEnumerable<Arg3>, args4:IEnumerable<Arg4>, converter:Func<Source, Arg1, Arg2, Arg3, Arg4, Result>) : IEnumerable<Result>
+    + {static} Combination(source:IEnumerable<Source>, args1:IEnumerable<Arg1>, args2:IEnumerable<Arg2>, args3:IEnumerable<Arg3>, args4:IEnumerable<Arg4>, args5:IEnumerable<Arg5>, converter:Func<Source, Arg1, Arg2, Arg3, Arg4, Arg5, Result>) : IEnumerable<Result>
+}
+@enduml

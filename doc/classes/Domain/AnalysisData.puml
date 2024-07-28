@@ -1,0 +1,9 @@
+@startuml
+class AnalysisData <<record>> {
+    + AnalysisData(date:DateTime, values:Dictionary<string, decimal>)
+}
+class "Dictionary`2"<T1,T2> {
+}
+AnalysisData --> "Values<string,decimal>" "Dictionary`2"
+AnalysisData --> "Date" DateTime
+@enduml

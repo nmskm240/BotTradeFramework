@@ -1,7 +1,0 @@
-@startuml
-enum GraphType {
-    Line,
-    Candlestick,
-    Bar,
-}
-@enduml

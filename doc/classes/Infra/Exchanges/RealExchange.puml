@@ -1,0 +1,18 @@
+@startuml
+class RealExchange {
+    + RealExchange(exchange:ccxt.Exchange, setting:ExchangeSetting, logger:ILogger<IExchange>)
+    + <<async>> Buy(quantity:float) : Task<Position>
+    + <<async>> Sell(quantity:float) : Task<Position>
+    + <<async>> ClosePosition(position:Position) : Task<decimal>
+    + <<async>> ClosePositionAll() : Task<decimal>
+}
+class "List`1"<T> {
+}
+class "IConnectableObservable`1"<T> {
+}
+IExchange <|-- RealExchange
+RealExchange --> "Place" ExchangePlace
+RealExchange --> "Positions<Position>" "List`1"
+RealExchange --> "Symbol" Symbol
+RealExchange --> "OnPulled<Candle>" "IConnectableObservable`1"
+@enduml
