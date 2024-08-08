@@ -23,10 +23,9 @@ public class ParameterFittingUsecase
 {
     private BotSetting TemplateSetting { get; init; }
     private RunAndReportUsecase BacktestUsecase { get; init; }
+    private int ProcessorsCount { get; init; }
 
-    private const int ProcessorsCount = 4;
-
-    public ParameterFittingUsecase(IBotFactory factory, ExchangePlace place, Symbol symbol, StrategyKind strategyKind, DateTimeOffset? parameterRatingAt = null)
+    public ParameterFittingUsecase(IBotFactory factory, ExchangePlace place, Symbol symbol, StrategyKind strategyKind, DateTimeOffset? parameterRatingAt = null, int processorsCount = 4)
     {
         var now = DateTimeOffset.UtcNow;
         var defaultRatingAt = now.AddYears(-1);
@@ -50,6 +49,7 @@ public class ParameterFittingUsecase
             }
         };
         BacktestUsecase = new RunAndReportUsecase(factory);
+        ProcessorsCount = processorsCount;
     }
 
     private BotSetting CreateSettingFromTemplate(Timeframe timeframe, params decimal[] parameters)
