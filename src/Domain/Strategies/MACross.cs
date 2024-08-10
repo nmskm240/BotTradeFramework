@@ -43,7 +43,7 @@ internal class MACross : Strategy
         return Task.FromResult(values);
     }
 
-    public override StrategyActionType OnNextAction(IEnumerable<AnalysisData> datas)
+    protected override StrategyActionType OnNextAction(IEnumerable<AnalysisData> datas)
     {
         var shortMa = datas.Select(analysis => analysis.Values[ShortMALabel]);
         var longMa = datas.Select(analysis => analysis.Values[LongMALabel]);
