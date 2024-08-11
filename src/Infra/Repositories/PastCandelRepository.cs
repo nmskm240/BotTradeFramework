@@ -88,12 +88,24 @@ public class PastCandleRepository : IUpdatableCandleRepository
             var limit = 1000;
             // 確定足情報を取得するため１分前の情報から取得していく
             var latest = DateTimeOffset.UtcNow.Subtract(TimeSpan.FromMinutes(1));
+            var rateLimit = exchange.enableRateLimit ?
+                                exchange.rateLimit :
+                                TimeSpan.FromMilliseconds(2500).TotalMilliseconds;
             IEnumerable<OHLCV> ohlcvs;
+
             while (true)
             {
                 var since = latest.Subtract(TimeSpan.FromMinutes(limit - 1)).ToUnixTimeMilliseconds();
-                ohlcvs = await exchange.FetchOHLCV(Symbol.GetStringValue(), since2: since, limit2: limit);
-                ohlcvs = ohlcvs.Where(e => lastTime < e.timestamp && e.timestamp <= latest.ToUnixTimeMilliseconds());
+                try
+                {
+                    ohlcvs = await exchange.FetchOHLCV(Symbol.GetStringValue(), since2: since, limit2: limit);
+                    ohlcvs = ohlcvs.Where(e => lastTime < e.timestamp && e.timestamp <= latest.ToUnixTimeMilliseconds());
+                }
+                catch (Exception e)
+                {
+                    Logger.LogError(e.Message);
+                    break;
+                }
 
                 if (!ohlcvs.Any() || token.IsCancellationRequested)
                     break;
@@ -137,7 +149,7 @@ public class PastCandleRepository : IUpdatableCandleRepository
                 }
 
                 latest = DateTimeOffset.FromUnixTimeMilliseconds(since);
-                await Task.Delay(TimeSpan.FromMilliseconds(exchange.rateLimit), token);
+                await Task.Delay(TimeSpan.FromMilliseconds(rateLimit), token);
             }
             Logger.LogInformation("データベース更新完了");
             connection.Close();

@@ -20,10 +20,16 @@ public enum ExchangePlace
     [ReflectableEnum("ccxt", "ccxt.Binance", typeof(object))]
     [EnumString("Binance")]
     BinanceTestnet,
-    [ReflectableEnum("ccxt", "ccxt.Bitmex", typeof(object))]
-    [EnumString("Bitmex")]
-    Bitmex,
     [ReflectableEnum("ccxt", "ccxt.Bitfinex", typeof(object))]
     [EnumString("Bitfinex")]
     Bitfinex,
+    [ReflectableEnum("ccxt", "ccxt.Bitfinex2", typeof(object))]
+    [EnumString("Bitfinex2")]
+    Bitfinex2,
+    [ReflectableEnum("ccxt", "ccxt.Bitmex", typeof(object))]
+    [EnumString("Bitmex")]
+    Bitmex,
+    [ReflectableEnum("ccxt", "ccxt.Bitbank", typeof(object))]
+    [EnumString("Bitbank")]
+    Bitbank,
 }
