@@ -1,5 +1,7 @@
+using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
 
 using BotTrade.Domain;
 using BotTrade.Domain.Settings;
@@ -12,7 +14,8 @@ using Microsoft.Extensions.Logging;
 namespace BotTrade.Infra.Repositories;
 public class PastCandleRepository : IUpdatableCandleRepository
 {
-    private const string PATH_FORMAT = "/workspace/data/{0}.sqlite3";
+    private const string DATA_DIR = "/workspace/data/";
+    private const string PATH_FORMAT = "{0}.sqlite3";
     private const string TABLE_NAME = "candles";
     private const string CREATE_TABLE_SQL = $"""
             create table if not exists {TABLE_NAME} (
@@ -29,7 +32,7 @@ public class PastCandleRepository : IUpdatableCandleRepository
     private Symbol Symbol { get; init; }
     private ExchangePlace Place { get; init; }
     private ILogger<PastCandleRepository> Logger { get; init; }
-    private string DatabasPath { get { return string.Format(PATH_FORMAT, Place.GetStringValue()); } }
+    private string DatabasPath { get { return Path.Combine(DATA_DIR, string.Format(PATH_FORMAT, Place.GetStringValue())); } }
 
     public PastCandleRepository(ExchangeSetting setting, ILogger<PastCandleRepository> logger)
     {
@@ -143,6 +146,65 @@ public class PastCandleRepository : IUpdatableCandleRepository
 
         Logger.LogWarning("ccxtに対応していない取引所");
         connection.Close();
+    }
+
+    public async Task Backup(int bufferSize = 1000000, CancellationToken token = default)
+    {
+        var outputPath = Path.Combine(DATA_DIR, "backup", $"{Place.GetStringValue()}.backup");
+        var info = new ProcessStartInfo
+        {
+            FileName = "sqlite3",
+            Arguments = $"{Place.GetStringValue()}.sqlite3 \".dump\"",
+            WorkingDirectory = DATA_DIR,
+            CreateNoWindow = true,
+            RedirectStandardError = true,
+            RedirectStandardOutput = true,
+        };
+        var process = new Process
+        {
+            StartInfo = info,
+            EnableRaisingEvents = true
+        };
+        using var writer = new StreamWriter(outputPath);
+        var errorMessageBuilder = new StringBuilder();
+        process.ErrorDataReceived += (_, e) =>
+        {
+            var errorMessage = errorMessageBuilder.ToString();
+            if (e.Data == null && string.IsNullOrEmpty(errorMessage))
+            {
+                Logger.LogError("{message}", errorMessage);
+                errorMessageBuilder.Clear();
+            }
+            else
+                errorMessageBuilder.AppendLine(e.Data);
+        };
+        var sqlBuilder = new StringBuilder();
+        var rows = 0;
+        process.OutputDataReceived += async (_, e) =>
+        {
+            if (e.Data != null)
+            {
+                sqlBuilder.AppendLine(e.Data);
+                rows++;
+                if (bufferSize <= rows)
+                {
+                    rows = 0;
+                    await writer.WriteAsync(sqlBuilder.ToString());
+                    sqlBuilder = sqlBuilder.Clear();
+                }
+            }
+        };
+        Logger.LogInformation("バックアップ作成");
+        process.Start();
+        process.BeginOutputReadLine();
+        process.BeginErrorReadLine();
+
+        await process.WaitForExitAsync(token);
+
+        if (sqlBuilder.Length > 0)
+            await writer.WriteAsync(sqlBuilder.ToString());
+
+        Logger.LogInformation("{message}", $"バックアップ{(process.ExitCode == 0 ? "成功" : "失敗")}");
     }
 
     public async IAsyncEnumerable<Candle> Pull(DateTimeOffset? startAt = null, DateTimeOffset? endAt = null, [EnumeratorCancellation] CancellationToken token = default)

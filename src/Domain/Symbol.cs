@@ -7,10 +7,14 @@ public enum Symbol
     Future_BTCUSDT,
     [EnumString("ETHUSDT")]
     Future_ETHUSDT,
+    [EnumString("SOLUSDT")]
+    Future_SOLUSDT,
     [EnumString("BTC/USDT")]
     Spot_BTCUSDT,
     [EnumString("ETH/USDT")]
     Spot_ETHUSDT,
+    [EnumString("SOL/USDT")]
+    Spot_SOLUSDT,
     [EnumString("ETH/BTC")]
     Spot_ETHBTC,
 }
