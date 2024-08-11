@@ -60,7 +60,15 @@ public record StrategyReport
     /// <summary>
     /// 損益
     /// </summary>
-    public decimal PnL { get { return Trades.Sum(trade => trade.PnL); } }
+    public decimal PnL
+    {
+        get
+        {
+            if (!Trades.Any())
+                return 0;
+            return Trades?.Sum(trade => trade.PnL) ?? 0;
+        }
+    }
 
     /// <summary>
     /// 利益の平均リターン
@@ -69,9 +77,11 @@ public record StrategyReport
     {
         get
         {
-            return Trades.Where(trade => trade.IsWin)
+            if (!Trades.Any())
+                return 0;
+            return Trades?.Where(trade => trade.IsWin)
                     .DefaultIfEmpty(new Position(default, default, default, default, default))
-                    .Average(trade => trade.PnL);
+                    .Average(trade => trade.PnL) ?? 0;
         }
     }
 
@@ -82,9 +92,11 @@ public record StrategyReport
     {
         get
         {
-            return Trades.Where(trade => !trade.IsWin)
+            if (!Trades.Any())
+                return 0;
+            return Trades?.Where(trade => !trade.IsWin)
                     .DefaultIfEmpty(new Position(default, default, default, default, default))
-                    .Average(trade => trade.PnL);
+                    .Average(trade => trade.PnL) ?? 0;
         }
     }
 
@@ -143,6 +155,8 @@ public record StrategyReport
     {
         get
         {
+            if (!Trades.Any())
+                return 0;
             var win = (float)Trades.Count(trade => trade.IsWin);
             return win / Trades.Count() * 100;
         }

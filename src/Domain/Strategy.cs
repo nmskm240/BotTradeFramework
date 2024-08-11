@@ -1,3 +1,4 @@
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
@@ -7,16 +8,18 @@ namespace BotTrade.Domain;
 
 public abstract class Strategy : IDisposable
 {
-    private Subject<AnalysisData> AnalysisSubject { get; init; }
-    private Subject<StrategyActionType> NextActionSubject { get; init; }
-    protected IList<IDisposable> Subscriptions { get; init; }
+    private CompositeDisposable Disposables { get; init; }
     protected abstract int NeedDataCountForAnalysis { get; }
     protected abstract int NeedDataCountForTrade { get; }
     public abstract StrategyKind KInd { get; }
     public Timeframe Timeframe { get; init; }
     public IEnumerable<decimal> Parameters { get; init; }
-    public IObservable<AnalysisData> OnAnalysised => AnalysisSubject;
-    public IObservable<StrategyActionType> OnComfirmedNextAction => NextActionSubject;
+
+    private Subject<AnalysisData> AnalysisSubject { get; init; }
+    protected IObservable<AnalysisData> OnAnalysised => AnalysisSubject;
+    private Subject<StrategyActionType> NextActionSubject { get; init; }
+    protected IObservable<StrategyActionType> OnComfirmedNextAction => NextActionSubject;
+    public IObservable<TradePoint> OnTradePointWithEvidence { get; init; }
 
     public Strategy(IObservable<Candle> candleStream, StrategySetting setting)
     {
@@ -24,8 +27,13 @@ public abstract class Strategy : IDisposable
         Parameters = setting.Parameters;
         AnalysisSubject = new();
         NextActionSubject = new();
+        OnTradePointWithEvidence = OnComfirmedNextAction
+            .Where(action => action != StrategyActionType.Neutral)
+            .WithLatestFrom(OnAnalysised.Buffer(NeedDataCountForTrade),
+                (action, analyses) => new TradePoint(action, analyses)
+            );
 
-        Subscriptions = [
+        Disposables = new(
             candleStream
                 .Buffer((int)Timeframe)
                 .Select(candles => Candle.Aggregate(candles, Timeframe))
@@ -35,15 +43,12 @@ public abstract class Strategy : IDisposable
                 ),
             OnAnalysised
                 .Buffer(NeedDataCountForTrade, 1)
-                .Subscribe(
-                    NextAction,
-                    UnSubscribe
-                )
-        ];
+                .Subscribe(NextAction)
+        );
     }
 
     protected abstract Task<Dictionary<string, decimal>> OnAnalysis(IEnumerable<Candle> candles);
-    public abstract StrategyActionType OnNextAction(IEnumerable<AnalysisData> datas);
+    protected abstract StrategyActionType OnNextAction(IEnumerable<AnalysisData> datas);
 
     private async Task Analysis(IEnumerable<Candle> candles)
     {
@@ -89,15 +94,6 @@ public abstract class Strategy : IDisposable
         return $"{KInd.GetStringValue()}({parameters})";
     }
 
-    private void UnSubscribe()
-    {
-        foreach (var subscription in Subscriptions)
-        {
-            subscription.Dispose();
-        }
-        Subscriptions.Clear();
-    }
-
     public void Dispose()
     {
         Dispose(true);
@@ -111,7 +107,7 @@ public abstract class Strategy : IDisposable
             AnalysisSubject.OnCompleted();
             NextActionSubject.OnCompleted();
 
-            UnSubscribe();
+            Disposables.Dispose();
         }
     }
 }

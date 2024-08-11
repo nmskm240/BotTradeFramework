@@ -1,4 +1,6 @@
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 using BotTrade.Domain.Settings;
 
@@ -15,8 +17,11 @@ public class Bot : IDisposable
     protected IExchange Exchange { get; init; }
     protected Strategy Strategy { get; init; }
     protected ILogger<Bot> Logger { get; init; }
+    private CompositeDisposable Disposables { get; init; }
 
-    private IList<IDisposable> Subscriptions { get; init; }
+    private Subject<Position> TradedSubject { get; init; }
+    private IObservable<Position> OnTraded => TradedSubject;
+    public IObservable<(Position, TradePoint)> OnTradedWithEvidence { get; init; }
 
     public Bot(BotSetting setting, IExchange exchange, Strategy strategy, ITradeHistoryRepository tradeHistory, ILogger<Bot> logger)
     {
@@ -26,14 +31,18 @@ public class Bot : IDisposable
         Lot = setting.Lot;
         IsTakeableMultiPosition = setting.IsTakeableMultiPosition;
         TradeHistory = tradeHistory;
+        TradedSubject = new();
 
-        Subscriptions = [
-            Strategy.OnComfirmedNextAction
+        OnTradedWithEvidence = OnTraded
+            .WithLatestFrom(Strategy.OnTradePointWithEvidence);
+
+        Disposables = new(
+            Strategy.OnTradePointWithEvidence
                 .Subscribe(
-                    async action => await Trade(action),
+                    async tradePoint => await Trade(tradePoint.Action),
                     async () => await Stop()
-                ),
-        ];
+                )
+        );
     }
 
     public async Task Start()
@@ -58,7 +67,7 @@ public class Bot : IDisposable
 
     public async Task Stop()
     {
-        UnSubscribe();
+        Disposables.Clear();
         await Exchange.ClosePositionAll();
         IsRunning = false;
     }
@@ -79,7 +88,7 @@ public class Bot : IDisposable
     {
         if (disposable)
         {
-            UnSubscribe();
+            Disposables.Dispose();
             Strategy.Dispose();
         }
     }
@@ -87,16 +96,10 @@ public class Bot : IDisposable
     /// <summary>
     /// 戦略の分析に基づいて取引所で売買を行う
     /// </summary>
-    /// <remarks>
-    /// 分析結果で1つでも<c>StrategyActionType.Neutral</c>があれば売買は行わない。
-    /// </remarks>
-    /// <param name="action"></param>
+    /// <param name="tradePoint"></param>
     /// <returns></returns>
     private async Task Trade(StrategyActionType action)
     {
-        if (action == StrategyActionType.Neutral)
-            return;
-
         var currentPosition = Exchange.Positions.FirstOrDefault();
 
         if (currentPosition != null)
@@ -121,14 +124,7 @@ public class Bot : IDisposable
             _ => throw new NotSupportedException(),
         };
         newPosition.OnClosed += async (t) => await TradeHistory.AddHistory(t);
-    }
-
-    private void UnSubscribe()
-    {
-        foreach (var subscription in Subscriptions)
-        {
-            subscription.Dispose();
-        }
-        Subscriptions.Clear();
+        newPosition.OnClosed += TradedSubject.OnNext;
+        TradedSubject.OnNext(newPosition);
     }
 }
