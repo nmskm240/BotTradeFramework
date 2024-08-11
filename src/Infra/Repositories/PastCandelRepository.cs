@@ -182,13 +182,10 @@ public class PastCandleRepository : IUpdatableCandleRepository
         process.ErrorDataReceived += (_, e) =>
         {
             var errorMessage = errorMessageBuilder.ToString();
-            if (e.Data == null && string.IsNullOrEmpty(errorMessage))
+            if (e.Data != null)
             {
-                Logger.LogError("{message}", errorMessage);
-                errorMessageBuilder.Clear();
-            }
-            else
                 errorMessageBuilder.AppendLine(e.Data);
+            }
         };
         var sqlBuilder = new StringBuilder();
         var rows = 0;
@@ -202,6 +199,7 @@ public class PastCandleRepository : IUpdatableCandleRepository
                 {
                     rows = 0;
                     await writer.WriteAsync(sqlBuilder.ToString());
+                    await writer.FlushAsync(token);
                     sqlBuilder = sqlBuilder.Clear();
                 }
             }
@@ -214,9 +212,15 @@ public class PastCandleRepository : IUpdatableCandleRepository
         await process.WaitForExitAsync(token);
 
         if (sqlBuilder.Length > 0)
+        {
             await writer.WriteAsync(sqlBuilder.ToString());
+            await writer.FlushAsync(token);
+        }
 
-        Logger.LogInformation("{message}", $"バックアップ{(process.ExitCode == 0 ? "成功" : "失敗")}");
+        var isSuccessed = errorMessageBuilder.Length == 0 ?
+            "成功" :
+            "失敗";
+        Logger.LogInformation("{message}", $"バックアップ{isSuccessed}");
     }
 
     public async IAsyncEnumerable<Candle> Pull(DateTimeOffset? startAt = null, DateTimeOffset? endAt = null, [EnumeratorCancellation] CancellationToken token = default)
