@@ -2,6 +2,7 @@ using System.Reactive.Disposables;
 using System.Reactive.Linq;
 using System.Reactive.Subjects;
 
+using BotTrade.Domain.Exceptions;
 using BotTrade.Domain.Settings;
 
 namespace BotTrade.Domain;
@@ -9,6 +10,7 @@ namespace BotTrade.Domain;
 public abstract class Strategy : IDisposable
 {
     private CompositeDisposable Disposables { get; init; }
+    protected abstract int NeedParameterSize { get; }
     protected abstract int NeedDataCountForAnalysis { get; }
     protected abstract int NeedDataCountForTrade { get; }
     public abstract StrategyKind KInd { get; }
@@ -33,6 +35,8 @@ public abstract class Strategy : IDisposable
                 (action, analyses) => new TradePoint(action, analyses)
             );
 
+        Validate();
+
         Disposables = new(
             candleStream
                 .Buffer((int)Timeframe)
@@ -49,6 +53,12 @@ public abstract class Strategy : IDisposable
 
     protected abstract Task<Dictionary<string, decimal>> OnAnalysis(IEnumerable<Candle> candles);
     protected abstract StrategyActionType OnNextAction(IEnumerable<AnalysisData> datas);
+
+    protected virtual void Validate()
+    {
+        if (Parameters.Count() < NeedParameterSize)
+            throw new InvalidParameterException($"パラメータ数が{NeedParameterSize}以上必要");
+    }
 
     private async Task Analysis(IEnumerable<Candle> candles)
     {
