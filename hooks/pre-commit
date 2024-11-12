@@ -2,7 +2,7 @@
 # pre-commit hook to run dotnet format
 
 # Run dotnet format
-dotnet format src/BotTrade.sln
+dotnet format server/src/BotTrade.sln
 
 # Capture the exit code of dotnet format
 FORMAT_EXIT_CODE=$?
