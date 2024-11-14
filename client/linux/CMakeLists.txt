@@ -143,10 +143,3 @@ if(NOT CMAKE_BUILD_TYPE MATCHES "Debug")
   install(FILES "${AOT_LIBRARY}" DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
     COMPONENT Runtime)
 endif()
-
-find_package(Python3 REQUIRED COMPONENTS Interpreter Development)
-target_link_libraries(${BINARY_NAME} PRIVATE Python3::Python Python3::Module)
-
-install(FILES "${CMAKE_CURRENT_SOURCE_DIR}/lib/core.so"
-    DESTINATION "${INSTALL_BUNDLE_LIB_DIR}"
-    COMPONENT Runtime)

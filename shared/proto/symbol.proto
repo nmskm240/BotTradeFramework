@@ -1,11 +1,9 @@
 syntax = "proto3";
-option csharp_namespace = "BotTrade";
+option csharp_namespace = "BotTrade.Application.Grpc.Generated";
 package symbol;
 
-import "place.proto";
-
 service SymbolService {
-    rpc SupportedSymbols (place.Place) returns (Symbols);
+
 }
 
 message Symbol {

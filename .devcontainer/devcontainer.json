@@ -1,0 +1,35 @@
+// For format details, see https://aka.ms/devcontainer.json. For config options, see the
+// README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
+{
+    "build": {
+        "dockerfile": ".dockerfile"
+    },
+	// "mounts": [
+	// 	{
+	// 		"type": "bind",
+	// 		"source": "../",
+	// 		"target": "/workspace"
+	// 	}
+	// ],
+	// "workspaceFolder": "/workspace",
+	"containerEnv": {
+		"DONT_PROMPT_WSL_INSTALL": "1"
+	},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-dotnettools.vscode-dotnet-runtime",
+				"ms-dotnettools.csharp",
+				"k--kato.docomment",
+				"ms-dotnettools.vscodeintellicode-csharp",
+				"EditorConfig.EditorConfig",
+				"VisualStudioExptTeam.vscodeintellicode",
+				"alexcvzz.vscode-sqlite",
+				"jebbs.plantuml",
+				"ms-python.python",
+				"zxh404.vscode-proto3",
+                "Dart-Code.flutter",
+			]
+		}
+	}
+}

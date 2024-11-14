@@ -9,7 +9,7 @@ using pb = global::Google.Protobuf;
 using pbc = global::Google.Protobuf.Collections;
 using pbr = global::Google.Protobuf.Reflection;
 using scg = global::System.Collections.Generic;
-namespace BotTrade {
+namespace BotTrade.Application.Grpc.Generated {
 
   /// <summary>Holder for reflection information generated from symbol.proto</summary>
   public static partial class SymbolReflection {
@@ -24,22 +24,22 @@ namespace BotTrade {
     static SymbolReflection() {
       byte[] descriptorData = global::System.Convert.FromBase64String(
           string.Concat(
-            "CgxzeW1ib2wucHJvdG8SBnN5bWJvbBoLcGxhY2UucHJvdG8iJAoGU3ltYm9s",
-            "EgwKBGNvZGUYASABKAkSDAoEbmFtZRgCIAEoCSIqCgdTeW1ib2xzEh8KB3N5",
-            "bWJvbHMYASADKAsyDi5zeW1ib2wuU3ltYm9sMkIKDVN5bWJvbFNlcnZpY2US",
-            "MQoQU3VwcG9ydGVkU3ltYm9scxIMLnBsYWNlLlBsYWNlGg8uc3ltYm9sLlN5",
-            "bWJvbHNCC6oCCEJvdFRyYWRlYgZwcm90bzM="));
+            "CgxzeW1ib2wucHJvdG8SBnN5bWJvbCIkCgZTeW1ib2wSDAoEY29kZRgBIAEo",
+            "CRIMCgRuYW1lGAIgASgJIioKB1N5bWJvbHMSHwoHc3ltYm9scxgBIAMoCzIO",
+            "LnN5bWJvbC5TeW1ib2wyDwoNU3ltYm9sU2VydmljZUImqgIjQm90VHJhZGUu",
+            "QXBwbGljYXRpb24uR3JwYy5HZW5lcmF0ZWRiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
-          new pbr::FileDescriptor[] { global::BotTrade.PlaceReflection.Descriptor, },
+          new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Symbol), global::BotTrade.Symbol.Parser, new[]{ "Code", "Name" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Symbols), global::BotTrade.Symbols.Parser, new[]{ "Symbols_" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.Symbol), global::BotTrade.Application.Grpc.Generated.Symbol.Parser, new[]{ "Code", "Name" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.Symbols), global::BotTrade.Application.Grpc.Generated.Symbols.Parser, new[]{ "Symbols_" }, null, null, null, null)
           }));
     }
     #endregion
 
   }
   #region Messages
+  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class Symbol : pb::IMessage<Symbol>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -54,7 +54,7 @@ namespace BotTrade {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::BotTrade.SymbolReflection.Descriptor.MessageTypes[0]; }
+      get { return global::BotTrade.Application.Grpc.Generated.SymbolReflection.Descriptor.MessageTypes[0]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -224,7 +224,11 @@ namespace BotTrade {
     #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -247,7 +251,11 @@ namespace BotTrade {
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
@@ -266,6 +274,7 @@ namespace BotTrade {
 
   }
 
+  [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
   public sealed partial class Symbols : pb::IMessage<Symbols>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
@@ -280,7 +289,7 @@ namespace BotTrade {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public static pbr::MessageDescriptor Descriptor {
-      get { return global::BotTrade.SymbolReflection.Descriptor.MessageTypes[1]; }
+      get { return global::BotTrade.Application.Grpc.Generated.SymbolReflection.Descriptor.MessageTypes[1]; }
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
@@ -312,12 +321,12 @@ namespace BotTrade {
 
     /// <summary>Field number for the "symbols" field.</summary>
     public const int Symbols_FieldNumber = 1;
-    private static readonly pb::FieldCodec<global::BotTrade.Symbol> _repeated_symbols_codec
-        = pb::FieldCodec.ForMessage(10, global::BotTrade.Symbol.Parser);
-    private readonly pbc::RepeatedField<global::BotTrade.Symbol> symbols_ = new pbc::RepeatedField<global::BotTrade.Symbol>();
+    private static readonly pb::FieldCodec<global::BotTrade.Application.Grpc.Generated.Symbol> _repeated_symbols_codec
+        = pb::FieldCodec.ForMessage(10, global::BotTrade.Application.Grpc.Generated.Symbol.Parser);
+    private readonly pbc::RepeatedField<global::BotTrade.Application.Grpc.Generated.Symbol> symbols_ = new pbc::RepeatedField<global::BotTrade.Application.Grpc.Generated.Symbol>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::BotTrade.Symbol> Symbols_ {
+    public pbc::RepeatedField<global::BotTrade.Application.Grpc.Generated.Symbol> Symbols_ {
       get { return symbols_; }
     }
 
@@ -410,7 +419,11 @@ namespace BotTrade {
     #else
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
@@ -429,7 +442,11 @@ namespace BotTrade {
     void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
       uint tag;
       while ((tag = input.ReadTag()) != 0) {
-        switch(tag) {
+      if ((tag & 7) == 4) {
+        // Abort on any end group tag.
+        return;
+      }
+      switch(tag) {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
