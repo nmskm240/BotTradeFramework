@@ -1,0 +1,14 @@
+{
+    "name": "bot_runner",
+    "build": {
+        "dockerfile": ".Dockerfile"
+    },
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "Dart-Code.flutter",
+                "EditorConfig.EditorConfig"
+            ]
+        }
+    }
+}

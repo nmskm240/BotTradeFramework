@@ -10,6 +10,15 @@ trim_trailing_whitespace = true
 dotnet_separate_import_directive_groups = true
 dotnet_sort_system_directives_first = true
 
+[*.dart]
+indent_style = space
+indent_size = 2
+max_line_length = 80
+
+[*.yaml]
+indent_style = space
+indent_size = 2
+
 # IDE0008: 明示的な型の使用
 csharp_style_var_when_type_is_apparent = true
 

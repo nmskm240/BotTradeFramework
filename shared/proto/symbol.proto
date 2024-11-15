@@ -1,0 +1,16 @@
+syntax = "proto3";
+option csharp_namespace = "BotTrade.Application.Grpc.Generated";
+package symbol;
+
+service SymbolService {
+
+}
+
+message Symbol {
+    string code = 1;
+    string name = 2;
+}
+
+message Symbols {
+    repeated Symbol symbols = 1;
+}

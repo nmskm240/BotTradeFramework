@@ -1,0 +1,15 @@
+syntax = "proto3";
+option csharp_namespace = "BotTrade.Application.Grpc.Generated";
+package exchange;
+
+import "symbol.proto";
+import "google/protobuf/empty.proto";
+
+service ExchangeService {
+    rpc SupportedSymbols (google.protobuf.Empty) returns (symbol.Symbols);
+    rpc Fetch (symbol.Symbols) returns (google.protobuf.Empty);
+}
+
+message Exchange {
+    string name = 1;
+}

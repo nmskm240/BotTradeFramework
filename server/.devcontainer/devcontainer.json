@@ -1,17 +1,20 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/dotnet
 {
-    "build": {
-        "dockerfile": ".dockerfile"
-    },
-	// "mounts": [
-	// 	{
-	// 		"type": "bind",
-	// 		"source": "../",
-	// 		"target": "/workspace"
-	// 	}
-	// ],
-	// "workspaceFolder": "/workspace",
+	"name": "BotTrade",
+	"dockerComposeFile": "./docker-compose.yaml",
+	"service": "workspace",
+	"mounts": [
+		{
+			"type": "bind",
+			"source": "../",
+			"target": "/workspace"
+		}
+	],
+	"workspaceFolder": "/workspace",
+	"remoteEnv": {
+		"CONTAINER_NAME": "BotTrade"
+	},
 	"containerEnv": {
 		"DONT_PROMPT_WSL_INSTALL": "1"
 	},
@@ -22,13 +25,13 @@
 				"ms-dotnettools.csharp",
 				"k--kato.docomment",
 				"ms-dotnettools.vscodeintellicode-csharp",
+				"ms-dotnettools.dotnet-interactive-vscode",
+				"ms-toolsai.jupyter",
 				"EditorConfig.EditorConfig",
 				"VisualStudioExptTeam.vscodeintellicode",
 				"alexcvzz.vscode-sqlite",
 				"jebbs.plantuml",
 				"ms-python.python",
-				"zxh404.vscode-proto3",
-                "Dart-Code.flutter",
 			]
 		}
 	}
