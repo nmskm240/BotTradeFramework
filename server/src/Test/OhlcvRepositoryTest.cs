@@ -38,7 +38,7 @@ public class OhlcvRepositoryTest
                 new (
                     "BTC/USD",
                     "Bitcoin to USD",
-                    new("Bybit")
+                    new("Bybit", true)
                 )
             )
         };
@@ -63,7 +63,7 @@ public class OhlcvRepositoryTest
         var symbol = new Symbol(
             "BTC/USD",
             "Bitcoin to USD",
-            new("Bybit")
+            new("Bybit", true)
         );
         var now = DateTime.UtcNow;
 
@@ -83,5 +83,30 @@ public class OhlcvRepositoryTest
         Assert.Single(result);
         Assert.Equal(105m, result.First().Open);
         Assert.Equal(110m, result.First().Close);
+    }
+
+    [Fact]
+    public async Task LastUpdatedAtAsyncTest()
+    {
+        var factory = await CreateInMemoryDbConnectionFactoryAsync();
+        var repository = new OhlcvRepository(factory);
+        var symbol = new Symbol(
+            "BTC/USD",
+            "Bitcoin to USD",
+            new("Bybit", true)
+        );
+        var now = DateTime.UtcNow;
+        var ohlcvs = new List<Ohlcv>
+        {
+            new(100m, 110m, 90m, 105m, 1000m, now.AddMinutes(-10), symbol),
+            new(105m, 115m, 95m, 110m, 2000m, now.AddMinutes(-5), symbol),
+            new(105m, 115m, 95m, 110m, 2000m, now, symbol),
+        };
+
+        await repository.PushAsync(ohlcvs, CancellationToken.None);
+
+        var result = await repository.LastUpdatedAtAsync(symbol, CancellationToken.None);
+
+        Assert.Equal(result, now);
     }
 }

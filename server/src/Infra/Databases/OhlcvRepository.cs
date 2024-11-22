@@ -11,8 +11,7 @@ using ServiceStack.OrmLite;
 
 namespace BotTrade.Infra.Databases;
 
-public class OhlcvRepository(IDbConnectionFactory connectionFactory)
- : IOhlcvRepository
+public class OhlcvRepository(IDbConnectionFactory connectionFactory) : IOhlcvRepository
 {
     private readonly IDbConnectionFactory _connectionFactory = connectionFactory;
 
@@ -57,5 +56,24 @@ public class OhlcvRepository(IDbConnectionFactory connectionFactory)
 
             return disposables;
         });
+    }
+
+    public async Task<IEnumerable<Symbol>> LoadableSymbolsAsync(CancellationToken token)
+    {
+        using var connection = await _connectionFactory.OpenAsync(token);
+        return connection.SelectLazy<SymbolOrm>()
+            .Select(e => SymbolMapper.ToEntity(e, connection));
+    }
+
+    public async Task<DateTimeOffset> LastUpdatedAtAsync(Symbol symbol, CancellationToken token)
+    {
+        using var connection = await _connectionFactory.OpenAsync(token);
+        var symbolOrm = SymbolMapper.ToOrm(symbol, connection);
+        var query = connection.From<OhlcvOrm>()
+            .Where(x => x.SymbolId == symbolOrm.Id)
+            .OrderByDescending(x => x.DecisionAt)
+            .Limit(1);
+        var ohlcvOrm = await connection.SingleAsync(query, token);
+        return ohlcvOrm?.DecisionAt ?? new DateTimeOffset(2020, 1, 1, 0, 0, 0, TimeSpan.Zero);
     }
 }
