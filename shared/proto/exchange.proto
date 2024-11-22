@@ -2,14 +2,29 @@ syntax = "proto3";
 option csharp_namespace = "BotTrade.Application.Grpc.Generated";
 package exchange;
 
-import "symbol.proto";
 import "google/protobuf/empty.proto";
 
 service ExchangeService {
-    rpc SupportedSymbols (google.protobuf.Empty) returns (symbol.Symbols);
-    rpc Fetch (symbol.Symbols) returns (google.protobuf.Empty);
+    rpc SupportedExchanges (google.protobuf.Empty) returns (ExchangePlaces);
+    rpc SupportedSymbols (ExchangePlace) returns (Symbols);
+    rpc Fetch (Symbols) returns (google.protobuf.Empty);
 }
 
-message Exchange {
+message Symbol {
+    string code = 1;
+    string name = 2;
+    ExchangePlace place = 3;
+}
+
+message Symbols {
+    repeated Symbol symbols = 1;
+}
+
+message ExchangePlace {
     string name = 1;
+    bool isBacktest = 2;
+}
+
+message ExchangePlaces {
+    repeated ExchangePlace places = 1;
 }

@@ -18,15 +18,13 @@ public class CryptoExternalExchange : IExchange
 
     private readonly ccxt.Exchange _client;
     private readonly ILogger<IExchange> _logger;
-    public readonly ExchangePlace Place;
-
-    ExchangePlace IExchange.Place { get => throw new NotImplementedException(); init => throw new NotImplementedException(); }
+    public ExchangePlace Place { get; init; }
 
     public CryptoExternalExchange(ccxt.Exchange client, ILogger<IExchange> logger)
     {
         _client = client;
         _logger = logger;
-        Place = new((string)_client.name);
+        Place = new((string)_client.name, false);
     }
 
     public async Task<IEnumerable<Symbol>> SupportSymbolsAsync(CancellationToken token)
@@ -48,7 +46,8 @@ public class CryptoExternalExchange : IExchange
         {
             while (since < until)
             {
-                List<ccxt.OHLCV> fetched = [];
+                var fetched = new List<ccxt.OHLCV>();
+                var fetchedAt = since.AddMinutes(limit);
                 token.ThrowIfCancellationRequested();
                 try
                 {
@@ -62,9 +61,7 @@ public class CryptoExternalExchange : IExchange
                 }
 
                 if(fetched.IsNullOrEmpty())
-                {
                     break;
-                }
 
                 foreach (var e in fetched)
                 {

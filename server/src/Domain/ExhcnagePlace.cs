@@ -1,5 +1,6 @@
 namespace BotTrade.Domain;
 
 public record struct ExchangePlace(
-    string Name
+    string Name,
+    bool IsBacktest
 );

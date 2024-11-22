@@ -48,22 +48,34 @@ namespace BotTrade.Application.Grpc.Generated {
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::Google.Protobuf.WellKnownTypes.Empty> __Marshaller_google_protobuf_Empty = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::Google.Protobuf.WellKnownTypes.Empty.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Marshaller<global::BotTrade.Application.Grpc.Generated.Symbols> __Marshaller_symbol_Symbols = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::BotTrade.Application.Grpc.Generated.Symbols.Parser));
+    static readonly grpc::Marshaller<global::BotTrade.Application.Grpc.Generated.ExchangePlaces> __Marshaller_exchange_ExchangePlaces = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::BotTrade.Application.Grpc.Generated.ExchangePlaces.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::BotTrade.Application.Grpc.Generated.ExchangePlace> __Marshaller_exchange_ExchangePlace = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::BotTrade.Application.Grpc.Generated.ExchangePlace.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::BotTrade.Application.Grpc.Generated.Symbols> __Marshaller_exchange_Symbols = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::BotTrade.Application.Grpc.Generated.Symbols.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::Google.Protobuf.WellKnownTypes.Empty, global::BotTrade.Application.Grpc.Generated.Symbols> __Method_SupportedSymbols = new grpc::Method<global::Google.Protobuf.WellKnownTypes.Empty, global::BotTrade.Application.Grpc.Generated.Symbols>(
+    static readonly grpc::Method<global::Google.Protobuf.WellKnownTypes.Empty, global::BotTrade.Application.Grpc.Generated.ExchangePlaces> __Method_SupportedExchanges = new grpc::Method<global::Google.Protobuf.WellKnownTypes.Empty, global::BotTrade.Application.Grpc.Generated.ExchangePlaces>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "SupportedExchanges",
+        __Marshaller_google_protobuf_Empty,
+        __Marshaller_exchange_ExchangePlaces);
+
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Method<global::BotTrade.Application.Grpc.Generated.ExchangePlace, global::BotTrade.Application.Grpc.Generated.Symbols> __Method_SupportedSymbols = new grpc::Method<global::BotTrade.Application.Grpc.Generated.ExchangePlace, global::BotTrade.Application.Grpc.Generated.Symbols>(
         grpc::MethodType.Unary,
         __ServiceName,
         "SupportedSymbols",
-        __Marshaller_google_protobuf_Empty,
-        __Marshaller_symbol_Symbols);
+        __Marshaller_exchange_ExchangePlace,
+        __Marshaller_exchange_Symbols);
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Method<global::BotTrade.Application.Grpc.Generated.Symbols, global::Google.Protobuf.WellKnownTypes.Empty> __Method_Fetch = new grpc::Method<global::BotTrade.Application.Grpc.Generated.Symbols, global::Google.Protobuf.WellKnownTypes.Empty>(
         grpc::MethodType.Unary,
         __ServiceName,
         "Fetch",
-        __Marshaller_symbol_Symbols,
+        __Marshaller_exchange_Symbols,
         __Marshaller_google_protobuf_Empty);
 
     /// <summary>Service descriptor</summary>
@@ -77,7 +89,13 @@ namespace BotTrade.Application.Grpc.Generated {
     public abstract partial class ExchangeServiceBase
     {
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::System.Threading.Tasks.Task<global::BotTrade.Application.Grpc.Generated.Symbols> SupportedSymbols(global::Google.Protobuf.WellKnownTypes.Empty request, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task<global::BotTrade.Application.Grpc.Generated.ExchangePlaces> SupportedExchanges(global::Google.Protobuf.WellKnownTypes.Empty request, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::System.Threading.Tasks.Task<global::BotTrade.Application.Grpc.Generated.Symbols> SupportedSymbols(global::BotTrade.Application.Grpc.Generated.ExchangePlace request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -96,6 +114,7 @@ namespace BotTrade.Application.Grpc.Generated {
     public static grpc::ServerServiceDefinition BindService(ExchangeServiceBase serviceImpl)
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
+          .AddMethod(__Method_SupportedExchanges, serviceImpl.SupportedExchanges)
           .AddMethod(__Method_SupportedSymbols, serviceImpl.SupportedSymbols)
           .AddMethod(__Method_Fetch, serviceImpl.Fetch).Build();
     }
@@ -107,7 +126,8 @@ namespace BotTrade.Application.Grpc.Generated {
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     public static void BindService(grpc::ServiceBinderBase serviceBinder, ExchangeServiceBase serviceImpl)
     {
-      serviceBinder.AddMethod(__Method_SupportedSymbols, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::Google.Protobuf.WellKnownTypes.Empty, global::BotTrade.Application.Grpc.Generated.Symbols>(serviceImpl.SupportedSymbols));
+      serviceBinder.AddMethod(__Method_SupportedExchanges, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::Google.Protobuf.WellKnownTypes.Empty, global::BotTrade.Application.Grpc.Generated.ExchangePlaces>(serviceImpl.SupportedExchanges));
+      serviceBinder.AddMethod(__Method_SupportedSymbols, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::BotTrade.Application.Grpc.Generated.ExchangePlace, global::BotTrade.Application.Grpc.Generated.Symbols>(serviceImpl.SupportedSymbols));
       serviceBinder.AddMethod(__Method_Fetch, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::BotTrade.Application.Grpc.Generated.Symbols, global::Google.Protobuf.WellKnownTypes.Empty>(serviceImpl.Fetch));
     }
 

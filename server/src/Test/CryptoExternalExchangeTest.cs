@@ -9,6 +9,8 @@ using Moq;
 
 using ServiceStack.Text;
 
+using Xunit.Abstractions;
+
 namespace BotTrade.Test;
 
 public class CryptoExternalExchangeTest
@@ -19,8 +21,8 @@ public class CryptoExternalExchangeTest
         {
             new ccxt.Bybit(),
             new Symbol("BTCUSDT", string.Empty, new()),
-            new DateTimeOffset(2024, 1, 1, 0, 0, 0, TimeSpan.Zero),
-            new DateTimeOffset(2024, 1, 1, 23, 59, 59, TimeSpan.Zero),
+            new DateTimeOffset(2020, 1, 1, 0, 0, 0, TimeSpan.Zero),
+            new DateTimeOffset(2020, 5, 31, 23, 59, 59, TimeSpan.Zero),
         };
         yield return new object[]
         {

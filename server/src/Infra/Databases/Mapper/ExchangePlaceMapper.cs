@@ -12,7 +12,8 @@ internal class ExchangePlaceMapper : IOrmMappger<ExchangePlace, ExchangePlaceOrm
     public static ExchangePlace ToEntity(ExchangePlaceOrm orm, IDbConnection connection)
     {
         return new ExchangePlace(
-            orm.Name
+            orm.Name,
+            true
         );
     }
 
