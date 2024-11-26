@@ -69,7 +69,15 @@ public class CryptoExternalExchange : IExchange
                     if (e.Equals(default))
                         continue;
 
-                    var entity = ConvertToEntity(e, symbol);
+                    var entity = new Ohlcv(
+                        e.open ?? 0,
+                        e.high ?? 0,
+                        e.low ?? 0,
+                        e.close ?? 0,
+                        e.volume ?? 0,
+                        DateTimeOffset.FromUnixTimeMilliseconds(e.timestamp ?? 0).UtcDateTime,
+                        symbol
+                    );
 
                     if (until < entity.Date)
                         break;
@@ -88,20 +96,5 @@ public class CryptoExternalExchange : IExchange
     public Task<Trade> Trade(Order order)
     {
         throw new NotImplementedException();
-    }
-
-    private Ohlcv ConvertToEntity(ccxt.OHLCV e, Symbol symbol)
-    {
-        return new Ohlcv(
-#pragma warning disable CS8629 // Null 許容値型は Null になる場合があります。
-            (decimal)e.open,
-            (decimal)e.high,
-            (decimal)e.low,
-            (decimal)e.low,
-            (decimal)e.volume,
-            DateTimeOffset.FromUnixTimeMilliseconds((long)e.timestamp).UtcDateTime,
-            symbol
-#pragma warning restore CS8629 // Null 許容値型は Null になる場合があります。
-        );
     }
 }
