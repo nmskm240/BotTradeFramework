@@ -9,8 +9,6 @@ using Moq;
 
 using ServiceStack.Text;
 
-using Xunit.Abstractions;
-
 namespace BotTrade.Test;
 
 public class CryptoExternalExchangeTest
