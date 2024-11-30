@@ -1,0 +1,19 @@
+syntax = "proto3";
+option csharp_namespace = "BotTrade.Application.Grpc.Generated";
+package bot;
+
+import "google/protobuf/empty.proto";
+
+service BotService {
+    rpc Run (google.protobuf.Empty) returns (google.protobuf.Empty);
+}
+
+message ProccssOrder {
+    int32 bufferSize = 1;
+    map<string, string> parameters = 2;
+}
+
+message BotOrder {
+    repeated ProccssOrder processes = 1;
+}
+
