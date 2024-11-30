@@ -16,7 +16,7 @@ public sealed class Remove : IFeaturePipline
         _targets = order.Parameters.Keys;
     }
 
-    public Dictionary<string, object> Execute(Dictionary<string, object> input)
+    public Dictionary<string, double> Execute(Dictionary<string, double> input)
     {
         return input.Where(pair => !_targets.Contains(pair.Key))
             .ToDictionary(pair => pair.Key, pair => pair.Value);
