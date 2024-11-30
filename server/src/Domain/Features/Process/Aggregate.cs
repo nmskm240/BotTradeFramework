@@ -2,7 +2,7 @@ namespace BotTrade.Domain.Features.Process;
 
 public sealed class Aggregate : IFeaturePipline
 {
-    private readonly RingQueue<Dictionary<string, object>> _buffer;
+    private readonly RingQueue<Dictionary<string, double>> _buffer;
     private const string DEFALUT_RULE = "last";
     public FeaturePiplineOrder Order { get; init; }
 
@@ -12,7 +12,7 @@ public sealed class Aggregate : IFeaturePipline
         _buffer = new(order.NeedDataSize);
     }
 
-    public Dictionary<string, object> Execute(Dictionary<string, object> input)
+    public Dictionary<string, double> Execute(Dictionary<string, double> input)
     {
         _buffer.Enqueue(input);
 
@@ -20,7 +20,7 @@ public sealed class Aggregate : IFeaturePipline
             return input;
 
         var header = _buffer.First().Keys;
-        var aggregated = new Dictionary<string, object>();
+        var aggregated = new Dictionary<string, double>();
         foreach(var key in header)
         {
             var values = _buffer.Select(pair => pair[key]);
@@ -30,7 +30,7 @@ public sealed class Aggregate : IFeaturePipline
             {
                 "first" => values.First(),
                 "last" => values.Last(),
-                "sum" => values.Sum(i => (decimal)i),
+                "sum" => values.Sum(),
                 "max" => values.Max(),
                 "min" => values.Min(),
                 _ => throw new NotImplementedException(),

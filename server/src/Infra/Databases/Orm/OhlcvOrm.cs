@@ -12,15 +12,15 @@ internal class OhlcvOrm
     [AutoIncrement]
     public int Id { get; set; }
     [DecimalLength]
-    public decimal Open { get; set; }
+    public double Open { get; set; }
     [DecimalLength]
-    public decimal High { get; set; }
+    public double High { get; set; }
     [DecimalLength]
-    public decimal Low { get; set; }
+    public double Low { get; set; }
     [DecimalLength]
-    public decimal Close { get; set; }
+    public double Close { get; set; }
     [DecimalLength]
-    public decimal Volume { get; set; }
+    public double Volume { get; set; }
     public DateTimeOffset DecisionAt { get; set; }
     [ForeignKey(typeof(SymbolOrm))]
     public long SymbolId { get; set; }

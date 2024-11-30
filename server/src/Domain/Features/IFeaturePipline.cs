@@ -4,5 +4,5 @@ public interface IFeaturePipline
 {
     public FeaturePiplineOrder Order { get; init; }
 
-    Dictionary<string, object> Execute(Dictionary<string, object> input);
+    Dictionary<string, double> Execute(Dictionary<string, double> input);
 }

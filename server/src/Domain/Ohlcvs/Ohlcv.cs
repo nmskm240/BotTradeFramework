@@ -9,16 +9,15 @@ public record class Ohlcv(
     DateTime Date,
     Symbol Symbol
 ) {
-    public Dictionary<string, object> ToDictonary()
+    public Dictionary<string, double> ToDictonary()
     {
-        return new Dictionary<string, object> {
+        return new Dictionary<string, double> {
             { "Open", Open },
             { "High", High },
             { "Low", Low },
             { "Close", Close },
             { "Volume", Volume },
             { "Date", new DateTimeOffset(Date).ToUnixTimeMilliseconds() },
-            { "Symbol", Symbol.Code },
         };
     }
 }

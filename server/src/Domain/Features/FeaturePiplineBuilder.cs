@@ -13,7 +13,7 @@ public class FeaturePiplineBuilder
         _ohlcvStream = ohlcvStream;
     }
 
-    public IObservable<Dictionary<string, object>> Create(IEnumerable<FeaturePiplineOrder> orders)
+    public IObservable<Dictionary<string, double>> Create(IEnumerable<FeaturePiplineOrder> orders)
     {
         var processes = orders.Select(order => Activator.CreateInstance(order.ProcessKind, order) as IFeaturePipline)
             .Where(p => p != null)
