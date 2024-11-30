@@ -4,7 +4,6 @@ using System.Reactive.Subjects;
 using BotTrade.Domain;
 using BotTrade.Domain.Exchanges;
 using BotTrade.Domain.Ohlcvs;
-using BotTrade.Domain.Settings;
 
 using Microsoft.Extensions.Logging;
 
