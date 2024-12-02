@@ -34,8 +34,8 @@ public class FeaturePiplineBuilderTest
             new (typeof(Remove), 0, new Dictionary<string, object> { { "Symbol", null } }),
         };
         var completion = new TaskCompletionSource();
-        var results = new List<Dictionary<string, object>>();
-        var subscription = builder.Create(piplineOrders)
+        var results = new List<Dictionary<string, double>>();
+        using var subscription = builder.Create(piplineOrders)
             .Subscribe(
                 results.Add,
                 completion.SetException,
@@ -43,7 +43,6 @@ public class FeaturePiplineBuilderTest
             );
 
         await completion.Task;
-        subscription.Dispose();
 
         Assert.Equal(ohlcvs.Count, results.Count);
         Assert.False(results.First().TryGetValue("Symbol", out var _));
