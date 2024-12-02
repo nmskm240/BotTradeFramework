@@ -3,17 +3,23 @@ option csharp_namespace = "BotTrade.Application.Grpc.Generated";
 package bot;
 
 import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "exchange.proto";
 
 service BotService {
-    rpc Run (google.protobuf.Empty) returns (google.protobuf.Empty);
+    rpc Run (BotOrder) returns (google.protobuf.Empty);
 }
 
-message ProccssOrder {
-    int32 bufferSize = 1;
-    map<string, string> parameters = 2;
+message ProcssOrder {
+    string kind = 1;
+    optional int32 bufferSize = 2;
+    map<string, string> parameters = 3;
 }
 
 message BotOrder {
-    repeated ProccssOrder processes = 1;
+    exchange.Symbol symbol = 1;
+    repeated ProcssOrder processes = 2;
+    optional google.protobuf.Timestamp start_at = 3;
+    optional google.protobuf.Timestamp end_at = 4;
 }
 

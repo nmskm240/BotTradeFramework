@@ -23,7 +23,10 @@ internal class SymbolMapper : IOrmMappger<Symbol, SymbolOrm>
 
     public static SymbolOrm ToOrm(Symbol entity, IDbConnection connection)
     {
-        var saved = connection.Single<SymbolOrm>(x => x.Code == entity.Code);
+        var query = connection.From<SymbolOrm>()
+            .Where(x => x.Code == entity.Code);
+        var saved = connection.Select(query)
+            .SingleOrDefault();
 
         if (saved != null)
         {
@@ -37,7 +40,7 @@ internal class SymbolMapper : IOrmMappger<Symbol, SymbolOrm>
             PlaceId = ExchangePlaceMapper.ToOrm(entity.Place, connection).Id
         };
 
-        orm.Id = connection.Insert(orm);
+        orm.Id = connection.Insert(orm, selectIdentity: true);
         return orm;
     }
 }

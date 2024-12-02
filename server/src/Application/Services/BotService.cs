@@ -1,5 +1,6 @@
 using System;
 
+using BotTrade.Application.Converters;
 using BotTrade.Application.Grpc.Generated;
 using BotTrade.Domain;
 using BotTrade.Domain.Exchanges;
@@ -19,38 +20,38 @@ public class BotService : ServiceBase.BotServiceBase
 {
     private IExchange _exchange;
     // private FeaturePiplineBuilder _piplineBuilder;
+    private ILogger _logger;
 
     // TODO: 本来はどの取引所を使用するかもCLからのリクエストに含める
-    public BotService(IExchange exchange/*, FeaturePiplineBuilder piplineBuilder*/)
+    public BotService(IExchange exchange/*, FeaturePiplineBuilder piplineBuilder*/, ILogger<BotService> logger)
     {
         _exchange = exchange;
         // _piplineBuilder = piplineBuilder;
+        _logger = logger;
     }
 
-    public override async Task<Empty> Run(Empty request, ServerCallContext context)
+    public override async Task<Empty> Run(BotOrder request, ServerCallContext context)
     {
-        var logger = LoggerFactory.Create(b => b.AddConsole())
-            .CreateLogger(string.Empty);
-        var symbol = new Domain.Symbol("BTCUSDT", string.Empty, new("Bybit", true));
-        var startAt = new DateTimeOffset(2022, 1, 1, 0, 0, 0, TimeSpan.Zero);
-        var endAt = new DateTimeOffset(2023, 12, 31, 23, 59, 59, TimeSpan.Zero);
-        var stream = _exchange.OhlcvStreamAsObservable(symbol, startAt: startAt, endAt: endAt);
-        var bot = new Bot(stream, logger);
+        var symbol = SymbolConverter.ToEntity(request.Symbol);
+        var startAt = request.StartAt.ToDateTimeOffset();
+        var endAt = request.EndAt.ToDateTimeOffset();
+        var stream = _exchange.OhlcvStreamAsObservable(symbol, startAt, endAt);
+        var bot = new Bot(stream, _logger);
         var completion = new TaskCompletionSource();
         using var _ = stream.Subscribe(
-            Console.WriteLine,
+            _ => { },
             completion.SetException,
             completion.SetResult
         );
 
-        stream.Connect();
         try
         {
+            using var __ = stream.Connect();
             await completion.Task;
         }
-        catch(Exception e)
+        catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError(e.Message);
         }
 
         return new Empty();
