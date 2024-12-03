@@ -26,22 +26,23 @@ namespace BotTrade.Application.Grpc.Generated {
           string.Concat(
             "Cglib3QucHJvdG8SA2JvdBobZ29vZ2xlL3Byb3RvYnVmL2VtcHR5LnByb3Rv",
             "Gh9nb29nbGUvcHJvdG9idWYvdGltZXN0YW1wLnByb3RvGg5leGNoYW5nZS5w",
-            "cm90byKsAQoLUHJvY3NzT3JkZXISDAoEa2luZBgBIAEoCRIXCgpidWZmZXJT",
-            "aXplGAIgASgFSACIAQESNAoKcGFyYW1ldGVycxgDIAMoCzIgLmJvdC5Qcm9j",
-            "c3NPcmRlci5QYXJhbWV0ZXJzRW50cnkaMQoPUGFyYW1ldGVyc0VudHJ5EgsK",
-            "A2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAFCDQoLX2J1ZmZlclNpemUi",
-            "zQEKCEJvdE9yZGVyEiAKBnN5bWJvbBgBIAEoCzIQLmV4Y2hhbmdlLlN5bWJv",
-            "bBIjCglwcm9jZXNzZXMYAiADKAsyEC5ib3QuUHJvY3NzT3JkZXISMQoIc3Rh",
-            "cnRfYXQYAyABKAsyGi5nb29nbGUucHJvdG9idWYuVGltZXN0YW1wSACIAQES",
-            "LwoGZW5kX2F0GAQgASgLMhouZ29vZ2xlLnByb3RvYnVmLlRpbWVzdGFtcEgB",
-            "iAEBQgsKCV9zdGFydF9hdEIJCgdfZW5kX2F0MjoKCkJvdFNlcnZpY2USLAoD",
-            "UnVuEg0uYm90LkJvdE9yZGVyGhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5Qiaq",
-            "AiNCb3RUcmFkZS5BcHBsaWNhdGlvbi5HcnBjLkdlbmVyYXRlZGIGcHJvdG8z"));
+            "cm90byK8AQoTRmVhdHVyZVBpcGxpbmVPcmRlchIMCgRraW5kGAEgASgJEhcK",
+            "CmJ1ZmZlclNpemUYAiABKAVIAIgBARI8CgpwYXJhbWV0ZXJzGAMgAygLMigu",
+            "Ym90LkZlYXR1cmVQaXBsaW5lT3JkZXIuUGFyYW1ldGVyc0VudHJ5GjEKD1Bh",
+            "cmFtZXRlcnNFbnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgB",
+            "Qg0KC19idWZmZXJTaXplItIBCghCb3RPcmRlchIgCgZzeW1ib2wYASABKAsy",
+            "EC5leGNoYW5nZS5TeW1ib2wSKAoGb3JkZXJzGAIgAygLMhguYm90LkZlYXR1",
+            "cmVQaXBsaW5lT3JkZXISMQoIc3RhcnRfYXQYAyABKAsyGi5nb29nbGUucHJv",
+            "dG9idWYuVGltZXN0YW1wSACIAQESLwoGZW5kX2F0GAQgASgLMhouZ29vZ2xl",
+            "LnByb3RvYnVmLlRpbWVzdGFtcEgBiAEBQgsKCV9zdGFydF9hdEIJCgdfZW5k",
+            "X2F0MjoKCkJvdFNlcnZpY2USLAoDUnVuEg0uYm90LkJvdE9yZGVyGhYuZ29v",
+            "Z2xlLnByb3RvYnVmLkVtcHR5QiaqAiNCb3RUcmFkZS5BcHBsaWNhdGlvbi5H",
+            "cnBjLkdlbmVyYXRlZGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.TimestampReflection.Descriptor, global::BotTrade.Application.Grpc.Generated.ExchangeReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
-            new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.ProcssOrder), global::BotTrade.Application.Grpc.Generated.ProcssOrder.Parser, new[]{ "Kind", "BufferSize", "Parameters" }, new[]{ "BufferSize" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
-            new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.BotOrder), global::BotTrade.Application.Grpc.Generated.BotOrder.Parser, new[]{ "Symbol", "Processes", "StartAt", "EndAt" }, new[]{ "StartAt", "EndAt" }, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.FeaturePiplineOrder), global::BotTrade.Application.Grpc.Generated.FeaturePiplineOrder.Parser, new[]{ "Kind", "BufferSize", "Parameters" }, new[]{ "BufferSize" }, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
+            new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.BotOrder), global::BotTrade.Application.Grpc.Generated.BotOrder.Parser, new[]{ "Symbol", "Orders", "StartAt", "EndAt" }, new[]{ "StartAt", "EndAt" }, null, null, null)
           }));
     }
     #endregion
@@ -49,17 +50,17 @@ namespace BotTrade.Application.Grpc.Generated {
   }
   #region Messages
   [global::System.Diagnostics.DebuggerDisplayAttribute("{ToString(),nq}")]
-  public sealed partial class ProcssOrder : pb::IMessage<ProcssOrder>
+  public sealed partial class FeaturePiplineOrder : pb::IMessage<FeaturePiplineOrder>
   #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       , pb::IBufferMessage
   #endif
   {
-    private static readonly pb::MessageParser<ProcssOrder> _parser = new pb::MessageParser<ProcssOrder>(() => new ProcssOrder());
+    private static readonly pb::MessageParser<FeaturePiplineOrder> _parser = new pb::MessageParser<FeaturePiplineOrder>(() => new FeaturePiplineOrder());
     private pb::UnknownFieldSet _unknownFields;
     private int _hasBits0;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public static pb::MessageParser<ProcssOrder> Parser { get { return _parser; } }
+    public static pb::MessageParser<FeaturePiplineOrder> Parser { get { return _parser; } }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
@@ -75,7 +76,7 @@ namespace BotTrade.Application.Grpc.Generated {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public ProcssOrder() {
+    public FeaturePiplineOrder() {
       OnConstruction();
     }
 
@@ -83,7 +84,7 @@ namespace BotTrade.Application.Grpc.Generated {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public ProcssOrder(ProcssOrder other) : this() {
+    public FeaturePiplineOrder(FeaturePiplineOrder other) : this() {
       _hasBits0 = other._hasBits0;
       kind_ = other.kind_;
       bufferSize_ = other.bufferSize_;
@@ -93,8 +94,8 @@ namespace BotTrade.Application.Grpc.Generated {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public ProcssOrder Clone() {
-      return new ProcssOrder(this);
+    public FeaturePiplineOrder Clone() {
+      return new FeaturePiplineOrder(this);
     }
 
     /// <summary>Field number for the "kind" field.</summary>
@@ -150,12 +151,12 @@ namespace BotTrade.Application.Grpc.Generated {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
-      return Equals(other as ProcssOrder);
+      return Equals(other as FeaturePiplineOrder);
     }
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool Equals(ProcssOrder other) {
+    public bool Equals(FeaturePiplineOrder other) {
       if (ReferenceEquals(other, null)) {
         return false;
       }
@@ -246,7 +247,7 @@ namespace BotTrade.Application.Grpc.Generated {
 
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void MergeFrom(ProcssOrder other) {
+    public void MergeFrom(FeaturePiplineOrder other) {
       if (other == null) {
         return;
       }
@@ -362,7 +363,7 @@ namespace BotTrade.Application.Grpc.Generated {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public BotOrder(BotOrder other) : this() {
       symbol_ = other.symbol_ != null ? other.symbol_.Clone() : null;
-      processes_ = other.processes_.Clone();
+      orders_ = other.orders_.Clone();
       startAt_ = other.startAt_ != null ? other.startAt_.Clone() : null;
       endAt_ = other.endAt_ != null ? other.endAt_.Clone() : null;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
@@ -386,15 +387,15 @@ namespace BotTrade.Application.Grpc.Generated {
       }
     }
 
-    /// <summary>Field number for the "processes" field.</summary>
-    public const int ProcessesFieldNumber = 2;
-    private static readonly pb::FieldCodec<global::BotTrade.Application.Grpc.Generated.ProcssOrder> _repeated_processes_codec
-        = pb::FieldCodec.ForMessage(18, global::BotTrade.Application.Grpc.Generated.ProcssOrder.Parser);
-    private readonly pbc::RepeatedField<global::BotTrade.Application.Grpc.Generated.ProcssOrder> processes_ = new pbc::RepeatedField<global::BotTrade.Application.Grpc.Generated.ProcssOrder>();
+    /// <summary>Field number for the "orders" field.</summary>
+    public const int OrdersFieldNumber = 2;
+    private static readonly pb::FieldCodec<global::BotTrade.Application.Grpc.Generated.FeaturePiplineOrder> _repeated_orders_codec
+        = pb::FieldCodec.ForMessage(18, global::BotTrade.Application.Grpc.Generated.FeaturePiplineOrder.Parser);
+    private readonly pbc::RepeatedField<global::BotTrade.Application.Grpc.Generated.FeaturePiplineOrder> orders_ = new pbc::RepeatedField<global::BotTrade.Application.Grpc.Generated.FeaturePiplineOrder>();
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public pbc::RepeatedField<global::BotTrade.Application.Grpc.Generated.ProcssOrder> Processes {
-      get { return processes_; }
+    public pbc::RepeatedField<global::BotTrade.Application.Grpc.Generated.FeaturePiplineOrder> Orders {
+      get { return orders_; }
     }
 
     /// <summary>Field number for the "start_at" field.</summary>
@@ -437,7 +438,7 @@ namespace BotTrade.Application.Grpc.Generated {
         return true;
       }
       if (!object.Equals(Symbol, other.Symbol)) return false;
-      if(!processes_.Equals(other.processes_)) return false;
+      if(!orders_.Equals(other.orders_)) return false;
       if (!object.Equals(StartAt, other.StartAt)) return false;
       if (!object.Equals(EndAt, other.EndAt)) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -448,7 +449,7 @@ namespace BotTrade.Application.Grpc.Generated {
     public override int GetHashCode() {
       int hash = 1;
       if (symbol_ != null) hash ^= Symbol.GetHashCode();
-      hash ^= processes_.GetHashCode();
+      hash ^= orders_.GetHashCode();
       if (startAt_ != null) hash ^= StartAt.GetHashCode();
       if (endAt_ != null) hash ^= EndAt.GetHashCode();
       if (_unknownFields != null) {
@@ -473,7 +474,7 @@ namespace BotTrade.Application.Grpc.Generated {
         output.WriteRawTag(10);
         output.WriteMessage(Symbol);
       }
-      processes_.WriteTo(output, _repeated_processes_codec);
+      orders_.WriteTo(output, _repeated_orders_codec);
       if (startAt_ != null) {
         output.WriteRawTag(26);
         output.WriteMessage(StartAt);
@@ -496,7 +497,7 @@ namespace BotTrade.Application.Grpc.Generated {
         output.WriteRawTag(10);
         output.WriteMessage(Symbol);
       }
-      processes_.WriteTo(ref output, _repeated_processes_codec);
+      orders_.WriteTo(ref output, _repeated_orders_codec);
       if (startAt_ != null) {
         output.WriteRawTag(26);
         output.WriteMessage(StartAt);
@@ -518,7 +519,7 @@ namespace BotTrade.Application.Grpc.Generated {
       if (symbol_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Symbol);
       }
-      size += processes_.CalculateSize(_repeated_processes_codec);
+      size += orders_.CalculateSize(_repeated_orders_codec);
       if (startAt_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(StartAt);
       }
@@ -543,7 +544,7 @@ namespace BotTrade.Application.Grpc.Generated {
         }
         Symbol.MergeFrom(other.Symbol);
       }
-      processes_.Add(other.processes_);
+      orders_.Add(other.orders_);
       if (other.startAt_ != null) {
         if (startAt_ == null) {
           StartAt = new global::Google.Protobuf.WellKnownTypes.Timestamp();
@@ -583,7 +584,7 @@ namespace BotTrade.Application.Grpc.Generated {
             break;
           }
           case 18: {
-            processes_.AddEntriesFrom(input, _repeated_processes_codec);
+            orders_.AddEntriesFrom(input, _repeated_orders_codec);
             break;
           }
           case 26: {
@@ -627,7 +628,7 @@ namespace BotTrade.Application.Grpc.Generated {
             break;
           }
           case 18: {
-            processes_.AddEntriesFrom(ref input, _repeated_processes_codec);
+            orders_.AddEntriesFrom(ref input, _repeated_orders_codec);
             break;
           }
           case 26: {

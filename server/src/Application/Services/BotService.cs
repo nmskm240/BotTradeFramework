@@ -1,5 +1,3 @@
-using System;
-
 using BotTrade.Application.Converters;
 using BotTrade.Application.Grpc.Generated;
 using BotTrade.Domain;
@@ -19,14 +17,12 @@ namespace BotTrade.Application.Services;
 public class BotService : ServiceBase.BotServiceBase
 {
     private IExchange _exchange;
-    // private FeaturePiplineBuilder _piplineBuilder;
     private ILogger _logger;
 
     // TODO: 本来はどの取引所を使用するかもCLからのリクエストに含める
-    public BotService(IExchange exchange/*, FeaturePiplineBuilder piplineBuilder*/, ILogger<BotService> logger)
+    public BotService(IExchange exchange, ILogger<BotService> logger)
     {
         _exchange = exchange;
-        // _piplineBuilder = piplineBuilder;
         _logger = logger;
     }
 
@@ -35,11 +31,13 @@ public class BotService : ServiceBase.BotServiceBase
         var symbol = SymbolConverter.ToEntity(request.Symbol);
         var startAt = request.StartAt.ToDateTimeOffset();
         var endAt = request.EndAt.ToDateTimeOffset();
+        var orders = request.Orders.Select(FeaturePiplineOrderConverter.ToEntity);
         var stream = _exchange.OhlcvStreamAsObservable(symbol, startAt, endAt);
-        var bot = new Bot(stream, _logger);
+        var pipline = stream.BuildPipline(orders);
+        var bot = new Bot(pipline, _logger);
         var completion = new TaskCompletionSource();
-        using var _ = stream.Subscribe(
-            _ => { },
+        using var _ = pipline.Subscribe(
+            _ => {},
             completion.SetException,
             completion.SetResult
         );

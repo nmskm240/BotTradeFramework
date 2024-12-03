@@ -1,7 +1,5 @@
 using System.Reactive.Linq;
 
-using BotTrade.Domain.Ohlcvs;
-
 using Microsoft.Extensions.Logging;
 
 using Python.Runtime;
@@ -14,7 +12,7 @@ public class Bot
     protected ILogger Logger { get; init; }
     private readonly dynamic _model;
 
-    public Bot(IObservable<Ohlcv> stream, ILogger logger)
+    public Bot(IObservable<Dictionary<string, double>> stream, ILogger logger)
     {
         // Exchange = exchange;
         Logger = logger;
@@ -25,8 +23,7 @@ public class Bot
             _model = river.SNARIMAX(1, 0, 0);
         }
 
-        stream.Select(x => x.ToDictonary())
-            .Buffer(2, 1)
+        stream.Buffer(2, 1)
             .Subscribe(Think);
     }
 

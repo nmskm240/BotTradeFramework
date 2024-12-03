@@ -29,13 +29,13 @@ public class FeaturePiplineBuilderTest
             new (100d, 100d, 100d, 100d, 100d, now.DateTime, symbol)
         };
         var ohlcvStream = ohlcvs.ToObservable();
-        var builder = new FeaturePiplineBuilder(ohlcvStream);
         var piplineOrders = new List<FeaturePiplineOrder> {
             new (typeof(Remove), 0, new Dictionary<string, object> { { "Symbol", null } }),
         };
+        var pipline = ohlcvStream.BuildPipline(piplineOrders);
         var completion = new TaskCompletionSource();
         var results = new List<Dictionary<string, double>>();
-        using var subscription = builder.Create(piplineOrders)
+        using var subscription = pipline
             .Subscribe(
                 results.Add,
                 completion.SetException,
