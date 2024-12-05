@@ -23,6 +23,8 @@ RUN apt-get update \
         ninja-build \
         pkg-config \
         libgtk-3-dev \
+        liblzma-dev \
+        libstdc++-12-dev \
         default-jre \
         graphviz \
         ca-certificates \
@@ -31,6 +33,7 @@ RUN apt-get update \
         cargo \
         sqlite3 \
         python3-openssl \
+        protobuf-compiler \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
@@ -53,11 +56,6 @@ RUN git clone https://github.com/flutter/flutter.git ${FLUTTER_SDK_PATH} \
     && cd ${FLUTTER_SDK_PATH} \
     && git fetch --all --tags \
     && git checkout ${FLUTTER_VERSION} \
-    && export PATH="$PATH:${FLUTTER_SDK_PATH}/bin" \
-    && flutter channel stable \
-    && flutter upgrade \
-    && flutter precache \
     && chmod -R 777 ${FLUTTER_SDK_PATH}
 
-ENV PATH="${FLUTTER_SDK_PATH}/bin/cache/dart-sdk/bin:${PATH}"
-
+ENV PATH="$PATH:${FLUTTER_SDK_PATH}/bin"
