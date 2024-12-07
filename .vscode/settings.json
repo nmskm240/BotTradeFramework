@@ -1,0 +1,23 @@
+{
+    "files.associations": {
+        "*.json": "jsonc"
+    },
+    "plantuml.exportIncludeFolderHeirarchy": false,
+    "plantuml.exportSubFolder": false,
+    "plantuml.render": "Local",
+    "plantuml.exportOutDir": "doc",
+    "workbench.editorLargeFileConfirmation": 1000,
+    "dotnet.server.useOmnisharp": true,
+    "files.exclude": {
+        "**/.gitkeep": true
+    },
+    "terminal.integrated.defaultProfile.linux": "bash",
+    "terminal.integrated.profiles.linux": {
+        "bash": {
+            "path": "bash",
+            "args": [
+                "-l"
+            ]
+        }
+    },
+}

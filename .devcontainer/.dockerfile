@@ -59,3 +59,7 @@ RUN git clone https://github.com/flutter/flutter.git ${FLUTTER_SDK_PATH} \
     && chmod -R 777 ${FLUTTER_SDK_PATH}
 
 ENV PATH="$PATH:${FLUTTER_SDK_PATH}/bin"
+
+RUN dart pub global activate protoc_plugin
+
+ENV PATH="$PATH:/root/.pub-cache/bin"
