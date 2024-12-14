@@ -17,16 +17,19 @@ namespace BotTrade.Application.Services;
 public class BotService : ServiceBase.BotServiceBase
 {
     private IExchange _exchange;
+    private IFeaturePipelineInfoLoader _loader;
     private ILogger _logger;
 
     // TODO: 本来はどの取引所を使用するかもCLからのリクエストに含める
-    public BotService(IExchange exchange, ILogger<BotService> logger)
+    // TODO: InfoLoaderではなく、SourceGenでPipelineProcessからInfoを作成するようにしたい
+    public BotService(IExchange exchange, IFeaturePipelineInfoLoader loader, ILogger<BotService> logger)
     {
         _exchange = exchange;
+        _loader = loader;
         _logger = logger;
     }
 
-    public override async Task<Empty> Run(BotOrder request, ServerCallContext context)
+    public override async Task Run(BotOrder request, IServerStreamWriter<BotPerformance> stream, ServerCallContext context)
     {
         var symbol = SymbolConverter.ToEntity(request.Symbol);
         var startAt = request.StartAt.ToDateTimeOffset();
@@ -42,16 +45,26 @@ public class BotService : ServiceBase.BotServiceBase
             completion.SetResult
         );
 
-        try
-        {
-            using var __ = stream.Connect();
-            await completion.Task;
-        }
-        catch (Exception e)
-        {
-            _logger.LogError(e.Message);
-        }
+        // try
+        // {
+        //     using var __ = ohlcvStream.Connect();
+        //     await completion.Task;
+        // }
+        // catch (Exception e)
+        // {
+        //     _logger.LogError(e.Message);
+        // }
+    }
 
-        return new Empty();
+    public override Task<FeaturePipelineInfos> SupportedFeaturePipelines(Empty request, ServerCallContext context)
+    {
+        var infos = _loader.Load("/workspaces/BotTradeFramework/server/pipeline_info.json")
+            .Select(FeaturePipelineInfoConverter.ToGrpcMessage)
+            .ToList();
+        var res = new FeaturePipelineInfos
+        {
+            Infos = { infos }
+        };
+        return Task.FromResult(res);
     }
 }

@@ -1,15 +1,18 @@
 namespace BotTrade.Domain.Features.Process;
 
-public sealed class Aggregate : IFeaturePipline
+public sealed class Aggregate : IFeaturePipeline
 {
     private readonly RingQueue<Dictionary<string, double>> _buffer;
     private const string DEFALUT_RULE = "last";
-    public FeaturePiplineOrder Order { get; init; }
+    public FeaturePipelineOrder Order { get; init; }
 
-    public Aggregate(FeaturePiplineOrder order)
+    public Aggregate(FeaturePipelineOrder order)
     {
+        var size = order.Parameters
+            .FirstOrDefault(p => p.Name == "buffer_size").IntValue ?? 0;
+
         Order = order;
-        _buffer = new(order.NeedDataSize);
+        _buffer = new(size);
     }
 
     public Dictionary<string, double> Execute(Dictionary<string, double> input)
@@ -25,7 +28,8 @@ public sealed class Aggregate : IFeaturePipline
         {
             var values = _buffer.Select(pair => pair[key]);
             // TODO: 拡張性を考えるならここはインターフェース化したい
-            var rule = Order.Parameters.GetValueOrDefault(key, DEFALUT_RULE);
+            var rule = Order.Parameters
+                .FirstOrDefault(p => p.Name == key).StringValue ?? DEFALUT_RULE;
             var res = (string)rule switch
             {
                 "first" => values.First(),

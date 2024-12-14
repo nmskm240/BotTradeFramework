@@ -1,8 +1,8 @@
 namespace BotTrade.Domain.Features;
 
-public interface IFeaturePipline
+public interface IFeaturePipeline
 {
-    public FeaturePiplineOrder Order { get; init; }
+    public FeaturePipelineOrder Order { get; init; }
 
     Dictionary<string, double> Execute(Dictionary<string, double> input);
 }

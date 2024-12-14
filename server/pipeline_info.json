@@ -1,0 +1,15 @@
+// FIXME: SourceGenerateを使うようにいたいため
+[
+    {
+        "type": "BotTrade.Domain.Features.Process.Aggregate",
+        "name": "Aggregate",
+        "description": "集約処理",
+        "parameters": [
+            {
+                "name": "target",
+                "description": "対象",
+                "default_value": 100
+            }
+        ]
+    }
+]

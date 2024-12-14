@@ -29,8 +29,16 @@ public class FeaturePiplineBuilderTest
             new (100d, 100d, 100d, 100d, 100d, now.DateTime, symbol)
         };
         var ohlcvStream = ohlcvs.ToObservable();
-        var piplineOrders = new List<FeaturePiplineOrder> {
-            new (typeof(Remove), 0, new Dictionary<string, object> { { "Symbol", null } }),
+        var piplineOrders = new List<FeaturePipelineOrder>{
+            new() {
+                ProcessKind = typeof(Remove),
+                Parameters = [
+                    new FeaturePipelineParameterOrder () {
+                        Name = "targets",
+                        Value = "",
+                    },
+                ]
+            },
         };
         var pipline = ohlcvStream.BuildPipline(piplineOrders);
         var completion = new TaskCompletionSource();

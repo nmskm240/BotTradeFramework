@@ -48,15 +48,27 @@ namespace BotTrade.Application.Grpc.Generated {
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::BotTrade.Application.Grpc.Generated.BotOrder> __Marshaller_bot_BotOrder = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::BotTrade.Application.Grpc.Generated.BotOrder.Parser));
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::BotTrade.Application.Grpc.Generated.BotPerformance> __Marshaller_bot_BotPerformance = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::BotTrade.Application.Grpc.Generated.BotPerformance.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     static readonly grpc::Marshaller<global::Google.Protobuf.WellKnownTypes.Empty> __Marshaller_google_protobuf_Empty = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::Google.Protobuf.WellKnownTypes.Empty.Parser));
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Marshaller<global::BotTrade.Application.Grpc.Generated.FeaturePipelineInfos> __Marshaller_bot_FeaturePipelineInfos = grpc::Marshallers.Create(__Helper_SerializeMessage, context => __Helper_DeserializeMessage(context, global::BotTrade.Application.Grpc.Generated.FeaturePipelineInfos.Parser));
 
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-    static readonly grpc::Method<global::BotTrade.Application.Grpc.Generated.BotOrder, global::Google.Protobuf.WellKnownTypes.Empty> __Method_Run = new grpc::Method<global::BotTrade.Application.Grpc.Generated.BotOrder, global::Google.Protobuf.WellKnownTypes.Empty>(
-        grpc::MethodType.Unary,
+    static readonly grpc::Method<global::BotTrade.Application.Grpc.Generated.BotOrder, global::BotTrade.Application.Grpc.Generated.BotPerformance> __Method_Run = new grpc::Method<global::BotTrade.Application.Grpc.Generated.BotOrder, global::BotTrade.Application.Grpc.Generated.BotPerformance>(
+        grpc::MethodType.ServerStreaming,
         __ServiceName,
         "Run",
         __Marshaller_bot_BotOrder,
-        __Marshaller_google_protobuf_Empty);
+        __Marshaller_bot_BotPerformance);
+
+    [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+    static readonly grpc::Method<global::Google.Protobuf.WellKnownTypes.Empty, global::BotTrade.Application.Grpc.Generated.FeaturePipelineInfos> __Method_SupportedFeaturePipelines = new grpc::Method<global::Google.Protobuf.WellKnownTypes.Empty, global::BotTrade.Application.Grpc.Generated.FeaturePipelineInfos>(
+        grpc::MethodType.Unary,
+        __ServiceName,
+        "SupportedFeaturePipelines",
+        __Marshaller_google_protobuf_Empty,
+        __Marshaller_bot_FeaturePipelineInfos);
 
     /// <summary>Service descriptor</summary>
     public static global::Google.Protobuf.Reflection.ServiceDescriptor Descriptor
@@ -69,7 +81,13 @@ namespace BotTrade.Application.Grpc.Generated {
     public abstract partial class BotServiceBase
     {
       [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
-      public virtual global::System.Threading.Tasks.Task<global::Google.Protobuf.WellKnownTypes.Empty> Run(global::BotTrade.Application.Grpc.Generated.BotOrder request, grpc::ServerCallContext context)
+      public virtual global::System.Threading.Tasks.Task Run(global::BotTrade.Application.Grpc.Generated.BotOrder request, grpc::IServerStreamWriter<global::BotTrade.Application.Grpc.Generated.BotPerformance> responseStream, grpc::ServerCallContext context)
+      {
+        throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
+      }
+
+      [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
+      public virtual global::System.Threading.Tasks.Task<global::BotTrade.Application.Grpc.Generated.FeaturePipelineInfos> SupportedFeaturePipelines(global::Google.Protobuf.WellKnownTypes.Empty request, grpc::ServerCallContext context)
       {
         throw new grpc::RpcException(new grpc::Status(grpc::StatusCode.Unimplemented, ""));
       }
@@ -82,7 +100,8 @@ namespace BotTrade.Application.Grpc.Generated {
     public static grpc::ServerServiceDefinition BindService(BotServiceBase serviceImpl)
     {
       return grpc::ServerServiceDefinition.CreateBuilder()
-          .AddMethod(__Method_Run, serviceImpl.Run).Build();
+          .AddMethod(__Method_Run, serviceImpl.Run)
+          .AddMethod(__Method_SupportedFeaturePipelines, serviceImpl.SupportedFeaturePipelines).Build();
     }
 
     /// <summary>Register service method with a service binder with or without implementation. Useful when customizing the service binding logic.
@@ -92,7 +111,8 @@ namespace BotTrade.Application.Grpc.Generated {
     [global::System.CodeDom.Compiler.GeneratedCode("grpc_csharp_plugin", null)]
     public static void BindService(grpc::ServiceBinderBase serviceBinder, BotServiceBase serviceImpl)
     {
-      serviceBinder.AddMethod(__Method_Run, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::BotTrade.Application.Grpc.Generated.BotOrder, global::Google.Protobuf.WellKnownTypes.Empty>(serviceImpl.Run));
+      serviceBinder.AddMethod(__Method_Run, serviceImpl == null ? null : new grpc::ServerStreamingServerMethod<global::BotTrade.Application.Grpc.Generated.BotOrder, global::BotTrade.Application.Grpc.Generated.BotPerformance>(serviceImpl.Run));
+      serviceBinder.AddMethod(__Method_SupportedFeaturePipelines, serviceImpl == null ? null : new grpc::UnaryServerMethod<global::Google.Protobuf.WellKnownTypes.Empty, global::BotTrade.Application.Grpc.Generated.FeaturePipelineInfos>(serviceImpl.SupportedFeaturePipelines));
     }
 
   }

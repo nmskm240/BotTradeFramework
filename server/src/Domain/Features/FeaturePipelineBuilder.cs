@@ -4,11 +4,11 @@ using BotTrade.Domain.Ohlcvs;
 
 namespace BotTrade.Domain.Features;
 
-public static class FeaturePiplineBuilder
+public static class FeaturePipelineBuilder
 {
-    public static IObservable<Dictionary<string, double>> BuildPipline(this IObservable<Ohlcv> stream, IEnumerable<FeaturePiplineOrder> orders)
+    public static IObservable<Dictionary<string, double>> BuildPipline(this IObservable<Ohlcv> stream, IEnumerable<FeaturePipelineOrder> orders)
     {
-        var processes = orders.Select(order => Activator.CreateInstance(order.ProcessKind, order) as IFeaturePipline)
+        var processes = orders.Select(order => Activator.CreateInstance(order.ProcessKind, order) as IFeaturePipeline)
             .Where(p => p != null)
             .ToList();
         return stream.Select(ohlcv =>
