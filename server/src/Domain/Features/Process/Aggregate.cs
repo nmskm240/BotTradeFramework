@@ -9,10 +9,10 @@ public sealed class Aggregate : IFeaturePipeline
     public Aggregate(FeaturePipelineOrder order)
     {
         var size = order.Parameters
-            .FirstOrDefault(p => p.Name == "buffer_size").IntValue ?? 0;
+            .FirstOrDefault(p => p.Name == "buffer_size").LongValue ?? 0;
 
         Order = order;
-        _buffer = new(size);
+        _buffer = new((int)size);
     }
 
     public Dictionary<string, double> Execute(Dictionary<string, double> input)

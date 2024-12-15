@@ -6,9 +6,9 @@ namespace BotTrade.Domain.Features;
 
 public static class FeaturePipelineBuilder
 {
-    public static IObservable<Dictionary<string, double>> BuildPipline(this IObservable<Ohlcv> stream, IEnumerable<FeaturePipelineOrder> orders)
+    public static IObservable<Dictionary<string, double>> BuildPipeline(this IObservable<Ohlcv> stream, IEnumerable<FeaturePipelineOrder> orders)
     {
-        var processes = orders.Select(order => Activator.CreateInstance(order.ProcessKind, order) as IFeaturePipeline)
+        var processes = orders.Select(order => Activator.CreateInstance(order.ProcessKind, [order]) as IFeaturePipeline)
             .Where(p => p != null)
             .ToList();
         return stream.Select(ohlcv =>

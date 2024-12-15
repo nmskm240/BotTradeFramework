@@ -26,41 +26,41 @@ namespace BotTrade.Application.Grpc.Generated {
           string.Concat(
             "Cglib3QucHJvdG8SA2JvdBobZ29vZ2xlL3Byb3RvYnVmL2VtcHR5LnByb3Rv",
             "Gh9nb29nbGUvcHJvdG9idWYvdGltZXN0YW1wLnByb3RvGg5leGNoYW5nZS5w",
-            "cm90byJsCg5Cb3RQZXJmb3JtYW5jZRIVCg1wcmVkaWN0X3ZhbHVlGAEgASgC",
-            "EhQKDGFjdHVhbF92YWx1ZRgCIAEoAhItCgl0aW1lc3RhbXAYAyABKAsyGi5n",
+            "cm90byJsCg5Cb3RQZXJmb3JtYW5jZRIVCg1wcmVkaWN0X3ZhbHVlGAEgASgB",
+            "EhQKDGFjdHVhbF92YWx1ZRgCIAEoARItCgl0aW1lc3RhbXAYAyABKAsyGi5n",
             "b29nbGUucHJvdG9idWYuVGltZXN0YW1wIj8KFEZlYXR1cmVQaXBlbGluZUlu",
             "Zm9zEicKBWluZm9zGAEgAygLMhguYm90LkZlYXR1cmVQaXBlbGluZUluZm8i",
             "fQoTRmVhdHVyZVBpcGVsaW5lSW5mbxIMCgR0eXBlGAEgASgJEgwKBG5hbWUY",
             "AiABKAkSEwoLZGVzY3JpcHRpb24YAyABKAkSNQoKcGFyYW1ldGVycxgEIAMo",
-            "CzIhLmJvdC5GZWF0dXJlUGlwZWxpbmVQYXJhbWV0ZXJJbmZvIqwBChxGZWF0",
+            "CzIhLmJvdC5GZWF0dXJlUGlwZWxpbmVQYXJhbWV0ZXJJbmZvIq4BChxGZWF0",
             "dXJlUGlwZWxpbmVQYXJhbWV0ZXJJbmZvEgwKBG5hbWUYASABKAkSEwoLZGVz",
-            "Y3JpcHRpb24YAiABKAkSFgoMc3RyaW5nX3ZhbHVlGAMgASgJSAASEwoJaW50",
-            "X3ZhbHVlGAQgASgFSAASFQoLZmxvYXRfdmFsdWUYBSABKAJIABIUCgpib29s",
-            "X3ZhbHVlGAYgASgISABCDwoNZGVmYXVsdF92YWx1ZSJcChRGZWF0dXJlUGlw",
-            "ZWxpbmVPcmRlchIMCgR0eXBlGAEgASgJEjYKCnBhcmFtZXRlcnMYAiADKAsy",
-            "Ii5ib3QuRmVhdHVyZVBpcGVsaW5lUGFyYW1ldGVyT3JkZXIikAEKHUZlYXR1",
-            "cmVQaXBlbGluZVBhcmFtZXRlck9yZGVyEgwKBG5hbWUYASABKAkSFgoMc3Ry",
-            "aW5nX3ZhbHVlGAIgASgJSAASEwoJaW50X3ZhbHVlGAMgASgFSAASFQoLZmxv",
-            "YXRfdmFsdWUYBCABKAJIABIUCgpib29sX3ZhbHVlGAUgASgISABCBwoFdmFs",
-            "dWUi3AEKCEJvdE9yZGVyEiAKBnN5bWJvbBgBIAEoCzIQLmV4Y2hhbmdlLlN5",
-            "bWJvbBIyCg9waXBlbGluZV9vcmRlcnMYAiADKAsyGS5ib3QuRmVhdHVyZVBp",
-            "cGVsaW5lT3JkZXISMQoIc3RhcnRfYXQYAyABKAsyGi5nb29nbGUucHJvdG9i",
-            "dWYuVGltZXN0YW1wSACIAQESLwoGZW5kX2F0GAQgASgLMhouZ29vZ2xlLnBy",
-            "b3RvYnVmLlRpbWVzdGFtcEgBiAEBQgsKCV9zdGFydF9hdEIJCgdfZW5kX2F0",
-            "MokBCgpCb3RTZXJ2aWNlEisKA1J1bhINLmJvdC5Cb3RPcmRlchoTLmJvdC5C",
-            "b3RQZXJmb3JtYW5jZTABEk4KGVN1cHBvcnRlZEZlYXR1cmVQaXBlbGluZXMS",
-            "Fi5nb29nbGUucHJvdG9idWYuRW1wdHkaGS5ib3QuRmVhdHVyZVBpcGVsaW5l",
-            "SW5mb3NCJqoCI0JvdFRyYWRlLkFwcGxpY2F0aW9uLkdycGMuR2VuZXJhdGVk",
-            "YgZwcm90bzM="));
+            "Y3JpcHRpb24YAiABKAkSFgoMc3RyaW5nX3ZhbHVlGAMgASgJSAASFAoKbG9u",
+            "Z192YWx1ZRgEIAEoA0gAEhYKDGRvdWJsZV92YWx1ZRgFIAEoAUgAEhQKCmJv",
+            "b2xfdmFsdWUYBiABKAhIAEIPCg1kZWZhdWx0X3ZhbHVlIlwKFEZlYXR1cmVQ",
+            "aXBlbGluZU9yZGVyEgwKBHR5cGUYASABKAkSNgoKcGFyYW1ldGVycxgCIAMo",
+            "CzIiLmJvdC5GZWF0dXJlUGlwZWxpbmVQYXJhbWV0ZXJPcmRlciKSAQodRmVh",
+            "dHVyZVBpcGVsaW5lUGFyYW1ldGVyT3JkZXISDAoEbmFtZRgBIAEoCRIWCgxz",
+            "dHJpbmdfdmFsdWUYAiABKAlIABIUCgpsb25nX3ZhbHVlGAMgASgDSAASFgoM",
+            "ZG91YmxlX3ZhbHVlGAQgASgBSAASFAoKYm9vbF92YWx1ZRgFIAEoCEgAQgcK",
+            "BXZhbHVlItwBCghCb3RPcmRlchIgCgZzeW1ib2wYASABKAsyEC5leGNoYW5n",
+            "ZS5TeW1ib2wSMgoPcGlwZWxpbmVfb3JkZXJzGAIgAygLMhkuYm90LkZlYXR1",
+            "cmVQaXBlbGluZU9yZGVyEjEKCHN0YXJ0X2F0GAMgASgLMhouZ29vZ2xlLnBy",
+            "b3RvYnVmLlRpbWVzdGFtcEgAiAEBEi8KBmVuZF9hdBgEIAEoCzIaLmdvb2ds",
+            "ZS5wcm90b2J1Zi5UaW1lc3RhbXBIAYgBAUILCglfc3RhcnRfYXRCCQoHX2Vu",
+            "ZF9hdDKJAQoKQm90U2VydmljZRIrCgNSdW4SDS5ib3QuQm90T3JkZXIaEy5i",
+            "b3QuQm90UGVyZm9ybWFuY2UwARJOChlTdXBwb3J0ZWRGZWF0dXJlUGlwZWxp",
+            "bmVzEhYuZ29vZ2xlLnByb3RvYnVmLkVtcHR5GhkuYm90LkZlYXR1cmVQaXBl",
+            "bGluZUluZm9zQiaqAiNCb3RUcmFkZS5BcHBsaWNhdGlvbi5HcnBjLkdlbmVy",
+            "YXRlZGIGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { global::Google.Protobuf.WellKnownTypes.EmptyReflection.Descriptor, global::Google.Protobuf.WellKnownTypes.TimestampReflection.Descriptor, global::BotTrade.Application.Grpc.Generated.ExchangeReflection.Descriptor, },
           new pbr::GeneratedClrTypeInfo(null, null, new pbr::GeneratedClrTypeInfo[] {
             new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.BotPerformance), global::BotTrade.Application.Grpc.Generated.BotPerformance.Parser, new[]{ "PredictValue", "ActualValue", "Timestamp" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.FeaturePipelineInfos), global::BotTrade.Application.Grpc.Generated.FeaturePipelineInfos.Parser, new[]{ "Infos" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.FeaturePipelineInfo), global::BotTrade.Application.Grpc.Generated.FeaturePipelineInfo.Parser, new[]{ "Type", "Name", "Description", "Parameters" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.FeaturePipelineParameterInfo), global::BotTrade.Application.Grpc.Generated.FeaturePipelineParameterInfo.Parser, new[]{ "Name", "Description", "StringValue", "IntValue", "FloatValue", "BoolValue" }, new[]{ "DefaultValue" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.FeaturePipelineParameterInfo), global::BotTrade.Application.Grpc.Generated.FeaturePipelineParameterInfo.Parser, new[]{ "Name", "Description", "StringValue", "LongValue", "DoubleValue", "BoolValue" }, new[]{ "DefaultValue" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.FeaturePipelineOrder), global::BotTrade.Application.Grpc.Generated.FeaturePipelineOrder.Parser, new[]{ "Type", "Parameters" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.FeaturePipelineParameterOrder), global::BotTrade.Application.Grpc.Generated.FeaturePipelineParameterOrder.Parser, new[]{ "Name", "StringValue", "IntValue", "FloatValue", "BoolValue" }, new[]{ "Value" }, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.FeaturePipelineParameterOrder), global::BotTrade.Application.Grpc.Generated.FeaturePipelineParameterOrder.Parser, new[]{ "Name", "StringValue", "LongValue", "DoubleValue", "BoolValue" }, new[]{ "Value" }, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::BotTrade.Application.Grpc.Generated.BotOrder), global::BotTrade.Application.Grpc.Generated.BotOrder.Parser, new[]{ "Symbol", "PipelineOrders", "StartAt", "EndAt" }, new[]{ "StartAt", "EndAt" }, null, null, null)
           }));
     }
@@ -117,10 +117,10 @@ namespace BotTrade.Application.Grpc.Generated {
 
     /// <summary>Field number for the "predict_value" field.</summary>
     public const int PredictValueFieldNumber = 1;
-    private float predictValue_;
+    private double predictValue_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float PredictValue {
+    public double PredictValue {
       get { return predictValue_; }
       set {
         predictValue_ = value;
@@ -129,10 +129,10 @@ namespace BotTrade.Application.Grpc.Generated {
 
     /// <summary>Field number for the "actual_value" field.</summary>
     public const int ActualValueFieldNumber = 2;
-    private float actualValue_;
+    private double actualValue_;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float ActualValue {
+    public double ActualValue {
       get { return actualValue_; }
       set {
         actualValue_ = value;
@@ -166,8 +166,8 @@ namespace BotTrade.Application.Grpc.Generated {
       if (ReferenceEquals(other, this)) {
         return true;
       }
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(PredictValue, other.PredictValue)) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(ActualValue, other.ActualValue)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(PredictValue, other.PredictValue)) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(ActualValue, other.ActualValue)) return false;
       if (!object.Equals(Timestamp, other.Timestamp)) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
@@ -176,8 +176,8 @@ namespace BotTrade.Application.Grpc.Generated {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override int GetHashCode() {
       int hash = 1;
-      if (PredictValue != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PredictValue);
-      if (ActualValue != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(ActualValue);
+      if (PredictValue != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(PredictValue);
+      if (ActualValue != 0D) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(ActualValue);
       if (timestamp_ != null) hash ^= Timestamp.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
@@ -197,13 +197,13 @@ namespace BotTrade.Application.Grpc.Generated {
     #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
       output.WriteRawMessage(this);
     #else
-      if (PredictValue != 0F) {
-        output.WriteRawTag(13);
-        output.WriteFloat(PredictValue);
+      if (PredictValue != 0D) {
+        output.WriteRawTag(9);
+        output.WriteDouble(PredictValue);
       }
-      if (ActualValue != 0F) {
-        output.WriteRawTag(21);
-        output.WriteFloat(ActualValue);
+      if (ActualValue != 0D) {
+        output.WriteRawTag(17);
+        output.WriteDouble(ActualValue);
       }
       if (timestamp_ != null) {
         output.WriteRawTag(26);
@@ -219,13 +219,13 @@ namespace BotTrade.Application.Grpc.Generated {
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
-      if (PredictValue != 0F) {
-        output.WriteRawTag(13);
-        output.WriteFloat(PredictValue);
+      if (PredictValue != 0D) {
+        output.WriteRawTag(9);
+        output.WriteDouble(PredictValue);
       }
-      if (ActualValue != 0F) {
-        output.WriteRawTag(21);
-        output.WriteFloat(ActualValue);
+      if (ActualValue != 0D) {
+        output.WriteRawTag(17);
+        output.WriteDouble(ActualValue);
       }
       if (timestamp_ != null) {
         output.WriteRawTag(26);
@@ -241,11 +241,11 @@ namespace BotTrade.Application.Grpc.Generated {
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public int CalculateSize() {
       int size = 0;
-      if (PredictValue != 0F) {
-        size += 1 + 4;
+      if (PredictValue != 0D) {
+        size += 1 + 8;
       }
-      if (ActualValue != 0F) {
-        size += 1 + 4;
+      if (ActualValue != 0D) {
+        size += 1 + 8;
       }
       if (timestamp_ != null) {
         size += 1 + pb::CodedOutputStream.ComputeMessageSize(Timestamp);
@@ -262,10 +262,10 @@ namespace BotTrade.Application.Grpc.Generated {
       if (other == null) {
         return;
       }
-      if (other.PredictValue != 0F) {
+      if (other.PredictValue != 0D) {
         PredictValue = other.PredictValue;
       }
-      if (other.ActualValue != 0F) {
+      if (other.ActualValue != 0D) {
         ActualValue = other.ActualValue;
       }
       if (other.timestamp_ != null) {
@@ -293,12 +293,12 @@ namespace BotTrade.Application.Grpc.Generated {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
             break;
-          case 13: {
-            PredictValue = input.ReadFloat();
+          case 9: {
+            PredictValue = input.ReadDouble();
             break;
           }
-          case 21: {
-            ActualValue = input.ReadFloat();
+          case 17: {
+            ActualValue = input.ReadDouble();
             break;
           }
           case 26: {
@@ -327,12 +327,12 @@ namespace BotTrade.Application.Grpc.Generated {
           default:
             _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
             break;
-          case 13: {
-            PredictValue = input.ReadFloat();
+          case 9: {
+            PredictValue = input.ReadDouble();
             break;
           }
-          case 21: {
-            ActualValue = input.ReadFloat();
+          case 17: {
+            ActualValue = input.ReadDouble();
             break;
           }
           case 26: {
@@ -875,11 +875,11 @@ namespace BotTrade.Application.Grpc.Generated {
         case DefaultValueOneofCase.StringValue:
           StringValue = other.StringValue;
           break;
-        case DefaultValueOneofCase.IntValue:
-          IntValue = other.IntValue;
+        case DefaultValueOneofCase.LongValue:
+          LongValue = other.LongValue;
           break;
-        case DefaultValueOneofCase.FloatValue:
-          FloatValue = other.FloatValue;
+        case DefaultValueOneofCase.DoubleValue:
+          DoubleValue = other.DoubleValue;
           break;
         case DefaultValueOneofCase.BoolValue:
           BoolValue = other.BoolValue;
@@ -945,54 +945,54 @@ namespace BotTrade.Application.Grpc.Generated {
       }
     }
 
-    /// <summary>Field number for the "int_value" field.</summary>
-    public const int IntValueFieldNumber = 4;
+    /// <summary>Field number for the "long_value" field.</summary>
+    public const int LongValueFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int IntValue {
-      get { return HasIntValue ? (int) defaultValue_ : 0; }
+    public long LongValue {
+      get { return HasLongValue ? (long) defaultValue_ : 0L; }
       set {
         defaultValue_ = value;
-        defaultValueCase_ = DefaultValueOneofCase.IntValue;
+        defaultValueCase_ = DefaultValueOneofCase.LongValue;
       }
     }
-    /// <summary>Gets whether the "int_value" field is set</summary>
+    /// <summary>Gets whether the "long_value" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasIntValue {
-      get { return defaultValueCase_ == DefaultValueOneofCase.IntValue; }
+    public bool HasLongValue {
+      get { return defaultValueCase_ == DefaultValueOneofCase.LongValue; }
     }
-    /// <summary> Clears the value of the oneof if it's currently set to "int_value" </summary>
+    /// <summary> Clears the value of the oneof if it's currently set to "long_value" </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearIntValue() {
-      if (HasIntValue) {
+    public void ClearLongValue() {
+      if (HasLongValue) {
         ClearDefaultValue();
       }
     }
 
-    /// <summary>Field number for the "float_value" field.</summary>
-    public const int FloatValueFieldNumber = 5;
+    /// <summary>Field number for the "double_value" field.</summary>
+    public const int DoubleValueFieldNumber = 5;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float FloatValue {
-      get { return HasFloatValue ? (float) defaultValue_ : 0F; }
+    public double DoubleValue {
+      get { return HasDoubleValue ? (double) defaultValue_ : 0D; }
       set {
         defaultValue_ = value;
-        defaultValueCase_ = DefaultValueOneofCase.FloatValue;
+        defaultValueCase_ = DefaultValueOneofCase.DoubleValue;
       }
     }
-    /// <summary>Gets whether the "float_value" field is set</summary>
+    /// <summary>Gets whether the "double_value" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasFloatValue {
-      get { return defaultValueCase_ == DefaultValueOneofCase.FloatValue; }
+    public bool HasDoubleValue {
+      get { return defaultValueCase_ == DefaultValueOneofCase.DoubleValue; }
     }
-    /// <summary> Clears the value of the oneof if it's currently set to "float_value" </summary>
+    /// <summary> Clears the value of the oneof if it's currently set to "double_value" </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearFloatValue() {
-      if (HasFloatValue) {
+    public void ClearDoubleValue() {
+      if (HasDoubleValue) {
         ClearDefaultValue();
       }
     }
@@ -1028,8 +1028,8 @@ namespace BotTrade.Application.Grpc.Generated {
     public enum DefaultValueOneofCase {
       None = 0,
       StringValue = 3,
-      IntValue = 4,
-      FloatValue = 5,
+      LongValue = 4,
+      DoubleValue = 5,
       BoolValue = 6,
     }
     private DefaultValueOneofCase defaultValueCase_ = DefaultValueOneofCase.None;
@@ -1064,8 +1064,8 @@ namespace BotTrade.Application.Grpc.Generated {
       if (Name != other.Name) return false;
       if (Description != other.Description) return false;
       if (StringValue != other.StringValue) return false;
-      if (IntValue != other.IntValue) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(FloatValue, other.FloatValue)) return false;
+      if (LongValue != other.LongValue) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(DoubleValue, other.DoubleValue)) return false;
       if (BoolValue != other.BoolValue) return false;
       if (DefaultValueCase != other.DefaultValueCase) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -1078,8 +1078,8 @@ namespace BotTrade.Application.Grpc.Generated {
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (Description.Length != 0) hash ^= Description.GetHashCode();
       if (HasStringValue) hash ^= StringValue.GetHashCode();
-      if (HasIntValue) hash ^= IntValue.GetHashCode();
-      if (HasFloatValue) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(FloatValue);
+      if (HasLongValue) hash ^= LongValue.GetHashCode();
+      if (HasDoubleValue) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(DoubleValue);
       if (HasBoolValue) hash ^= BoolValue.GetHashCode();
       hash ^= (int) defaultValueCase_;
       if (_unknownFields != null) {
@@ -1112,13 +1112,13 @@ namespace BotTrade.Application.Grpc.Generated {
         output.WriteRawTag(26);
         output.WriteString(StringValue);
       }
-      if (HasIntValue) {
+      if (HasLongValue) {
         output.WriteRawTag(32);
-        output.WriteInt32(IntValue);
+        output.WriteInt64(LongValue);
       }
-      if (HasFloatValue) {
-        output.WriteRawTag(45);
-        output.WriteFloat(FloatValue);
+      if (HasDoubleValue) {
+        output.WriteRawTag(41);
+        output.WriteDouble(DoubleValue);
       }
       if (HasBoolValue) {
         output.WriteRawTag(48);
@@ -1146,13 +1146,13 @@ namespace BotTrade.Application.Grpc.Generated {
         output.WriteRawTag(26);
         output.WriteString(StringValue);
       }
-      if (HasIntValue) {
+      if (HasLongValue) {
         output.WriteRawTag(32);
-        output.WriteInt32(IntValue);
+        output.WriteInt64(LongValue);
       }
-      if (HasFloatValue) {
-        output.WriteRawTag(45);
-        output.WriteFloat(FloatValue);
+      if (HasDoubleValue) {
+        output.WriteRawTag(41);
+        output.WriteDouble(DoubleValue);
       }
       if (HasBoolValue) {
         output.WriteRawTag(48);
@@ -1177,11 +1177,11 @@ namespace BotTrade.Application.Grpc.Generated {
       if (HasStringValue) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(StringValue);
       }
-      if (HasIntValue) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(IntValue);
+      if (HasLongValue) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(LongValue);
       }
-      if (HasFloatValue) {
-        size += 1 + 4;
+      if (HasDoubleValue) {
+        size += 1 + 8;
       }
       if (HasBoolValue) {
         size += 1 + 1;
@@ -1208,11 +1208,11 @@ namespace BotTrade.Application.Grpc.Generated {
         case DefaultValueOneofCase.StringValue:
           StringValue = other.StringValue;
           break;
-        case DefaultValueOneofCase.IntValue:
-          IntValue = other.IntValue;
+        case DefaultValueOneofCase.LongValue:
+          LongValue = other.LongValue;
           break;
-        case DefaultValueOneofCase.FloatValue:
-          FloatValue = other.FloatValue;
+        case DefaultValueOneofCase.DoubleValue:
+          DoubleValue = other.DoubleValue;
           break;
         case DefaultValueOneofCase.BoolValue:
           BoolValue = other.BoolValue;
@@ -1251,11 +1251,11 @@ namespace BotTrade.Application.Grpc.Generated {
             break;
           }
           case 32: {
-            IntValue = input.ReadInt32();
+            LongValue = input.ReadInt64();
             break;
           }
-          case 45: {
-            FloatValue = input.ReadFloat();
+          case 41: {
+            DoubleValue = input.ReadDouble();
             break;
           }
           case 48: {
@@ -1294,11 +1294,11 @@ namespace BotTrade.Application.Grpc.Generated {
             break;
           }
           case 32: {
-            IntValue = input.ReadInt32();
+            LongValue = input.ReadInt64();
             break;
           }
-          case 45: {
-            FloatValue = input.ReadFloat();
+          case 41: {
+            DoubleValue = input.ReadDouble();
             break;
           }
           case 48: {
@@ -1576,11 +1576,11 @@ namespace BotTrade.Application.Grpc.Generated {
         case ValueOneofCase.StringValue:
           StringValue = other.StringValue;
           break;
-        case ValueOneofCase.IntValue:
-          IntValue = other.IntValue;
+        case ValueOneofCase.LongValue:
+          LongValue = other.LongValue;
           break;
-        case ValueOneofCase.FloatValue:
-          FloatValue = other.FloatValue;
+        case ValueOneofCase.DoubleValue:
+          DoubleValue = other.DoubleValue;
           break;
         case ValueOneofCase.BoolValue:
           BoolValue = other.BoolValue;
@@ -1634,54 +1634,54 @@ namespace BotTrade.Application.Grpc.Generated {
       }
     }
 
-    /// <summary>Field number for the "int_value" field.</summary>
-    public const int IntValueFieldNumber = 3;
+    /// <summary>Field number for the "long_value" field.</summary>
+    public const int LongValueFieldNumber = 3;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public int IntValue {
-      get { return HasIntValue ? (int) value_ : 0; }
+    public long LongValue {
+      get { return HasLongValue ? (long) value_ : 0L; }
       set {
         value_ = value;
-        valueCase_ = ValueOneofCase.IntValue;
+        valueCase_ = ValueOneofCase.LongValue;
       }
     }
-    /// <summary>Gets whether the "int_value" field is set</summary>
+    /// <summary>Gets whether the "long_value" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasIntValue {
-      get { return valueCase_ == ValueOneofCase.IntValue; }
+    public bool HasLongValue {
+      get { return valueCase_ == ValueOneofCase.LongValue; }
     }
-    /// <summary> Clears the value of the oneof if it's currently set to "int_value" </summary>
+    /// <summary> Clears the value of the oneof if it's currently set to "long_value" </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearIntValue() {
-      if (HasIntValue) {
+    public void ClearLongValue() {
+      if (HasLongValue) {
         ClearValue();
       }
     }
 
-    /// <summary>Field number for the "float_value" field.</summary>
-    public const int FloatValueFieldNumber = 4;
+    /// <summary>Field number for the "double_value" field.</summary>
+    public const int DoubleValueFieldNumber = 4;
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public float FloatValue {
-      get { return HasFloatValue ? (float) value_ : 0F; }
+    public double DoubleValue {
+      get { return HasDoubleValue ? (double) value_ : 0D; }
       set {
         value_ = value;
-        valueCase_ = ValueOneofCase.FloatValue;
+        valueCase_ = ValueOneofCase.DoubleValue;
       }
     }
-    /// <summary>Gets whether the "float_value" field is set</summary>
+    /// <summary>Gets whether the "double_value" field is set</summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public bool HasFloatValue {
-      get { return valueCase_ == ValueOneofCase.FloatValue; }
+    public bool HasDoubleValue {
+      get { return valueCase_ == ValueOneofCase.DoubleValue; }
     }
-    /// <summary> Clears the value of the oneof if it's currently set to "float_value" </summary>
+    /// <summary> Clears the value of the oneof if it's currently set to "double_value" </summary>
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
-    public void ClearFloatValue() {
-      if (HasFloatValue) {
+    public void ClearDoubleValue() {
+      if (HasDoubleValue) {
         ClearValue();
       }
     }
@@ -1717,8 +1717,8 @@ namespace BotTrade.Application.Grpc.Generated {
     public enum ValueOneofCase {
       None = 0,
       StringValue = 2,
-      IntValue = 3,
-      FloatValue = 4,
+      LongValue = 3,
+      DoubleValue = 4,
       BoolValue = 5,
     }
     private ValueOneofCase valueCase_ = ValueOneofCase.None;
@@ -1752,8 +1752,8 @@ namespace BotTrade.Application.Grpc.Generated {
       }
       if (Name != other.Name) return false;
       if (StringValue != other.StringValue) return false;
-      if (IntValue != other.IntValue) return false;
-      if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(FloatValue, other.FloatValue)) return false;
+      if (LongValue != other.LongValue) return false;
+      if (!pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.Equals(DoubleValue, other.DoubleValue)) return false;
       if (BoolValue != other.BoolValue) return false;
       if (ValueCase != other.ValueCase) return false;
       return Equals(_unknownFields, other._unknownFields);
@@ -1765,8 +1765,8 @@ namespace BotTrade.Application.Grpc.Generated {
       int hash = 1;
       if (Name.Length != 0) hash ^= Name.GetHashCode();
       if (HasStringValue) hash ^= StringValue.GetHashCode();
-      if (HasIntValue) hash ^= IntValue.GetHashCode();
-      if (HasFloatValue) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(FloatValue);
+      if (HasLongValue) hash ^= LongValue.GetHashCode();
+      if (HasDoubleValue) hash ^= pbc::ProtobufEqualityComparers.BitwiseDoubleEqualityComparer.GetHashCode(DoubleValue);
       if (HasBoolValue) hash ^= BoolValue.GetHashCode();
       hash ^= (int) valueCase_;
       if (_unknownFields != null) {
@@ -1795,13 +1795,13 @@ namespace BotTrade.Application.Grpc.Generated {
         output.WriteRawTag(18);
         output.WriteString(StringValue);
       }
-      if (HasIntValue) {
+      if (HasLongValue) {
         output.WriteRawTag(24);
-        output.WriteInt32(IntValue);
+        output.WriteInt64(LongValue);
       }
-      if (HasFloatValue) {
-        output.WriteRawTag(37);
-        output.WriteFloat(FloatValue);
+      if (HasDoubleValue) {
+        output.WriteRawTag(33);
+        output.WriteDouble(DoubleValue);
       }
       if (HasBoolValue) {
         output.WriteRawTag(40);
@@ -1825,13 +1825,13 @@ namespace BotTrade.Application.Grpc.Generated {
         output.WriteRawTag(18);
         output.WriteString(StringValue);
       }
-      if (HasIntValue) {
+      if (HasLongValue) {
         output.WriteRawTag(24);
-        output.WriteInt32(IntValue);
+        output.WriteInt64(LongValue);
       }
-      if (HasFloatValue) {
-        output.WriteRawTag(37);
-        output.WriteFloat(FloatValue);
+      if (HasDoubleValue) {
+        output.WriteRawTag(33);
+        output.WriteDouble(DoubleValue);
       }
       if (HasBoolValue) {
         output.WriteRawTag(40);
@@ -1853,11 +1853,11 @@ namespace BotTrade.Application.Grpc.Generated {
       if (HasStringValue) {
         size += 1 + pb::CodedOutputStream.ComputeStringSize(StringValue);
       }
-      if (HasIntValue) {
-        size += 1 + pb::CodedOutputStream.ComputeInt32Size(IntValue);
+      if (HasLongValue) {
+        size += 1 + pb::CodedOutputStream.ComputeInt64Size(LongValue);
       }
-      if (HasFloatValue) {
-        size += 1 + 4;
+      if (HasDoubleValue) {
+        size += 1 + 8;
       }
       if (HasBoolValue) {
         size += 1 + 1;
@@ -1881,11 +1881,11 @@ namespace BotTrade.Application.Grpc.Generated {
         case ValueOneofCase.StringValue:
           StringValue = other.StringValue;
           break;
-        case ValueOneofCase.IntValue:
-          IntValue = other.IntValue;
+        case ValueOneofCase.LongValue:
+          LongValue = other.LongValue;
           break;
-        case ValueOneofCase.FloatValue:
-          FloatValue = other.FloatValue;
+        case ValueOneofCase.DoubleValue:
+          DoubleValue = other.DoubleValue;
           break;
         case ValueOneofCase.BoolValue:
           BoolValue = other.BoolValue;
@@ -1920,11 +1920,11 @@ namespace BotTrade.Application.Grpc.Generated {
             break;
           }
           case 24: {
-            IntValue = input.ReadInt32();
+            LongValue = input.ReadInt64();
             break;
           }
-          case 37: {
-            FloatValue = input.ReadFloat();
+          case 33: {
+            DoubleValue = input.ReadDouble();
             break;
           }
           case 40: {
@@ -1959,11 +1959,11 @@ namespace BotTrade.Application.Grpc.Generated {
             break;
           }
           case 24: {
-            IntValue = input.ReadInt32();
+            LongValue = input.ReadInt64();
             break;
           }
-          case 37: {
-            FloatValue = input.ReadFloat();
+          case 33: {
+            DoubleValue = input.ReadDouble();
             break;
           }
           case 40: {

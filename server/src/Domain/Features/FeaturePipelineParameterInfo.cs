@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 
 namespace BotTrade.Domain.Features;
 
-public record FeaturePipelineParameterInfo
+public readonly record struct FeaturePipelineParameterInfo
 {
     [JsonPropertyName("name")]
     public required string Name { get; init; }
@@ -11,14 +11,14 @@ public record FeaturePipelineParameterInfo
     public required string Description { get; init; }
     [JsonPropertyName("default_value")]
     [JsonConverter(typeof(FeaturePipelineParameterInfoDefaultValueConverter))]
-    public required object DefaultValue { get; set; }
+    public required object DefaultValue { get; init; }
 
     [JsonIgnore]
     public string? StringValue => DefaultValue as string;
     [JsonIgnore]
-    public int? IntValue => DefaultValue as int?;
+    public long? LongValue => DefaultValue as long?;
     [JsonIgnore]
-    public float? FloatValue => DefaultValue as float?;
+    public double? DoubleValue => DefaultValue as double?;
     [JsonIgnore]
     public bool? BoolValue => DefaultValue as bool?;
 }
@@ -32,8 +32,8 @@ public class FeaturePipelineParameterInfoDefaultValueConverter : JsonConverter<o
             case JsonTokenType.String:
                 return reader.GetString();
             case JsonTokenType.Number:
-                if (reader.TryGetInt32(out var intValue))
-                    return intValue;
+                if (reader.TryGetInt64(out var longValue))
+                    return longValue;
                 if (reader.TryGetDouble(out var doubleValue))
                     return doubleValue;
                 break;
@@ -53,11 +53,11 @@ public class FeaturePipelineParameterInfoDefaultValueConverter : JsonConverter<o
             case string stringValue:
                 writer.WriteStringValue(stringValue);
                 break;
-            case int intValue:
-                writer.WriteNumberValue(intValue);
+            case long longValue:
+                writer.WriteNumberValue(longValue);
                 break;
-            case float floatValue:
-                writer.WriteNumberValue(floatValue);
+            case double doubleValue:
+                writer.WriteNumberValue(doubleValue);
                 break;
             case bool boolValue:
                 writer.WriteBooleanValue(boolValue);

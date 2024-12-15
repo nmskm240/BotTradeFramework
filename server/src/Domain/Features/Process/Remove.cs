@@ -12,10 +12,10 @@ public sealed class Remove : IFeaturePipeline
 
     public Remove(FeaturePipelineOrder order)
     {
+        Order = order;
+
         var elements = Order.Parameters
             .FirstOrDefault(p => p.Name == "target").StringValue ?? string.Empty;
-
-        Order = order;
         _targets = elements.Split(",");
     }
 

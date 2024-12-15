@@ -15,8 +15,8 @@ internal class FeaturePipelineParameterInfoConverter : IGrpcConverter<FeaturePip
             DefaultValue = message.DefaultValueCase switch
             {
                 GrpcMessages.FeaturePipelineParameterInfo.DefaultValueOneofCase.StringValue => message.StringValue,
-                GrpcMessages.FeaturePipelineParameterInfo.DefaultValueOneofCase.IntValue => message.IntValue,
-                GrpcMessages.FeaturePipelineParameterInfo.DefaultValueOneofCase.FloatValue => message.FloatValue,
+                GrpcMessages.FeaturePipelineParameterInfo.DefaultValueOneofCase.LongValue => message.LongValue,
+                GrpcMessages.FeaturePipelineParameterInfo.DefaultValueOneofCase.DoubleValue => message.DoubleValue,
                 GrpcMessages.FeaturePipelineParameterInfo.DefaultValueOneofCase.BoolValue => message.BoolValue,
                 _ => throw new NotImplementedException(),
             },
@@ -33,10 +33,10 @@ internal class FeaturePipelineParameterInfoConverter : IGrpcConverter<FeaturePip
 
         if (entity.BoolValue != null)
             grpc.BoolValue = (bool)entity.BoolValue;
-        else if (entity.IntValue != null)
-            grpc.IntValue = (int)entity.IntValue;
-        else if (entity.FloatValue != null)
-            grpc.FloatValue = (float)entity.FloatValue;
+        else if (entity.LongValue != null)
+            grpc.LongValue = (long)entity.LongValue;
+        else if (entity.DoubleValue != null)
+            grpc.DoubleValue = (double)entity.DoubleValue;
         else if (entity.StringValue != null)
             grpc.StringValue = entity.StringValue;
         else

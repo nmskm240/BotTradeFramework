@@ -10,7 +10,7 @@ internal class FeaturePipelineOrderConverter : IGrpcConverter<FeaturePipelineOrd
     {
         return new FeaturePipelineOrder
         {
-            ProcessKind = Type.GetType(message.Type),
+            ProcessKind = Type.GetType(message.Type, throwOnError: true)!,
             Parameters = message.Parameters
                 .Select(FeaturePipelineParameterOrderConverter.ToEntity)
                 .ToArray(),
