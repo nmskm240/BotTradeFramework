@@ -2,7 +2,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0
 
 ARG FLUTTER_VERSION=3.24.0
 ARG FLUTTER_SDK_PATH=/opt/flutter
-ARG PYTHON_VERSION=3.10
+ARG PYTHON_VERSION=3.10.15
 ARG PYENV_ROOT=/root/.pyenv
 
 EXPOSE 5000 5001
@@ -41,13 +41,13 @@ ENV PYTHON_CONFIGURE_OPTS="--enable-shared"
 
 RUN pyenv install ${PYTHON_VERSION} && pyenv global ${PYTHON_VERSION}
 
-ENV LD_LIBRARY_PATH="${PYENV_ROOT}/versions/${PYTHON_VERSION}/lib:$LD_LIBRARY_PATH"
+ENV LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install \
         rust \
         cython \
-        git+https://github.com/online-ml/river
+        river
 
 RUN git clone https://github.com/flutter/flutter.git ${FLUTTER_SDK_PATH} \
     && cd ${FLUTTER_SDK_PATH} \

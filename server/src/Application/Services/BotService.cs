@@ -1,3 +1,6 @@
+using System.Reactive.Disposables;
+using System.Reactive.Linq;
+
 using BotTrade.Application.Converters;
 using BotTrade.Application.Grpc.Generated;
 using BotTrade.Domain;
@@ -32,28 +35,44 @@ public class BotService : ServiceBase.BotServiceBase
     public override async Task Run(BotOrder request, IServerStreamWriter<BotPerformance> stream, ServerCallContext context)
     {
         var symbol = SymbolConverter.ToEntity(request.Symbol);
-        var startAt = request.StartAt.ToDateTimeOffset();
-        var endAt = request.EndAt.ToDateTimeOffset();
-        var orders = request.Orders.Select(FeaturePiplineOrderConverter.ToEntity);
-        var stream = _exchange.OhlcvStreamAsObservable(symbol, startAt, endAt);
-        var pipline = stream.BuildPipline(orders);
-        var bot = new Bot(pipline, _logger);
+        var startAt = request.StartAt?.ToDateTimeOffset()
+             ?? new DateTimeOffset(2018, 1, 1, 0, 0, 0, TimeSpan.Zero);
+        var endAt = request.EndAt?.ToDateTimeOffset()
+             ?? DateTimeOffset.UtcNow;
+        var orders = request.PipelineOrders
+            .Select(FeaturePipelineOrderConverter.ToEntity)
+            .ToList();
+        var ohlcvStream = _exchange.OhlcvStreamAsObservable(symbol, startAt, endAt);
+        var pipeline = ohlcvStream.BuildPipeline(orders);
         var completion = new TaskCompletionSource();
-        using var _ = pipline.Subscribe(
-            _ => {},
-            completion.SetException,
-            completion.SetResult
-        );
+        var bot = new Bot(pipeline, _logger);
+        using var disposables = new CompositeDisposable([
+            bot,
+            bot.OnPredicatedAsObservable()
+                .WithLatestFrom(ohlcvStream, (pred, ohlcv) => new BotPerformance()
+                {
+                    PredictValue = pred.First(),
+                    ActualValue = ohlcv.Close,
+                    Timestamp = ohlcv.Date.ToTimestamp()
+                })
+                .Subscribe(async e => await stream.WriteAsync(e)),
+            pipeline.Subscribe(
+                _ => {},
+                completion.SetException,
+                completion.SetResult
+            ),
+            ohlcvStream.Connect(),
+        ]);
 
-        // try
-        // {
-        //     using var __ = ohlcvStream.Connect();
-        //     await completion.Task;
-        // }
-        // catch (Exception e)
-        // {
-        //     _logger.LogError(e.Message);
-        // }
+        try
+        {
+            await completion.Task;
+        }
+        catch (Exception e)
+        {
+            _logger.LogError(e.Message);
+            disposables.Dispose();
+        }
     }
 
     public override Task<FeaturePipelineInfos> SupportedFeaturePipelines(Empty request, ServerCallContext context)

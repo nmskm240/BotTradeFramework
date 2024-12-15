@@ -1,4 +1,6 @@
+using System.Reactive.Disposables;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 
 using Microsoft.Extensions.Logging;
 
@@ -6,11 +8,14 @@ using Python.Runtime;
 
 namespace BotTrade.Domain;
 
-public class Bot
+public sealed class Bot : IDisposable
 {
     // protected IExchange Exchange { get; init; }
     protected ILogger Logger { get; init; }
+    private CompositeDisposable _disposables;
     private readonly dynamic _model;
+    private Subject<IEnumerable<double>> _onPredicated = new();
+    public IObservable<IEnumerable<double>> OnPredicatedAsObservable() => _onPredicated;
 
     public Bot(IObservable<Dictionary<string, double>> stream, ILogger logger)
     {
@@ -23,8 +28,11 @@ public class Bot
             _model = river.SNARIMAX(1, 0, 0);
         }
 
-        stream.Buffer(2, 1)
-            .Subscribe(Think);
+        _disposables = new([
+            _onPredicated,
+            stream.Buffer(2, 1)
+                .Subscribe(Think),
+        ]);
     }
 
     private void Think(IEnumerable<IDictionary<string, double>> features)
@@ -52,18 +60,38 @@ public class Bot
 
                 var input = new PyList();
                 input.Append(recent.ToPython());
-                var pred = _model.forecast(horizon: 1, xs: input);
-
-                Logger.LogInformation($"Prediction: {pred}");
+                var preds = new List<double>();
+                foreach(double pred in _model.forecast(horizon: 1, xs: input))
+                {
+                    preds.Add(pred);
+                }
+                _onPredicated.OnNext(preds);
             }
         }
         catch (PythonException ex)
         {
             Logger.LogError(ex, "An error occurred while calling the Python model.");
+            _onPredicated.OnError(ex);
         }
         catch (Exception ex)
         {
             Logger.LogError(ex, "An unexpected error occurred in Think.");
+            _onPredicated.OnError(ex);
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    private void Dispose(bool dispose)
+    {
+        _disposables.Dispose();
+        if(dispose)
+        {
+
         }
     }
 }
