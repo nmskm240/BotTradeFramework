@@ -1,8 +1,0 @@
-@startuml
-class ApiSetting <<record>> {
-    + IsTestnet : bool <<get>>
-    + <<required>> Key : string <<get>> <<set>>
-    + <<required>> Secret : string <<get>> <<set>>
-}
-ApiSetting --> "Place" ExchangePlace
-@enduml

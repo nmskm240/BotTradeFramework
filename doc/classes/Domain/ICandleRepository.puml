@@ -1,7 +1,0 @@
-@startuml
-interface ICandleRepository {
-}
-interface IUpdatableCandleRepository {
-}
-ICandleRepository <|-- IUpdatableCandleRepository
-@enduml
