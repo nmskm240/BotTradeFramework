@@ -13,10 +13,13 @@ internal class FeaturePipelineParameterOrderConverter : IGrpcConverter<FeaturePi
             Name = message.Name,
             Value = message.ValueCase switch
             {
-                GrpcMessages.FeaturePipelineParameterOrder.ValueOneofCase.StringValue => message.StringValue,
-                GrpcMessages.FeaturePipelineParameterOrder.ValueOneofCase.LongValue => message.LongValue,
-                GrpcMessages.FeaturePipelineParameterOrder.ValueOneofCase.DoubleValue => message.DoubleValue,
-                GrpcMessages.FeaturePipelineParameterOrder.ValueOneofCase.BoolValue => message.BoolValue,
+                GrpcMessages.FeaturePipelineParameterValue.ValueOneofCase.StringValue => message.Value.StringValue,
+                GrpcMessages.FeaturePipelineParameterValue.ValueOneofCase.LongValue => message.Value.LongValue,
+                GrpcMessages.FeaturePipelineParameterValue.ValueOneofCase.DoubleValue => message.Value.DoubleValue,
+                GrpcMessages.FeaturePipelineParameterValue.ValueOneofCase.BoolValue => message.Value.BoolValue,
+                GrpcMessages.FeaturePipelineParameterValue.ValueOneofCase.ListValue => message.Value.ListValue,
+                GrpcMessages.FeaturePipelineParameterValue.ValueOneofCase.MapValue => message.Value.MapValue,
+                GrpcMessages.FeaturePipelineParameterValue.ValueOneofCase.SelectValue => message.Value.SelectValue,
                 _ => throw new NotImplementedException(),
             },
         };
@@ -24,22 +27,17 @@ internal class FeaturePipelineParameterOrderConverter : IGrpcConverter<FeaturePi
 
     public static GrpcMessages.FeaturePipelineParameterOrder ToGrpcMessage(FeaturePipelineParameterOrder entity)
     {
-        var grpc = new GrpcMessages.FeaturePipelineParameterOrder
+        return new GrpcMessages.FeaturePipelineParameterOrder
         {
             Name = entity.Name,
+            Value = entity switch
+            {
+                { BoolValue: not null } => new() { BoolValue = (bool)entity.BoolValue },
+                { LongValue: not null } => new() { LongValue = (long)entity.LongValue },
+                { DoubleValue: not null } => new() { DoubleValue = (double)entity.DoubleValue },
+                { StringValue: not null } => new() { StringValue = entity.StringValue },
+                _ => throw new NotImplementedException(),
+            }
         };
-
-        if (entity.BoolValue != null)
-            grpc.BoolValue = (bool)entity.BoolValue;
-        else if (entity.LongValue != null)
-            grpc.LongValue = (long)entity.LongValue;
-        else if (entity.DoubleValue != null)
-            grpc.DoubleValue = (double)entity.DoubleValue;
-        else if (entity.StringValue != null)
-            grpc.StringValue = entity.StringValue;
-        else
-            throw new NotImplementedException();
-
-        return grpc;
     }
 }

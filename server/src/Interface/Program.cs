@@ -1,9 +1,6 @@
 using BotTrade.Application.Services;
-using BotTrade.Domain;
 using BotTrade.Domain.Exchanges;
-using BotTrade.Domain.Features;
 using BotTrade.Domain.Ohlcvs;
-using BotTrade.Infra;
 using BotTrade.Infra.Databases;
 using BotTrade.Infra.Exchanges;
 
@@ -28,7 +25,6 @@ public class Program
         builder.Services.AddSingleton<ccxt.Exchange, ccxt.Bybit>();
         builder.Services.AddSingleton<IExchange, BacktestExchange>();
         builder.Services.AddSingleton<IDbConnectionFactory>(connectionFactory);
-        builder.Services.AddSingleton<IFeaturePipelineInfoLoader, FeaturePipelineInfoLoader>();
 
         builder.Logging.ClearProviders();
         builder.Logging.AddConsole();
@@ -43,6 +39,7 @@ public class Program
 
         app.MapGrpcService<ExchangeService>();
         app.MapGrpcService<BotService>();
+        app.MapGrpcService<FeatureService>();
         app.Run();
     }
 }

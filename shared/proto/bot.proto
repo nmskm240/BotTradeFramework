@@ -5,10 +5,10 @@ package bot;
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 import "exchange.proto";
+import "feature.proto";
 
 service BotService {
     rpc Run (BotOrder) returns (stream BotPerformance);
-    rpc SupportedFeaturePipelines (google.protobuf.Empty) returns (FeaturePipelineInfos);
 }
 
 message BotPerformance {
@@ -17,47 +17,9 @@ message BotPerformance {
     google.protobuf.Timestamp timestamp = 3;
 }
 
-message FeaturePipelineInfos {
-    repeated FeaturePipelineInfo infos = 1;
-}
-
-message FeaturePipelineInfo {
-    string type = 1;
-    string name = 2;
-    string description = 3;
-    repeated FeaturePipelineParameterInfo parameters = 4;
-}
-
-message FeaturePipelineParameterInfo {
-    string name = 1;
-    string description = 2;
-    oneof default_value {
-        string string_value = 3;
-        int64 long_value = 4;
-        double double_value = 5;
-        bool bool_value = 6;
-    };
-}
-
-message FeaturePipelineOrder {
-    string type = 1;
-    repeated FeaturePipelineParameterOrder parameters = 2;
-}
-
-message FeaturePipelineParameterOrder {
-    string name = 1;
-    oneof value {
-        string string_value = 2;
-        int64 long_value = 3;
-        double double_value = 4;
-        bool bool_value = 5;
-    };
-}
-
 message BotOrder {
     exchange.Symbol symbol = 1;
-    repeated FeaturePipelineOrder pipeline_orders = 2;
+    repeated feature.FeaturePipelineOrder pipeline_orders = 2;
     optional google.protobuf.Timestamp start_at = 3;
     optional google.protobuf.Timestamp end_at = 4;
 }
-

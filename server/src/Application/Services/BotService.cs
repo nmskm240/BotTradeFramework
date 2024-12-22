@@ -20,15 +20,12 @@ namespace BotTrade.Application.Services;
 public class BotService : ServiceBase.BotServiceBase
 {
     private IExchange _exchange;
-    private IFeaturePipelineInfoLoader _loader;
     private ILogger _logger;
 
     // TODO: 本来はどの取引所を使用するかもCLからのリクエストに含める
-    // TODO: InfoLoaderではなく、SourceGenでPipelineProcessからInfoを作成するようにしたい
-    public BotService(IExchange exchange, IFeaturePipelineInfoLoader loader, ILogger<BotService> logger)
+    public BotService(IExchange exchange, ILogger<BotService> logger)
     {
         _exchange = exchange;
-        _loader = loader;
         _logger = logger;
     }
 
@@ -57,7 +54,7 @@ public class BotService : ServiceBase.BotServiceBase
                 })
                 .Subscribe(async e => await stream.WriteAsync(e)),
             pipeline.Subscribe(
-                _ => {},
+                _ => { },
                 completion.SetException,
                 completion.SetResult
             ),
@@ -73,17 +70,5 @@ public class BotService : ServiceBase.BotServiceBase
             _logger.LogError(e.Message);
             disposables.Dispose();
         }
-    }
-
-    public override Task<FeaturePipelineInfos> SupportedFeaturePipelines(Empty request, ServerCallContext context)
-    {
-        var infos = _loader.Load("/workspaces/BotTradeFramework/server/pipeline_info.json")
-            .Select(FeaturePipelineInfoConverter.ToGrpcMessage)
-            .ToList();
-        var res = new FeaturePipelineInfos
-        {
-            Infos = { infos }
-        };
-        return Task.FromResult(res);
     }
 }

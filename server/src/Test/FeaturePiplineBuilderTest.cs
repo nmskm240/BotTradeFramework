@@ -40,7 +40,7 @@ public class FeaturePiplineBuilderTest
                 ]
             },
         };
-        var pipline = ohlcvStream.BuildPipline(piplineOrders);
+        var pipline = ohlcvStream.BuildPipeline(piplineOrders);
         var completion = new TaskCompletionSource();
         var results = new List<Dictionary<string, double>>();
         using var subscription = pipline

@@ -1,0 +1,70 @@
+syntax = "proto3";
+option csharp_namespace = "BotTrade.Application.Grpc.Generated";
+package feature;
+
+import "google/protobuf/empty.proto";
+
+service FeatureService {
+    rpc SupportedFeaturePipelines (google.protobuf.Empty) returns (FeaturePipelineInfos);
+}
+
+message FeaturePipelineInfos {
+    repeated FeaturePipelineInfo infos = 1;
+}
+
+message FeaturePipelineInfo {
+    string type = 1;
+    string name = 2;
+    string description = 3;
+    repeated FeaturePipelineParameterInfo parameters = 4;
+}
+
+message FeaturePipelineParameterInfo {
+    string name = 1;
+    string description = 2;
+    FeaturePipelineParameterValue default_value = 3;
+}
+
+message FeaturePipelineOrder {
+    string type = 1;
+    repeated FeaturePipelineParameterOrder parameters = 2;
+}
+
+message FeaturePipelineParameterOrder {
+    string name = 1;
+    FeaturePipelineParameterValue value = 2;
+}
+
+message FeaturePipelineParameterValue {
+    oneof value {
+        string string_value = 1;
+        int64 long_value = 2;
+        double double_value = 3;
+        bool bool_value = 4;
+        ListValue list_value = 5;
+        SelectValue select_value = 6;
+        MapValue map_value = 7;
+        RangeValue range_value = 8;
+    }
+}
+
+message ListValue {
+    repeated string values = 1;
+}
+
+message SelectValue {
+    string value = 1;
+    repeated string options = 2;
+}
+
+message MapValue {
+    map<string, string> values = 1;
+    optional SelectValue selectable_keys = 2;
+    optional SelectValue selectable_values = 3;
+}
+
+message RangeValue {
+    double value = 1;
+    double min = 2;
+    double max = 3;
+}

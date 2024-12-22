@@ -61,7 +61,7 @@ public sealed class Bot : IDisposable
                 var input = new PyList();
                 input.Append(recent.ToPython());
                 var preds = new List<double>();
-                foreach(double pred in _model.forecast(horizon: 1, xs: input))
+                foreach (double pred in _model.forecast(horizon: 1, xs: input))
                 {
                     preds.Add(pred);
                 }
@@ -89,7 +89,7 @@ public sealed class Bot : IDisposable
     private void Dispose(bool dispose)
     {
         _disposables.Dispose();
-        if(dispose)
+        if (dispose)
         {
 
         }
