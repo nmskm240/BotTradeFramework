@@ -3,7 +3,7 @@
 // ignore_for_file: type=lint
 // ignore_for_file: unused_element, deprecated_member_use, deprecated_member_use_from_same_package, use_function_type_syntax_for_parameters, unnecessary_const, avoid_init_to_null, invalid_override_different_default_values_named, prefer_expression_function_bodies, annotate_overrides, invalid_annotation_target, unnecessary_question_mark
 
-part of 'bot_edit_page_state.dart';
+part of 'bot_edit_page.dart';
 
 // **************************************************************************
 // FreezedGenerator
@@ -17,7 +17,7 @@ final _privateConstructorUsedError = UnsupportedError(
 /// @nodoc
 mixin _$BotEditPageState {
   GlobalKey<FormBuilderState> get formKey => throw _privateConstructorUsedError;
-  BotSetting get setting => throw _privateConstructorUsedError;
+  BotOrder? get order => throw _privateConstructorUsedError;
 
   /// Create a copy of BotEditPageState
   /// with the given fields replaced by the non-null parameter values.
@@ -32,9 +32,7 @@ abstract class $BotEditPageStateCopyWith<$Res> {
           BotEditPageState value, $Res Function(BotEditPageState) then) =
       _$BotEditPageStateCopyWithImpl<$Res, BotEditPageState>;
   @useResult
-  $Res call({GlobalKey<FormBuilderState> formKey, BotSetting setting});
-
-  $BotSettingCopyWith<$Res> get setting;
+  $Res call({GlobalKey<FormBuilderState> formKey, BotOrder? order});
 }
 
 /// @nodoc
@@ -53,28 +51,18 @@ class _$BotEditPageStateCopyWithImpl<$Res, $Val extends BotEditPageState>
   @override
   $Res call({
     Object? formKey = null,
-    Object? setting = null,
+    Object? order = freezed,
   }) {
     return _then(_value.copyWith(
       formKey: null == formKey
           ? _value.formKey
           : formKey // ignore: cast_nullable_to_non_nullable
               as GlobalKey<FormBuilderState>,
-      setting: null == setting
-          ? _value.setting
-          : setting // ignore: cast_nullable_to_non_nullable
-              as BotSetting,
+      order: freezed == order
+          ? _value.order
+          : order // ignore: cast_nullable_to_non_nullable
+              as BotOrder?,
     ) as $Val);
-  }
-
-  /// Create a copy of BotEditPageState
-  /// with the given fields replaced by the non-null parameter values.
-  @override
-  @pragma('vm:prefer-inline')
-  $BotSettingCopyWith<$Res> get setting {
-    return $BotSettingCopyWith<$Res>(_value.setting, (value) {
-      return _then(_value.copyWith(setting: value) as $Val);
-    });
   }
 }
 
@@ -86,10 +74,7 @@ abstract class _$$BotEditPageStateImplCopyWith<$Res>
       __$$BotEditPageStateImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({GlobalKey<FormBuilderState> formKey, BotSetting setting});
-
-  @override
-  $BotSettingCopyWith<$Res> get setting;
+  $Res call({GlobalKey<FormBuilderState> formKey, BotOrder? order});
 }
 
 /// @nodoc
@@ -106,17 +91,17 @@ class __$$BotEditPageStateImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? formKey = null,
-    Object? setting = null,
+    Object? order = freezed,
   }) {
     return _then(_$BotEditPageStateImpl(
       formKey: null == formKey
           ? _value.formKey
           : formKey // ignore: cast_nullable_to_non_nullable
               as GlobalKey<FormBuilderState>,
-      setting: null == setting
-          ? _value.setting
-          : setting // ignore: cast_nullable_to_non_nullable
-              as BotSetting,
+      order: freezed == order
+          ? _value.order
+          : order // ignore: cast_nullable_to_non_nullable
+              as BotOrder?,
     ));
   }
 }
@@ -124,16 +109,17 @@ class __$$BotEditPageStateImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$BotEditPageStateImpl implements _BotEditPageState {
-  const _$BotEditPageStateImpl({required this.formKey, required this.setting});
+  const _$BotEditPageStateImpl({required this.formKey, this.order = null});
 
   @override
   final GlobalKey<FormBuilderState> formKey;
   @override
-  final BotSetting setting;
+  @JsonKey()
+  final BotOrder? order;
 
   @override
   String toString() {
-    return 'BotEditPageState(formKey: $formKey, setting: $setting)';
+    return 'BotEditPageState(formKey: $formKey, order: $order)';
   }
 
   @override
@@ -142,11 +128,11 @@ class _$BotEditPageStateImpl implements _BotEditPageState {
         (other.runtimeType == runtimeType &&
             other is _$BotEditPageStateImpl &&
             (identical(other.formKey, formKey) || other.formKey == formKey) &&
-            (identical(other.setting, setting) || other.setting == setting));
+            (identical(other.order, order) || other.order == order));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, formKey, setting);
+  int get hashCode => Object.hash(runtimeType, formKey, order);
 
   /// Create a copy of BotEditPageState
   /// with the given fields replaced by the non-null parameter values.
@@ -161,12 +147,12 @@ class _$BotEditPageStateImpl implements _BotEditPageState {
 abstract class _BotEditPageState implements BotEditPageState {
   const factory _BotEditPageState(
       {required final GlobalKey<FormBuilderState> formKey,
-      required final BotSetting setting}) = _$BotEditPageStateImpl;
+      final BotOrder? order}) = _$BotEditPageStateImpl;
 
   @override
   GlobalKey<FormBuilderState> get formKey;
   @override
-  BotSetting get setting;
+  BotOrder? get order;
 
   /// Create a copy of BotEditPageState
   /// with the given fields replaced by the non-null parameter values.

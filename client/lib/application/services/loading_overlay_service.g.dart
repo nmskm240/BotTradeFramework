@@ -1,27 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'feature_edit_page_notifier.dart';
+part of 'loading_overlay_service.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$featureEditPageNotifierHash() =>
-    r'404ff029058a6a18a6271a52caf590764689e112';
+String _$loadingOverlayServiceHash() =>
+    r'9cae5301d30a411dbcc05b64f6113dde9ea858d3';
 
-/// See also [FeatureEditPageNotifier].
-@ProviderFor(FeatureEditPageNotifier)
-final featureEditPageNotifierProvider = AutoDisposeNotifierProvider<
-    FeatureEditPageNotifier, FeatureEditPageState>.internal(
-  FeatureEditPageNotifier.new,
-  name: r'featureEditPageNotifierProvider',
+/// See also [LoadingOverlayService].
+@ProviderFor(LoadingOverlayService)
+final loadingOverlayServiceProvider =
+    AutoDisposeNotifierProvider<LoadingOverlayService, bool>.internal(
+  LoadingOverlayService.new,
+  name: r'loadingOverlayServiceProvider',
   debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
       ? null
-      : _$featureEditPageNotifierHash,
+      : _$loadingOverlayServiceHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-typedef _$FeatureEditPageNotifier = AutoDisposeNotifier<FeatureEditPageState>;
+typedef _$LoadingOverlayService = AutoDisposeNotifier<bool>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

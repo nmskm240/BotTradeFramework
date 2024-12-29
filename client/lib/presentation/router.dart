@@ -9,9 +9,9 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:bot_runner/presentation/bot_detail/bot_detail_page.dart';
 import 'package:bot_runner/presentation/bot_edit/bot_edit_page.dart';
 import 'package:bot_runner/presentation/bot_list/bot_list_page.dart';
-import 'package:bot_runner/presentation/feature_edit/feature_edit_page.dart';
 import 'package:bot_runner/presentation/feature_method_select/feature_method_select_dialog_page.dart';
 import 'package:bot_runner/presentation/home/home_page.dart';
+import 'package:bot_runner/presentation/widgets/loading_overlay.dart';
 
 part 'router.g.dart';
 part 'router.dialog.dart';
@@ -27,12 +27,14 @@ final routerProvider = Provider((ref) {
   path: "/",
   name: "home",
 )
-class HomeRoute extends GoRouteData {
+final class HomeRoute extends GoRouteData {
   const HomeRoute();
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const HomePage();
+    return const LoadingOverlay(
+      child: HomePage(),
+    );
   }
 }
 
@@ -44,10 +46,6 @@ class HomeRoute extends GoRouteData {
       path: "/create",
       name: "bot_create",
       routes: [
-        TypedGoRoute<FeatureCreateRoute>(
-          path: "/features/create",
-          name: "feature_create",
-        ),
         TypedGoRoute<FeatureMethodSelectRoute>(
           path: "/features/select",
           name: "feature_method_select",
@@ -64,16 +62,18 @@ class HomeRoute extends GoRouteData {
     ),
   ],
 )
-class BotRoute extends GoRouteData {
+final class BotRoute extends GoRouteData {
   const BotRoute();
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const BotListPage();
+    return const LoadingOverlay(
+      child: BotListPage(),
+    );
   }
 }
 
-class BotDetailRoute extends GoRouteData {
+final class BotDetailRoute extends GoRouteData {
   final String id;
 
   const BotDetailRoute({
@@ -82,11 +82,13 @@ class BotDetailRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const BotDeatilPage();
+    return const LoadingOverlay(
+      child: BotDeatilPage(),
+    );
   }
 }
 
-class BotEditRoute extends GoRouteData {
+final class BotEditRoute extends GoRouteData {
   final String id;
 
   const BotEditRoute({
@@ -95,35 +97,26 @@ class BotEditRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const BotEditPage();
+    return const LoadingOverlay(
+      child: BotEditPage(),
+    );
   }
 }
 
-class BotCreateRoute extends GoRouteData {
-  const BotCreateRoute();
-
+final class BotCreateRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const BotEditPage();
+    return const LoadingOverlay(
+      child: BotEditPage(),
+    );
   }
 }
 
-class FeatureMethodSelectRoute extends GoRouteData {
-  const FeatureMethodSelectRoute();
-
+final class FeatureMethodSelectRoute extends GoRouteData {
   @override
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return DialogPage(
       builder: (_) => const FeatureMethodSelectDialogPage(),
     );
-  }
-}
-
-class FeatureCreateRoute extends GoRouteData {
-  const FeatureCreateRoute();
-
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return const FeatureEditPage();
   }
 }

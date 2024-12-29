@@ -1,13 +1,13 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'bot_edit_page_notifier.dart';
+part of 'bot_edit_page.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
 String _$botEditPageNotifierHash() =>
-    r'82c3fb02ca41c735aab9c2195889d8e4c08e3480';
+    r'c5a819201c135b36791f3ec679c1747ecb23f751';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -32,10 +32,10 @@ class _SystemHash {
 
 abstract class _$BotEditPageNotifier
     extends BuildlessAutoDisposeNotifier<BotEditPageState> {
-  late final BotSetting? setting;
+  late final BotOrder? order;
 
   BotEditPageState build(
-    BotSetting? setting,
+    BotOrder? order,
   );
 }
 
@@ -50,10 +50,10 @@ class BotEditPageNotifierFamily extends Family<BotEditPageState> {
 
   /// See also [BotEditPageNotifier].
   BotEditPageNotifierProvider call(
-    BotSetting? setting,
+    BotOrder? order,
   ) {
     return BotEditPageNotifierProvider(
-      setting,
+      order,
     );
   }
 
@@ -62,7 +62,7 @@ class BotEditPageNotifierFamily extends Family<BotEditPageState> {
     covariant BotEditPageNotifierProvider provider,
   ) {
     return call(
-      provider.setting,
+      provider.order,
     );
   }
 
@@ -86,9 +86,9 @@ class BotEditPageNotifierProvider extends AutoDisposeNotifierProviderImpl<
     BotEditPageNotifier, BotEditPageState> {
   /// See also [BotEditPageNotifier].
   BotEditPageNotifierProvider(
-    BotSetting? setting,
+    BotOrder? order,
   ) : this._internal(
-          () => BotEditPageNotifier()..setting = setting,
+          () => BotEditPageNotifier()..order = order,
           from: botEditPageNotifierProvider,
           name: r'botEditPageNotifierProvider',
           debugGetCreateSourceHash:
@@ -98,7 +98,7 @@ class BotEditPageNotifierProvider extends AutoDisposeNotifierProviderImpl<
           dependencies: BotEditPageNotifierFamily._dependencies,
           allTransitiveDependencies:
               BotEditPageNotifierFamily._allTransitiveDependencies,
-          setting: setting,
+          order: order,
         );
 
   BotEditPageNotifierProvider._internal(
@@ -108,17 +108,17 @@ class BotEditPageNotifierProvider extends AutoDisposeNotifierProviderImpl<
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
-    required this.setting,
+    required this.order,
   }) : super.internal();
 
-  final BotSetting? setting;
+  final BotOrder? order;
 
   @override
   BotEditPageState runNotifierBuild(
     covariant BotEditPageNotifier notifier,
   ) {
     return notifier.build(
-      setting,
+      order,
     );
   }
 
@@ -127,13 +127,13 @@ class BotEditPageNotifierProvider extends AutoDisposeNotifierProviderImpl<
     return ProviderOverride(
       origin: this,
       override: BotEditPageNotifierProvider._internal(
-        () => create()..setting = setting,
+        () => create()..order = order,
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        setting: setting,
+        order: order,
       ),
     );
   }
@@ -146,13 +146,13 @@ class BotEditPageNotifierProvider extends AutoDisposeNotifierProviderImpl<
 
   @override
   bool operator ==(Object other) {
-    return other is BotEditPageNotifierProvider && other.setting == setting;
+    return other is BotEditPageNotifierProvider && other.order == order;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, setting.hashCode);
+    hash = _SystemHash.combine(hash, order.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -162,8 +162,8 @@ class BotEditPageNotifierProvider extends AutoDisposeNotifierProviderImpl<
 // ignore: unused_element
 mixin BotEditPageNotifierRef
     on AutoDisposeNotifierProviderRef<BotEditPageState> {
-  /// The parameter `setting` of this provider.
-  BotSetting? get setting;
+  /// The parameter `order` of this provider.
+  BotOrder? get order;
 }
 
 class _BotEditPageNotifierProviderElement
@@ -172,7 +172,7 @@ class _BotEditPageNotifierProviderElement
   _BotEditPageNotifierProviderElement(super.provider);
 
   @override
-  BotSetting? get setting => (origin as BotEditPageNotifierProvider).setting;
+  BotOrder? get order => (origin as BotEditPageNotifierProvider).order;
 }
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

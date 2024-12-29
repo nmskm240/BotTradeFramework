@@ -11,7 +11,7 @@ internal class FeaturePipelineParameterOrderConverter : IGrpcConverter<FeaturePi
         return new FeaturePipelineParameterOrder
         {
             Name = message.Name,
-            Value = message.ValueCase switch
+            Value = message.Value.ValueCase switch
             {
                 GrpcMessages.FeaturePipelineParameterValue.ValueOneofCase.StringValue => message.Value.StringValue,
                 GrpcMessages.FeaturePipelineParameterValue.ValueOneofCase.LongValue => message.Value.LongValue,
