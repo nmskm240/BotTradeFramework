@@ -1,8 +1,0 @@
-@startuml
-class PastCandleRepository {
-    + PastCandleRepository(setting:ExchangeSetting, logger:ILogger<PastCandleRepository>)
-    + <<async>> Fetch(token:CancellationToken) : Task
-    + <<async>> Pull(startAt:DateTimeOffset?, endAt:DateTimeOffset?, token:CancellationToken) : IAsyncEnumerable<Candle>
-}
-IUpdatableCandleRepository <|-- PastCandleRepository
-@enduml

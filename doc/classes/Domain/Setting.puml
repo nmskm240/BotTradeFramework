@@ -1,8 +1,0 @@
-@startuml
-class Setting <<record>> {
-}
-class "IEnumerable`1"<T> {
-}
-Setting --> "Api<ApiSetting>" "IEnumerable`1"
-Setting --> "Bots<BotSetting>" "IEnumerable`1"
-@enduml

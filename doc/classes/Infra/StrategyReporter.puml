@@ -1,5 +1,0 @@
-@startuml
-class StrategyReporter <<static>> {
-    + {static} <<async>> Export(directoryName:string, report:StrategyReport, shouldExportTradesToDB:bool, cancellation:CancellationToken) : Task<Plot>
-}
-@enduml

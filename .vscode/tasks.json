@@ -36,6 +36,20 @@
                 "${workspaceFolder}/src/BotTrade.sln"
             ],
             "problemMatcher": "$msCompile"
+        },
+        {
+            "label": "protobuf gen",
+            "command": "protoc",
+            "type": "process",
+            "args": [
+                "--dart_out=grpc:./client/lib/application/generated",
+                "-I",
+                "./shared/proto",
+                "./shared/proto/exchange.proto",
+                "./shared/proto/bot.proto",
+                "google/protobuf/timestamp.proto",
+                "google/protobuf/empty.proto",
+            ],
         }
     ]
 }

@@ -1,0 +1,175 @@
+@startuml
+
+package Application
+{
+    package Converters
+    {
+        interface IGrpcConverter<TEntity, SMessage>
+        {
+            ~ {static} {abstract} ToEntity(message: SMessage): TEntity
+            ~ {static} {abstract} ToGrpcMessage(entity: TEntity): SMessage
+        }
+        class ExchangePlaceConverter
+        class FeaturePipelineOrderConverter
+        class SymbolConverter
+
+        IGrpcConverter <-- ExchangePlaceConverter
+        IGrpcConverter <-- FeaturePipelineOrderConverter
+        IGrpcConverter <-- SymbolConverter
+    }
+
+    package Services
+    {
+        class BotService
+        class ExchangeService
+    }
+}
+
+package Domain
+{
+    package Exchanges
+    {
+        interface IExchange
+        {
+            + <<get only>> Place: ExchangePlace
+            + SupportSymbolsAsync(token: CancellationToken): Task<IEnumerable<Symbol>>
+            + OhlcvStreamAsObservable(symbol: Symbol, startAt: DateTimeOffset, endAt: DateTimeOffset): IConnectableObservable<Ohlcv>
+        }
+    }
+
+    package Features
+    {
+        class FeaturePipelineBuilder <<Extension>>
+        {
+            + BuildPipeline(stream: this IObservable<Ohlcv>, orders: IEnumerable<FeaturePipelineOrder>): IObservable<Dictonary<string, double>>
+        }
+        struct FeaturePipelineOrder <<record>>
+        {
+            + ProcessType: Type
+            + Parameters: Dictonary<string, object>
+        }
+        interface IFeaturePipeline
+        {
+            + <<get only>> Order: FeaturePipelineOrder
+            + Execute(input: Dictonary<string, double>): Dictonary<string, double>
+        }
+    }
+
+    package Ohlcvs
+    {
+        struct Ohlcv <<record>>
+        {
+            + Open: double
+            + High: double
+            + Low: double
+            + Close: double
+            + Volume: double
+            + Date: DateTime
+            + Symbol: Symbol
+            + ToDictonary(): Dictonary<string, double>
+        }
+        interface IOhlcvRepository
+        {
+            + LoadableSymbolsAsync(token: CancellationToken): Task<IEnumerable<Symbol>>
+            + LastUpdatedAtAsync(symbol Symbol, token: CancellationToken ): Task<DateTimeOffset>
+            + PushAsync(ohlcvs IEnumerable<Ohlcv>, token: CancellationToken) Task
+            + PullAsObservable(symbol Symbol, startAt: DateTimeOffset?, endAt: DateTimeOffset?): IObservable<Ohlcv>
+        }
+    }
+
+    class Bot
+    struct ExchangePlace <<record>>
+    {
+        + Name: string
+        + IsBacktest: bool
+    }
+    struct Symbol <<record>>
+    {
+        + Code: string
+        + Name: string
+        + Place: ExchangePlace
+    }
+}
+
+package Infra
+{
+    package Databases
+    {
+        package Mapper
+        {
+            interface IOrmMapper<TEntity, SOrm>
+            {
+                ~ {static} {abstract} ToOrm(entity: TEntity, connection: IDbConnection): SOrm
+                ~ {static} {abstract} ToEntity(orm: SOrm, connection: IDbConnection): TEntity
+            }
+            class ExchangePlaceMapper
+            class OhlcvMapper
+            class SymbolMapper
+
+            IOrmMapper <- ExchangePlaceMapper
+            IOrmMapper <- OhlcvMapper
+            IOrmMapper <- SymbolMapper
+        }
+
+        package Orm
+        {
+            entity ExchangePlaceOrm
+            {
+                + <<property>> Id: long
+                + <<property>> Name: string
+            }
+            entity OhlcvOrm
+            {
+                + <<property>> Id: int
+                + <<property>> Open: double
+                + <<property>> High: double
+                + <<property>> Low: double
+                + <<property>> Close: double
+                + <<property>> Volume: double
+                + <<property>> DecisionAt: DateTimeOffset
+                + <<property>> SymbolId: long
+            }
+            entity SymbolOrm
+            {
+                + <<property>> Id: long
+                + <<property>> Code: string
+                + <<property>> Name: string
+                + <<property>> PlaceId: long
+            }
+        }
+        class DatabaseStarter
+        {
+            + {static} CreateTablas(dbConnectionFactory: IDbConnectionFactory): Task
+        }
+        class OhlcvRepository
+        {
+            - <<readonly>> _connectionFactory: IDbConnectionFactory
+        }
+    }
+
+    package Exchanges
+    {
+        class BacktestExchang
+        class CryptoExternalExchange
+    }
+}
+
+Symbol *-- ExchangePlace
+Ohlcv *-- Symbol
+
+ExchangePlaceMapper ..> ExchangePlace
+ExchangePlaceMapper ..> ExchangePlaceOrm
+SymbolMapper ..> Symbol
+SymbolMapper ..> SymbolOrm
+OhlcvMapper ..> Ohlcv
+OhlcvMapper ..> OhlcvOrm
+OhlcvRepository ..> IOrmMapper
+
+ExchangePlaceConverter ..> ExchangePlace
+SymbolConverter ..> Symbol
+
+BacktestExchang ..|> IExchange
+CryptoExternalExchange ..|> IExchange
+OhlcvRepository ..|> IOhlcvRepository
+
+@enduml

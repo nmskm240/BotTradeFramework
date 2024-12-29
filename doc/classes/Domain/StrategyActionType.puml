@@ -1,7 +1,0 @@
-@startuml
-enum StrategyActionType {
-    Buy,
-    Sell,
-    Neutral,
-}
-@enduml

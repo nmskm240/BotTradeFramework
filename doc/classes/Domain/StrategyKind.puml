@@ -1,5 +1,0 @@
-@startuml
-enum StrategyKind {
-    MACross,
-}
-@enduml
