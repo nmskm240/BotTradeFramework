@@ -2,7 +2,7 @@ PROJECT_DIR := $(shell pwd)
 PROTO_DIR := ../shared/proto
 DART_OUT_DIR := lib/application/generated
 PROTOC_CMD := protoc \
-  --proto_path=$(PROTO_DIR) \
+  --proto_path=$(PROTO_DIR) google/protobuf/timestamp.proto google/protobuf/empty.proto\
   --dart_out=grpc:$(DART_OUT_DIR)
 
 generate_proto:
