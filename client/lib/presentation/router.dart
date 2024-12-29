@@ -9,7 +9,6 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:bot_runner/presentation/bot_detail/bot_detail_page.dart';
 import 'package:bot_runner/presentation/bot_edit/bot_edit_page.dart';
 import 'package:bot_runner/presentation/bot_list/bot_list_page.dart';
-import 'package:bot_runner/presentation/feature_edit/feature_edit_page.dart';
 import 'package:bot_runner/presentation/feature_method_select/feature_method_select_dialog_page.dart';
 import 'package:bot_runner/presentation/home/home_page.dart';
 import 'package:bot_runner/presentation/widgets/loading_overlay.dart';
@@ -47,10 +46,6 @@ final class HomeRoute extends GoRouteData {
       path: "/create",
       name: "bot_create",
       routes: [
-        TypedGoRoute<FeatureCreateRoute>(
-          path: "/features/create",
-          name: "feature_create",
-        ),
         TypedGoRoute<FeatureMethodSelectRoute>(
           path: "/features/select",
           name: "feature_method_select",
@@ -122,15 +117,6 @@ final class FeatureMethodSelectRoute extends GoRouteData {
   Page<void> buildPage(BuildContext context, GoRouterState state) {
     return DialogPage(
       builder: (_) => const FeatureMethodSelectDialogPage(),
-    );
-  }
-}
-
-final class FeatureCreateRoute extends GoRouteData {
-  @override
-  Widget build(BuildContext context, GoRouterState state) {
-    return const LoadingOverlay(
-      child: FeatureEditPage(),
     );
   }
 }

@@ -45,11 +45,6 @@ RouteBase get $botRoute => GoRouteData.$route(
           factory: $BotCreateRouteExtension._fromState,
           routes: [
             GoRouteData.$route(
-              path: '/features/create',
-              name: 'feature_create',
-              factory: $FeatureCreateRouteExtension._fromState,
-            ),
-            GoRouteData.$route(
               path: '/features/select',
               name: 'feature_method_select',
               factory: $FeatureMethodSelectRouteExtension._fromState,
@@ -91,24 +86,6 @@ extension $BotCreateRouteExtension on BotCreateRoute {
 
   String get location => GoRouteData.$location(
         '/create',
-      );
-
-  void go(BuildContext context) => context.go(location);
-
-  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
-
-  void pushReplacement(BuildContext context) =>
-      context.pushReplacement(location);
-
-  void replace(BuildContext context) => context.replace(location);
-}
-
-extension $FeatureCreateRouteExtension on FeatureCreateRoute {
-  static FeatureCreateRoute _fromState(GoRouterState state) =>
-      FeatureCreateRoute();
-
-  String get location => GoRouteData.$location(
-        '/features/create',
       );
 
   void go(BuildContext context) => context.go(location);
