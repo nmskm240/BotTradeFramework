@@ -87,8 +87,7 @@ extension $BotRouteExtension on BotRoute {
 }
 
 extension $BotCreateRouteExtension on BotCreateRoute {
-  static BotCreateRoute _fromState(GoRouterState state) =>
-      const BotCreateRoute();
+  static BotCreateRoute _fromState(GoRouterState state) => BotCreateRoute();
 
   String get location => GoRouteData.$location(
         '/create',
@@ -106,7 +105,7 @@ extension $BotCreateRouteExtension on BotCreateRoute {
 
 extension $FeatureCreateRouteExtension on FeatureCreateRoute {
   static FeatureCreateRoute _fromState(GoRouterState state) =>
-      const FeatureCreateRoute();
+      FeatureCreateRoute();
 
   String get location => GoRouteData.$location(
         '/features/create',
@@ -124,7 +123,7 @@ extension $FeatureCreateRouteExtension on FeatureCreateRoute {
 
 extension $FeatureMethodSelectRouteExtension on FeatureMethodSelectRoute {
   static FeatureMethodSelectRoute _fromState(GoRouterState state) =>
-      const FeatureMethodSelectRoute();
+      FeatureMethodSelectRoute();
 
   String get location => GoRouteData.$location(
         '/features/select',
