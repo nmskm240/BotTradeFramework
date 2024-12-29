@@ -32,8 +32,8 @@ public class OhlcvRepository(IDbConnectionFactory connectionFactory) : IOhlcvRep
             try
             {
                 var connection = await _connectionFactory.OpenAsync(token);
-                disposables.Add(connection);
                 var symbolOrm = SymbolMapper.ToOrm(symbol, connection);
+                disposables.Add(connection);
                 var query = connection.From<OhlcvOrm>()
                     .Where(x =>
                         x.SymbolId == symbolOrm.Id &&
@@ -48,10 +48,12 @@ public class OhlcvRepository(IDbConnectionFactory connectionFactory) : IOhlcvRep
                     observer.OnNext(OhlcvMapper.ToEntity(orm, connection));
                 }
                 observer.OnCompleted();
+                disposables.Dispose();
             }
             catch (Exception e)
             {
                 observer.OnError(e);
+                disposables.Dispose();
             }
 
             return disposables;

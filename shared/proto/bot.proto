@@ -1,0 +1,25 @@
+syntax = "proto3";
+option csharp_namespace = "BotTrade.Application.Grpc.Generated";
+package bot;
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+import "exchange.proto";
+import "feature.proto";
+
+service BotService {
+    rpc Run (BotOrder) returns (stream BotPerformance);
+}
+
+message BotPerformance {
+    double predict_value = 1;
+    double actual_value = 2;
+    google.protobuf.Timestamp timestamp = 3;
+}
+
+message BotOrder {
+    exchange.Symbol symbol = 1;
+    repeated feature.FeaturePipelineOrder pipeline_orders = 2;
+    optional google.protobuf.Timestamp start_at = 3;
+    optional google.protobuf.Timestamp end_at = 4;
+}

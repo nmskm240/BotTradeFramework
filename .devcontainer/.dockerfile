@@ -2,6 +2,8 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0
 
 ARG FLUTTER_VERSION=3.24.0
 ARG FLUTTER_SDK_PATH=/opt/flutter
+ARG PYTHON_VERSION=3.10.15
+ARG PYENV_ROOT=/root/.pyenv
 
 EXPOSE 5000 5001
 
@@ -28,25 +30,30 @@ RUN apt-get update \
         libffi-dev \
         cargo \
         sqlite3 \
-        python3 \
-        python3-pip \
-        python3.11-venv \
+        python3-openssl \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
-RUN python3 -m venv /opt/venv
-ENV PATH="/opt/venv/bin:$PATH"
+RUN curl https://pyenv.run | bash
+
+ENV PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims:$PATH"
+ENV PYTHON_CONFIGURE_OPTS="--enable-shared"
+
+RUN pyenv install ${PYTHON_VERSION} && pyenv global ${PYTHON_VERSION}
+
+ENV LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install \
         rust \
         cython \
-        git+https://github.com/online-ml/river
+        river
 
 RUN git clone https://github.com/flutter/flutter.git ${FLUTTER_SDK_PATH} \
     && cd ${FLUTTER_SDK_PATH} \
     && git fetch --all --tags \
     && git checkout ${FLUTTER_VERSION} \
-    && export PATH="$PATH:/opt/flutter/bin" \
+    && export PATH="$PATH:${FLUTTER_SDK_PATH}/bin" \
     && flutter channel stable \
     && flutter upgrade \
     && flutter precache \

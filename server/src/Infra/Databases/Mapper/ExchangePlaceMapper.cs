@@ -19,7 +19,10 @@ internal class ExchangePlaceMapper : IOrmMappger<ExchangePlace, ExchangePlaceOrm
 
     public static ExchangePlaceOrm ToOrm(ExchangePlace entity, IDbConnection connection)
     {
-        var saved = connection.Single<ExchangePlaceOrm>(x => x.Name == entity.Name);
+        var query = connection.From<ExchangePlaceOrm>()
+            .Where(x => x.Name == entity.Name);
+        var saved = connection.Select(query)
+            .SingleOrDefault();
 
         if (saved != null)
             return saved;
@@ -29,7 +32,7 @@ internal class ExchangePlaceMapper : IOrmMappger<ExchangePlace, ExchangePlaceOrm
             Name = entity.Name,
         };
 
-        orm.Id = connection.Insert(orm);
+        orm.Id = connection.Insert(orm, selectIdentity: true);
         return orm;
     }
 }

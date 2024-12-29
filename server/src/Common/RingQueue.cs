@@ -2,13 +2,13 @@ using System.Collections;
 
 namespace BotTrade;
 
-public class RingQueue<T> : IEnumerable<T>
+public struct RingQueue<T> : IEnumerable<T>
 {
     private Queue<T> _queue;
 
-    public int Count => _queue.Count;
-
-    public int Capacity { get; private set; }
+    public readonly int Count => _queue.Count;
+    public readonly bool IsMax => Count >= Capacity;
+    public int Capacity { get; init; }
 
     public RingQueue(int capacity)
     {
@@ -16,18 +16,18 @@ public class RingQueue<T> : IEnumerable<T>
         _queue = new Queue<T>(capacity);
     }
 
-    public void Enqueue(T item)
+    public readonly void Enqueue(T item)
     {
+        if (IsMax)
+            Dequeue();
         _queue.Enqueue(item);
-
-        if (Count > Capacity) Dequeue();
     }
 
-    public T Dequeue() => _queue.Dequeue();
+    public readonly T Dequeue() => _queue.Dequeue();
 
-    public T Peek() => _queue.Peek();
+    public readonly T Peek() => _queue.Peek();
 
-    public IEnumerator<T> GetEnumerator() => _queue.GetEnumerator();
+    public readonly IEnumerator<T> GetEnumerator() => _queue.GetEnumerator();
 
-    IEnumerator IEnumerable.GetEnumerator() => _queue.GetEnumerator();
+    readonly IEnumerator IEnumerable.GetEnumerator() => _queue.GetEnumerator();
 }

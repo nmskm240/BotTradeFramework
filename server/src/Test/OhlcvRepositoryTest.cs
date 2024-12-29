@@ -29,11 +29,11 @@ public class OhlcvRepositoryTest
         var ohlcvs = new List<Ohlcv>
         {
             new(
-                100m,
-                110m,
-                90m,
-                105m,
-                1000m,
+                100d,
+                110d,
+                90d,
+                105d,
+                1000d,
                 DateTime.UtcNow,
                 new (
                     "BTC/USD",
@@ -50,7 +50,7 @@ public class OhlcvRepositoryTest
         using var db = await dbFactory.OpenAsync();
         var result = db.Select<OhlcvOrm>();
         Assert.Single(result);
-        Assert.Equal(100m, result.First().Open);
+        Assert.Equal(100d, result.First().Open);
     }
 
     [Fact]
@@ -69,8 +69,8 @@ public class OhlcvRepositoryTest
 
         var ohlcvs = new List<Ohlcv>
         {
-            new(100m, 110m, 90m, 105m, 1000m, now.AddMinutes(-10), symbol),
-            new(105m, 115m, 95m, 110m, 2000m, now.AddMinutes(-5), symbol)
+            new(100d, 110d, 90d, 105d, 1000d, now.AddMinutes(-10), symbol),
+            new(105d, 115d, 95d, 110d, 2000d, now.AddMinutes(-5), symbol)
         };
 
         await repository.PushAsync(ohlcvs, CancellationToken.None);
@@ -81,8 +81,8 @@ public class OhlcvRepositoryTest
 
         // Assert
         Assert.Single(result);
-        Assert.Equal(105m, result.First().Open);
-        Assert.Equal(110m, result.First().Close);
+        Assert.Equal(105d, result.First().Open);
+        Assert.Equal(110d, result.First().Close);
     }
 
     [Fact]
@@ -98,9 +98,9 @@ public class OhlcvRepositoryTest
         var now = DateTime.UtcNow;
         var ohlcvs = new List<Ohlcv>
         {
-            new(100m, 110m, 90m, 105m, 1000m, now.AddMinutes(-10), symbol),
-            new(105m, 115m, 95m, 110m, 2000m, now.AddMinutes(-5), symbol),
-            new(105m, 115m, 95m, 110m, 2000m, now, symbol),
+            new(100d, 110d, 90d, 105d, 1000d, now.AddMinutes(-10), symbol),
+            new(105d, 115d, 95d, 110d, 2000d, now.AddMinutes(-5), symbol),
+            new(105d, 115d, 95d, 110d, 2000d, now, symbol),
         };
 
         await repository.PushAsync(ohlcvs, CancellationToken.None);

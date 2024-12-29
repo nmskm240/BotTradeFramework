@@ -10,8 +10,6 @@ using Google.Protobuf.WellKnownTypes;
 
 using Grpc.Core;
 
-using Microsoft.Extensions.Logging;
-
 using ServiceBase = BotTrade.Application.Grpc.Generated.ExchangeService;
 
 namespace BotTrade.Application.Services;
@@ -19,13 +17,11 @@ public class ExchangeService : ServiceBase.ExchangeServiceBase
 {
     private IExchange _exchange { get; init; }
     private IOhlcvRepository _repository { get; init; }
-    // private ILogger _logger { get; init; }
 
     public ExchangeService(IExchange exchange, IOhlcvRepository repository)
     {
         _exchange = exchange;
         _repository = repository;
-        // _logger = logger;
     }
 
     public override async Task<Symbols> SupportedSymbols(ExchangePlace request, ServerCallContext context)
@@ -45,35 +41,26 @@ public class ExchangeService : ServiceBase.ExchangeServiceBase
             var updatedAt = await _repository.LastUpdatedAtAsync(symbol, context.CancellationToken);
             var now = DateTimeOffset.UtcNow;
             var completion = new TaskCompletionSource<bool>();
-            var ohlcvs = new List<Ohlcv>();
             var observable = _exchange.OhlcvStreamAsObservable(symbol, updatedAt.AddMinutes(1), now.AddMinutes(-1));
-            var subscription = new CompositeDisposable(
-                observable.Subscribe(
-                    async ohlcv =>
+            using var _ = observable.Buffer(100000)
+                .Subscribe(
+                    async ohlcvs =>
                     {
-                        ohlcvs.Add(ohlcv);
-                        if (ohlcvs.Count >= 1000)
+                        try
                         {
-                            try
-                            {
-                                await _repository.PushAsync(ohlcvs, context.CancellationToken);
-                                ohlcvs.Clear();
-                            }
-                            catch (Exception e)
-                            {
-                                completion.SetException(e);
-                            }
+                            await _repository.PushAsync(ohlcvs, context.CancellationToken);
+                        }
+                        catch (Exception e)
+                        {
+                            completion.SetException(e);
                         }
                     },
                     e => completion.SetException(e),
                     () => completion.SetResult(true)
-                ),
-                observable.Connect()
-            );
+                );
+            observable.Connect();
 
             await completion.Task;
-
-            subscription.Dispose();
         });
         await Task.WhenAll(tasks);
 
