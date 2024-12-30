@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:go_router/go_router.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // Project imports:
 import 'package:bot_runner/presentation/bot_detail/bot_detail_page.dart';
@@ -16,12 +15,10 @@ import 'package:bot_runner/presentation/widgets/loading_overlay.dart';
 part 'router.g.dart';
 part 'router.dialog.dart';
 
-final routerProvider = Provider((ref) {
-  return GoRouter(
-    initialLocation: "/",
-    routes: $appRoutes,
-  );
-});
+final routes = GoRouter(
+  routes: $appRoutes,
+  initialLocation: "/",
+);
 
 @TypedGoRoute<HomeRoute>(
   path: "/",
