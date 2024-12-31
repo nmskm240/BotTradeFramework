@@ -2,7 +2,6 @@
 import 'dart:async';
 
 // Flutter imports:
-import 'package:bot_runner/application/services/loading_overlay_service.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -12,6 +11,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // Project imports:
 import 'package:bot_runner/application/generated/bot.pb.dart';
+import 'package:bot_runner/application/services/loading_overlay_service.dart';
 import 'package:bot_runner/presentation/widgets/bot_activity_chart.dart';
 
 part 'bot_detail_page.state.dart';
@@ -36,7 +36,7 @@ final class BotDeatilPage extends ConsumerWidget {
     return Scaffold(
       appBar: AppBar(),
       body: BotActivityChart(
-        data: state.activities,
+        performances: state.activities,
       ),
     );
   }

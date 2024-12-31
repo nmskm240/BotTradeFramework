@@ -7,7 +7,7 @@ part of 'bot_detail_page.dart';
 // **************************************************************************
 
 String _$botDetailPageNotifierHash() =>
-    r'34677bf4d182862c3595a5915b956078c087bff6';
+    r'0a8967ab2fa4fc7aada2945dbcbae61dac6c9ad2';
 
 /// Copied from Dart SDK
 class _SystemHash {

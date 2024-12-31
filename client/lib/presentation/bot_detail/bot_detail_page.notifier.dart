@@ -7,8 +7,8 @@ class BotDetailPageNotifier extends _$BotDetailPageNotifier {
     activities.listen(
       (e) {
         final fixed = [...state.activities, e];
-        if (10000 < fixed.length) {
-          fixed.removeRange(0, fixed.length - 10000);
+        if (1000 < fixed.length) {
+          fixed.removeRange(0, fixed.length - 1000);
         }
         state = state.copyWith(activities: fixed);
       },
