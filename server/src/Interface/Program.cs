@@ -15,7 +15,7 @@ public class Program
     {
         Domain.Python.Setup();
 
-        var connectionFactory = new OrmLiteConnectionFactory("/workspaces/trade_bot/server/data/ohlcvs.sqlite3", SqliteDialect.Provider);
+        var connectionFactory = new OrmLiteConnectionFactory("/workspaces/BotTradeFramework/server/data/ohlcvs.sqlite3", SqliteDialect.Provider);
         await DatabaseStarter.CreateTables(connectionFactory);
 
         var builder = WebApplication.CreateBuilder(args);
