@@ -7,7 +7,7 @@ part of 'bot_edit_page.dart';
 // **************************************************************************
 
 String _$botEditPageNotifierHash() =>
-    r'c5a819201c135b36791f3ec679c1747ecb23f751';
+    r'08160f180f0d20a252816676353b9140f368448b';
 
 /// Copied from Dart SDK
 class _SystemHash {

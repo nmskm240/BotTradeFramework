@@ -3,9 +3,10 @@ import 'package:flutter/material.dart';
 
 // Package imports:
 import 'package:go_router/go_router.dart';
-import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // Project imports:
+import 'package:bot_runner/application/generated/bot.pb.dart';
+import 'package:bot_runner/application/services/routing_service.dart';
 import 'package:bot_runner/presentation/bot_detail/bot_detail_page.dart';
 import 'package:bot_runner/presentation/bot_edit/bot_edit_page.dart';
 import 'package:bot_runner/presentation/bot_list/bot_list_page.dart';
@@ -16,16 +17,14 @@ import 'package:bot_runner/presentation/widgets/loading_overlay.dart';
 part 'router.g.dart';
 part 'router.dialog.dart';
 
-final routerProvider = Provider((ref) {
-  return GoRouter(
-    initialLocation: "/",
-    routes: $appRoutes,
-  );
-});
+final routes = GoRouter(
+  routes: $appRoutes,
+  initialLocation: "/",
+);
 
 @TypedGoRoute<HomeRoute>(
   path: "/",
-  name: "home",
+  name: RouteName.home,
 )
 final class HomeRoute extends GoRouteData {
   const HomeRoute();
@@ -40,25 +39,21 @@ final class HomeRoute extends GoRouteData {
 
 @TypedGoRoute<BotRoute>(
   path: "/bots",
-  name: "bots",
+  name: RouteName.botList,
   routes: [
     TypedGoRoute<BotCreateRoute>(
       path: "/create",
-      name: "bot_create",
+      name: RouteName.botCreate,
       routes: [
         TypedGoRoute<FeatureMethodSelectRoute>(
           path: "/features/select",
-          name: "feature_method_select",
+          name: RouteName.featureMethodSelect,
         ),
       ],
     ),
     TypedGoRoute<BotDetailRoute>(
       path: "/:id",
-      name: "bot_detail",
-    ),
-    TypedGoRoute<BotEditRoute>(
-      path: "/:id/edit",
-      name: "bot_edit",
+      name: RouteName.botDetail,
     ),
   ],
 )
@@ -82,8 +77,9 @@ final class BotDetailRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const LoadingOverlay(
-      child: BotDeatilPage(),
+    final i = state.extra as Stream<BotPerformance>;
+    return LoadingOverlay(
+      child: BotDeatilPage(activities: i),
     );
   }
 }

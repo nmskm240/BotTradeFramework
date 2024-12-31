@@ -7,7 +7,7 @@ part of 'feature_method_select_dialog_page_notifier.dart';
 // **************************************************************************
 
 String _$featureMethodSelectDialogPageNotifierHash() =>
-    r'88f5d26327f1637ff3b0e319498126695e3b0ef6';
+    r'517f46bf05d97f96d3558b7bfd5a2ad2078f1ef4';
 
 /// See also [FeatureMethodSelectDialogPageNotifier].
 @ProviderFor(FeatureMethodSelectDialogPageNotifier)

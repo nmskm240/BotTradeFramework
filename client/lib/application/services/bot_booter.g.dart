@@ -1,26 +1,25 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'grpc_client.dart';
+part of 'bot_booter.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$grpcClientHash() => r'cc6591cb9c204e9033e2894d9c3a83bce27fa6c4';
+String _$botBooterHash() => r'0cc9c54255d1ee6ac6208dc99a124ff2d6fd6c7f';
 
-/// See also [grpcClient].
-@ProviderFor(grpcClient)
-final grpcClientProvider = Provider<_GrpcClient>.internal(
-  grpcClient,
-  name: r'grpcClientProvider',
+/// See also [BotBooter].
+@ProviderFor(BotBooter)
+final botBooterProvider =
+    AutoDisposeNotifierProvider<BotBooter, BotBooter>.internal(
+  BotBooter.new,
+  name: r'botBooterProvider',
   debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$grpcClientHash,
+      const bool.fromEnvironment('dart.vm.product') ? null : _$botBooterHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
-@Deprecated('Will be removed in 3.0. Use Ref instead')
-// ignore: unused_element
-typedef GrpcClientRef = ProviderRef<_GrpcClient>;
+typedef _$BotBooter = AutoDisposeNotifier<BotBooter>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

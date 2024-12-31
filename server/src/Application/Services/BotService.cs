@@ -13,6 +13,8 @@ using Grpc.Core;
 
 using Microsoft.Extensions.Logging;
 
+using Reactive.Bindings.Extensions;
+
 using ServiceBase = BotTrade.Application.Grpc.Generated.BotService;
 
 namespace BotTrade.Application.Services;
@@ -31,6 +33,7 @@ public class BotService : ServiceBase.BotServiceBase
 
     public override async Task Run(BotOrder request, IServerStreamWriter<BotPerformance> stream, ServerCallContext context)
     {
+        var disposables = new CompositeDisposable();
         var symbol = SymbolConverter.ToEntity(request.Symbol);
         var startAt = request.StartAt?.ToDateTimeOffset()
              ?? new DateTimeOffset(2018, 1, 1, 0, 0, 0, TimeSpan.Zero);
@@ -42,24 +45,41 @@ public class BotService : ServiceBase.BotServiceBase
         var ohlcvStream = _exchange.OhlcvStreamAsObservable(symbol, startAt, endAt);
         var pipeline = ohlcvStream.BuildPipeline(orders);
         var completion = new TaskCompletionSource();
-        var bot = new Bot(pipeline, _logger);
-        using var disposables = new CompositeDisposable([
-            bot,
-            bot.OnPredicatedAsObservable()
-                .WithLatestFrom(ohlcvStream, (pred, ohlcv) => new BotPerformance()
+        var semaphore = new SemaphoreSlim(1, 1)
+            .AddTo(disposables);
+        var streamWriteProcess = async (BotPerformance e) =>
+        {
+            await semaphore.WaitAsync();
+            try
+            {
+                await stream.WriteAsync(e);
+            }
+            finally
+            {
+                if (!disposables.IsDisposed)
                 {
-                    PredictValue = pred.First(),
-                    ActualValue = ohlcv.Close,
-                    Timestamp = ohlcv.Date.ToTimestamp()
-                })
-                .Subscribe(async e => await stream.WriteAsync(e)),
-            pipeline.Subscribe(
-                _ => { },
-                completion.SetException,
-                completion.SetResult
-            ),
-            ohlcvStream.Connect(),
-        ]);
+                    semaphore.Release();
+                }
+            }
+        };
+        var bot = new Bot(pipeline, _logger)
+            .AddTo(disposables);
+        bot.OnPredicatedAsObservable()
+            .WithLatestFrom(ohlcvStream, (pred, ohlcv) => new BotPerformance()
+            {
+                PredictValue = pred.First(),
+                ActualValue = ohlcv.Close,
+                Timestamp = ohlcv.Date.ToTimestamp()
+            })
+            .Subscribe(async e => await streamWriteProcess(e))
+            .AddTo(disposables);
+        pipeline.Subscribe(
+            _ => { },
+            completion.SetException,
+            completion.SetResult
+        ).AddTo(disposables);
+        ohlcvStream.Connect()
+            .AddTo(disposables);
 
         try
         {
@@ -68,6 +88,9 @@ public class BotService : ServiceBase.BotServiceBase
         catch (Exception e)
         {
             _logger.LogError(e.Message);
+        }
+        finally
+        {
             disposables.Dispose();
         }
     }

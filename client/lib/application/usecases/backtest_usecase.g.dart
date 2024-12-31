@@ -1,26 +1,27 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'grpc_client.dart';
+part of 'backtest_usecase.dart';
 
 // **************************************************************************
 // RiverpodGenerator
 // **************************************************************************
 
-String _$grpcClientHash() => r'cc6591cb9c204e9033e2894d9c3a83bce27fa6c4';
+String _$backtestUsecaseHash() => r'4789bcd2a9e6458731d5922f6e285685cd37a974';
 
-/// See also [grpcClient].
-@ProviderFor(grpcClient)
-final grpcClientProvider = Provider<_GrpcClient>.internal(
-  grpcClient,
-  name: r'grpcClientProvider',
-  debugGetCreateSourceHash:
-      const bool.fromEnvironment('dart.vm.product') ? null : _$grpcClientHash,
+/// See also [backtestUsecase].
+@ProviderFor(backtestUsecase)
+final backtestUsecaseProvider = AutoDisposeProvider<BacktestUsecase>.internal(
+  backtestUsecase,
+  name: r'backtestUsecaseProvider',
+  debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+      ? null
+      : _$backtestUsecaseHash,
   dependencies: null,
   allTransitiveDependencies: null,
 );
 
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
-typedef GrpcClientRef = ProviderRef<_GrpcClient>;
+typedef BacktestUsecaseRef = AutoDisposeProviderRef<BacktestUsecase>;
 // ignore_for_file: type=lint
 // ignore_for_file: subtype_of_sealed_class, invalid_use_of_internal_member, invalid_use_of_visible_for_testing_member, deprecated_member_use_from_same_package

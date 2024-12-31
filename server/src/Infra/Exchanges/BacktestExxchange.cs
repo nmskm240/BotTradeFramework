@@ -20,7 +20,7 @@ public class BacktestExchange : IExchange
     public ExchangePlace Place { get; init; }
     private readonly ILogger _loggerr;
     private readonly IOhlcvRepository _ohlcvRepository;
-    private IConnectableObservable<Ohlcv>? _ohlcvStream = null;
+    private Dictionary<(Symbol, DateTimeOffset?, DateTimeOffset?), IObservable<Ohlcv>> _ohlcvStreamMap = [];
 
     public BacktestExchange(IOhlcvRepository ohlcvRepository, ILogger<IExchange> loggerr)
     {
@@ -30,8 +30,11 @@ public class BacktestExchange : IExchange
 
     public IConnectableObservable<Ohlcv> OhlcvStreamAsObservable(Symbol symbol, DateTimeOffset? startAt = null, DateTimeOffset? endAt = null)
     {
-        _ohlcvStream ??= _ohlcvRepository.PullAsObservable(symbol, startAt, endAt).Publish();
-        return _ohlcvStream;
+        if (!_ohlcvStreamMap.ContainsKey((symbol, startAt, endAt)))
+        {
+            _ohlcvStreamMap[(symbol, startAt, endAt)] = _ohlcvRepository.PullAsObservable(symbol, startAt, endAt);
+        }
+        return _ohlcvStreamMap[(symbol, startAt, endAt)].Publish();
     }
 
     public async Task<IEnumerable<Symbol>> SupportSymbolsAsync(CancellationToken token)
