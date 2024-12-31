@@ -56,11 +56,6 @@ RouteBase get $botRoute => GoRouteData.$route(
           name: 'bot_detail',
           factory: $BotDetailRouteExtension._fromState,
         ),
-        GoRouteData.$route(
-          path: '/:id/edit',
-          name: 'bot_edit',
-          factory: $BotEditRouteExtension._fromState,
-        ),
       ],
     );
 
@@ -123,25 +118,6 @@ extension $BotDetailRouteExtension on BotDetailRoute {
 
   String get location => GoRouteData.$location(
         '/${Uri.encodeComponent(id)}',
-      );
-
-  void go(BuildContext context) => context.go(location);
-
-  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
-
-  void pushReplacement(BuildContext context) =>
-      context.pushReplacement(location);
-
-  void replace(BuildContext context) => context.replace(location);
-}
-
-extension $BotEditRouteExtension on BotEditRoute {
-  static BotEditRoute _fromState(GoRouterState state) => BotEditRoute(
-        id: state.pathParameters['id']!,
-      );
-
-  String get location => GoRouteData.$location(
-        '/${Uri.encodeComponent(id)}/edit',
       );
 
   void go(BuildContext context) => context.go(location);

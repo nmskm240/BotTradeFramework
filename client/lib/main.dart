@@ -13,7 +13,7 @@ void main() {
     ProviderScope(
       child: App(),
       overrides: [
-        routingServiceProvider.overrideWith((ref) => routes),
+        routingServiceProvider.overrideWith((ref) => RoutingService(routes)),
       ],
     ),
   );
@@ -24,14 +24,14 @@ class App extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final router = ref.read(routingServiceProvider);
+    final routing = ref.read(routingServiceProvider);
     return MaterialApp.router(
       title: 'Bot runner',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      routerConfig: router,
+      routerConfig: routing.router,
     );
   }
 }
