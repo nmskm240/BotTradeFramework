@@ -1,6 +1,8 @@
 // Package imports:
-import 'package:bot_runner/application/services/routing_service.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
+
+// Project imports:
+import 'package:bot_runner/application/services/routing_service.dart';
 
 part 'home_page_notifier.g.dart';
 
@@ -12,6 +14,6 @@ class HomePageNotifier extends _$HomePageNotifier {
   }
 
   void pushBotCreatePage() {
-    ref.read(routingServiceProvider).push("/bots/create");
+    ref.read(routingServiceProvider).goToBotEdit();
   }
 }

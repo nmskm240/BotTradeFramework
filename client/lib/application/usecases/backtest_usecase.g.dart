@@ -6,7 +6,7 @@ part of 'backtest_usecase.dart';
 // RiverpodGenerator
 // **************************************************************************
 
-String _$backtestUsecaseHash() => r'a92e5e1c64853162ef4b6e6112f57d8f93bfc9eb';
+String _$backtestUsecaseHash() => r'4789bcd2a9e6458731d5922f6e285685cd37a974';
 
 /// See also [backtestUsecase].
 @ProviderFor(backtestUsecase)
