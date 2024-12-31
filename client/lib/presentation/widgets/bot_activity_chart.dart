@@ -1,6 +1,11 @@
-import 'package:bot_runner/application/generated/bot.pb.dart';
+// Flutter imports:
 import 'package:flutter/material.dart';
+
+// Package imports:
 import 'package:graphic/graphic.dart';
+
+// Project imports:
+import 'package:bot_runner/application/generated/bot.pb.dart';
 
 final class BotActivityChart extends Chart<BotPerformance> {
   BotActivityChart({
