@@ -12,16 +12,16 @@ import 'package:bot_runner/infra/grpc_client.dart';
 part 'exchange_place_fetcher.g.dart';
 
 @riverpod
-_ExchangePlaceFetcher exchangePlaceFetcher(Ref ref) {
+ExchangePlaceFetcher exchangePlaceFetcher(Ref ref) {
   final grpc = ref.read(grpcClientProvider);
   final client = grpc.get<ExchangeServiceClient>();
-  return _ExchangePlaceFetcher(client: client);
+  return ExchangePlaceFetcher(client: client);
 }
 
-final class _ExchangePlaceFetcher {
+final class ExchangePlaceFetcher {
   final ExchangeServiceClient client;
 
-  const _ExchangePlaceFetcher({
+  const ExchangePlaceFetcher({
     required this.client,
   });
 
