@@ -25,6 +25,7 @@ internal class FeaturePipelineParameterOrderConverter : IGrpcConverter<FeaturePi
         };
     }
 
+
     public static GrpcMessages.FeaturePipelineParameterOrder ToGrpcMessage(FeaturePipelineParameterOrder entity)
     {
         return new GrpcMessages.FeaturePipelineParameterOrder
@@ -36,6 +37,8 @@ internal class FeaturePipelineParameterOrderConverter : IGrpcConverter<FeaturePi
                 { LongValue: not null } => new() { LongValue = (long)entity.LongValue },
                 { DoubleValue: not null } => new() { DoubleValue = (double)entity.DoubleValue },
                 { StringValue: not null } => new() { StringValue = entity.StringValue },
+                { ListValue: not null } => new() { ListValue = { Values = { entity.ListValue } } },
+                { MapValue: not null } => new() { MapValue = { Values = { entity.MapValue } } },
                 _ => throw new NotImplementedException(),
             }
         };

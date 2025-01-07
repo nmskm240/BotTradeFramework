@@ -8,7 +8,7 @@ namespace BotTrade.Domain.Features.Process;
 public sealed class Remove : IFeaturePipeline
 {
     public FeaturePipelineOrder Order { get; init; }
-    [ListParameterInfo(name: "", description: "", defalutValue: [])]
+    [ListParameterInfo(name: "targets", description: "", defalutValue: [])]
     public IEnumerable<string> Targets { get; init; }
 
     public Remove(FeaturePipelineOrder order)

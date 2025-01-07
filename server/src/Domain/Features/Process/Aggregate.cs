@@ -58,7 +58,9 @@ public sealed class Aggregate : IFeaturePipeline
     private readonly RingQueue<Dictionary<string, double>> _buffer;
     public FeaturePipelineOrder Order { get; init; }
 
-    [MapParameterInfo(name: "", description: "", valueOptions: [Rule.First, Rule.Last, Rule.Sum, Rule.Min, Rule.Max])]
+    [LongParameterInfo(name: "buffer_size", description: "", defalutValue: 1)]
+    public long BufferSize { get; init; }
+    [MapParameterInfo(name: "RuleMap", description: "", valueOptions: [Rule.First, Rule.Last, Rule.Sum, Rule.Min, Rule.Max])]
     [MapParameterInfo.Element(key: Ohlcv.OPEN_LABEL, value: Rule.First)]
     [MapParameterInfo.Element(key: Ohlcv.HIGH_LABEL, value: Rule.Max)]
     [MapParameterInfo.Element(key: Ohlcv.LOW_LABEL, value: Rule.Min)]
@@ -69,23 +71,22 @@ public sealed class Aggregate : IFeaturePipeline
 
     public Aggregate(FeaturePipelineOrder order)
     {
-        var size = order.Parameters
-            .FirstOrDefault(p => p.Name == "buffer_size").LongValue ?? 0;
-
+        BufferSize = order.Parameters.First(p => p.Name == "buffer_size").LongValue ?? 1;
+        RuleMap = order.Parameters.First(p => p.Name == "RuleMap").MapValue ?? [];
         Order = order;
-        _buffer = new((int)size);
+        _buffer = new((int)BufferSize);
     }
 
     public Dictionary<string, double> Execute(Dictionary<string, double> input)
     {
         _buffer.Enqueue(input);
 
-        if(!_buffer.IsMax)
+        if (!_buffer.IsMax)
             return input;
 
         var header = _buffer.First().Keys;
         var aggregated = new Dictionary<string, double>();
-        foreach(var key in header)
+        foreach (var key in header)
         {
             var values = _buffer.Select(pair => pair[key]);
             // TODO: 拡張性を考えるならここはインターフェース化したい
