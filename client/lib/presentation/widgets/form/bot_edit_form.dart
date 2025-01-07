@@ -1,5 +1,4 @@
 // Flutter imports:
-import 'package:bot_runner/application/fetchers/symbol_fetcher.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -10,6 +9,7 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // Project imports:
 import 'package:bot_runner/application/fetchers/exchange_place_fetcher.dart';
+import 'package:bot_runner/application/fetchers/symbol_fetcher.dart';
 import 'package:bot_runner/application/generated/exchange.pb.dart';
 import 'package:bot_runner/application/services/loading_overlay_service.dart';
 import 'package:bot_runner/presentation/widgets/form/fields/exchange_place_form_field.dart';

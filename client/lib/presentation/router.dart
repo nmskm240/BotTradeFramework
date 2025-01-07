@@ -2,6 +2,7 @@
 import 'package:flutter/material.dart';
 
 // Package imports:
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:go_router/go_router.dart';
 
 // Project imports:
@@ -10,8 +11,12 @@ import 'package:bot_runner/application/services/routing_service.dart';
 import 'package:bot_runner/presentation/bot_detail/bot_detail_page.dart';
 import 'package:bot_runner/presentation/bot_edit/bot_edit_page.dart';
 import 'package:bot_runner/presentation/bot_list/bot_list_page.dart';
-import 'package:bot_runner/presentation/feature_method_select/feature_method_select_dialog_page.dart';
+import 'package:bot_runner/presentation/exchange_list/exchange_list_page.dart';
+import 'package:bot_runner/presentation/feature_info_list/feature_info_list_page.dart';
+import 'package:bot_runner/presentation/feature_pipeline_edit/feature_pipeline_edit_page.dart';
+import 'package:bot_runner/presentation/feature_pipeline_order_edit/feature_pipeline_order_edit_page.dart';
 import 'package:bot_runner/presentation/home/home_page.dart';
+import 'package:bot_runner/presentation/symbol_list/symbol_list_page.dart';
 import 'package:bot_runner/presentation/widgets/loading_overlay.dart';
 
 part 'router.g.dart';
@@ -42,15 +47,14 @@ final class HomeRoute extends GoRouteData {
   name: RouteName.botList,
   routes: [
     TypedGoRoute<BotCreateRoute>(
-      path: "/create",
-      name: RouteName.botCreate,
-      routes: [
-        TypedGoRoute<FeatureMethodSelectRoute>(
-          path: "/features/select",
-          name: RouteName.featureMethodSelect,
-        ),
-      ],
-    ),
+        path: "/create",
+        name: RouteName.botCreate,
+        routes: [
+          TypedGoRoute<FeaturePipelinEditRoute>(
+            path: "/features",
+            name: RouteName.featuresEdit,
+          ),
+        ]),
     TypedGoRoute<BotDetailRoute>(
       path: "/:id",
       name: RouteName.botDetail,
@@ -102,17 +106,79 @@ final class BotEditRoute extends GoRouteData {
 final class BotCreateRoute extends GoRouteData {
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    return const LoadingOverlay(
-      child: BotEditPage(),
+    return LoadingOverlay(
+      child: FeaturePipelineEditPage(
+        initialPipelines: const [],
+      ),
     );
   }
 }
 
-final class FeatureMethodSelectRoute extends GoRouteData {
+final class FeaturePipelinEditRoute extends GoRouteData {
   @override
-  Page<void> buildPage(BuildContext context, GoRouterState state) {
-    return DialogPage(
-      builder: (_) => const FeatureMethodSelectDialogPage(),
+  Widget build(BuildContext context, GoRouterState state) {
+    final extra = state.extra as FeaturePipelineParameterOrderEditRouteExtraArgs;
+    return LoadingOverlay(
+      child: FeaturePipelineOrderEditPage(
+        formKey: GlobalKey<FormBuilderState>(),
+        parameters: extra.parameters,
+      ),
+    );
+  }
+}
+
+@TypedGoRoute<SelectRoute>(
+  path: "/select",
+  name: "select",
+  routes: [
+    TypedGoRoute<SelectExchangeRoute>(
+      path: "/exchanges",
+      name: RouteName.selectExchanges,
+    ),
+    TypedGoRoute<SelectFeatureRoute>(
+      path: "/features",
+      name: RouteName.selectFeatures,
+    ),
+    TypedGoRoute<SelectSymbolRoute>(
+      path: "/symbols",
+      name: RouteName.selectSymbols,
+    ),
+  ],
+)
+final class SelectRoute extends GoRouteData {}
+
+final class SelectFeatureRoute extends GoRouteData {
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    final extra = state.extra as FeatureInfoListExtraArgs;
+    return LoadingOverlay(
+      child: FeatureInfoListPage(
+        infos: extra.infos,
+      ),
+    );
+  }
+}
+
+final class SelectExchangeRoute extends GoRouteData {
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    final extra = state.extra as ExchangeListExtraArgs;
+    return LoadingOverlay(
+      child: ExchangeListPage(
+        exchanges: extra.exchanges,
+      ),
+    );
+  }
+}
+
+final class SelectSymbolRoute extends GoRouteData {
+  @override
+  Widget build(BuildContext context, GoRouterState state) {
+    final extra = state.extra as SymbolListExtraArgs;
+    return LoadingOverlay(
+      child: SymbolListPage(
+        symbols: extra.symbols,
+      ),
     );
   }
 }

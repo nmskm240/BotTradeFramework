@@ -7,7 +7,7 @@ part of 'bot_edit_form.dart';
 // **************************************************************************
 
 String _$botEditFormNotifierHash() =>
-    r'bd136a7f6096e4949864fd0299183b5c2f6eb76a';
+    r'7b8b9bef2cff5401576fa971126969a2721a867d';
 
 /// Copied from Dart SDK
 class _SystemHash {

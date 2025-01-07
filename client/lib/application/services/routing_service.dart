@@ -1,10 +1,16 @@
+// Flutter imports:
+import 'package:flutter/material.dart';
+
 // Package imports:
+import 'package:flutter_form_builder/flutter_form_builder.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:riverpod_annotation/riverpod_annotation.dart';
 
 // Project imports:
 import 'package:bot_runner/application/generated/bot.pb.dart';
+import 'package:bot_runner/application/generated/exchange.pb.dart';
+import 'package:bot_runner/application/generated/feature.pb.dart';
 
 part 'routing_service.dto.dart';
 part 'routing_service.g.dart';
@@ -23,64 +29,31 @@ final class RoutingService {
 
   GoRouter get router => _router;
 
-  Future<T?> _push<T>(
+  Future<T?> push<T>(
     String name, {
-    Map<String, String> pathParameter = const {},
-    Object? extra,
+    RoutingArgs? arg,
   }) async {
     return await _router.pushNamed<T>(
       name,
-      pathParameters: pathParameter,
-      extra: extra,
+      pathParameters: arg?.pathParameters ?? {},
+      extra: arg?.extra,
     );
   }
 
-  Future<T?> _replace<T>(
+  Future<T?> replace<T>(
     String name, {
-    Map<String, String> pathParameter = const {},
-    Object? extra,
+    RoutingArgs? arg,
   }) async {
     return await _router.replaceNamed(
       name,
-      pathParameters: pathParameter,
-      extra: extra,
+      pathParameters: arg?.pathParameters ?? {},
+      extra: arg?.extra,
     );
   }
 
   void pop<T>({T? res = null}) async {
     return _router.pop(res);
   }
-
-  Future goToHome() async {
-    await _router.replace(RouteName.home);
-  }
-
-  Future goToBotList() async {}
-
-  Future goToBotEdit() async {
-    await _push(RouteName.botCreate);
-  }
-
-  Future goToBotDetail({
-    String id = "",
-    required Stream<BotPerformance> activities,
-    TransitionType transitionType = TransitionType.push,
-  }) async {
-    final pathParameter = {
-      "id": id,
-    };
-    return await switch (transitionType) {
-      TransitionType.push => _push(RouteName.botDetail,
-          pathParameter: pathParameter, extra: activities),
-      TransitionType.replace => _replace(RouteName.botDetail,
-          pathParameter: pathParameter, extra: activities),
-    };
-  }
-}
-
-enum TransitionType {
-  push,
-  replace,
 }
 
 final class RouteName {
@@ -88,5 +61,8 @@ final class RouteName {
   static const String botList = "bots";
   static const String botCreate = "bot_create";
   static const String botDetail = "bot_detail";
-  static const String featureMethodSelect = "feature_method_select";
+  static const String selectFeatures = "select_features";
+  static const String selectExchanges = "select_exchanges";
+  static const String selectSymbols = "select_symbols";
+  static const String featuresEdit = "edit_feature";
 }
