@@ -58,9 +58,9 @@ public sealed class Aggregate : IFeaturePipeline
     private readonly RingQueue<Dictionary<string, double>> _buffer;
     public FeaturePipelineOrder Order { get; init; }
 
-    [LongParameterInfo(name: "buffer_size", description: "", defalutValue: 1)]
+    [LongParameterInfo(name: "buffer_size", description: "", defalutValue: 60)]
     public long BufferSize { get; init; }
-    [MapParameterInfo(name: "RuleMap", description: "", valueOptions: [Rule.First, Rule.Last, Rule.Sum, Rule.Min, Rule.Max])]
+    [MapParameterInfo(name: "rule_map", description: "", valueOptions: [Rule.First, Rule.Last, Rule.Sum, Rule.Min, Rule.Max])]
     [MapParameterInfo.Element(key: Ohlcv.OPEN_LABEL, value: Rule.First)]
     [MapParameterInfo.Element(key: Ohlcv.HIGH_LABEL, value: Rule.Max)]
     [MapParameterInfo.Element(key: Ohlcv.LOW_LABEL, value: Rule.Min)]
@@ -71,8 +71,8 @@ public sealed class Aggregate : IFeaturePipeline
 
     public Aggregate(FeaturePipelineOrder order)
     {
-        BufferSize = order.Parameters.First(p => p.Name == "buffer_size").LongValue ?? 1;
-        RuleMap = order.Parameters.First(p => p.Name == "RuleMap").MapValue ?? [];
+        BufferSize = order.Parameters.First(p => p.Name == "buffer_size").LongValue ?? 60;
+        RuleMap = order.Parameters.First(p => p.Name == "rule_map").MapValue ?? [];
         Order = order;
         _buffer = new((int)BufferSize);
     }
@@ -90,15 +90,14 @@ public sealed class Aggregate : IFeaturePipeline
         {
             var values = _buffer.Select(pair => pair[key]);
             // TODO: 拡張性を考えるならここはインターフェース化したい
-            var rule = Order.Parameters
-                .FirstOrDefault(p => p.Name == key).StringValue ?? DEFALUT_RULE;
+            var rule = RuleMap.GetValueOrDefault(key, DEFALUT_RULE);
             var res = (string)rule switch
             {
-                "first" => values.First(),
-                "last" => values.Last(),
-                "sum" => values.Sum(),
-                "max" => values.Max(),
-                "min" => values.Min(),
+                Rule.First => values.First(),
+                Rule.Last => values.Last(),
+                Rule.Sum => values.Sum(),
+                Rule.Max => values.Max(),
+                Rule.Min => values.Min(),
                 _ => throw new NotImplementedException(),
             };
             aggregated.Add(key, res!);

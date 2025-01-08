@@ -15,9 +15,8 @@ public sealed class Remove : IFeaturePipeline
     {
         Order = order;
 
-        var elements = Order.Parameters
-            .FirstOrDefault(p => p.Name == "target").StringValue ?? string.Empty;
-        Targets = elements.Split(",");
+        Targets = Order.Parameters
+            .FirstOrDefault(p => p.Name == "targets").ListValue ?? [];
     }
 
     public Dictionary<string, double> Execute(Dictionary<string, double> input)

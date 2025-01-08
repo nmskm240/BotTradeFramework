@@ -24,7 +24,7 @@ final class EditFeaturePipelineUsecase extends _$EditFeaturePipelineUsecase {
     return this;
   }
 
-  Future<FeaturePipelineInfo?> selectBy() async {
+  Future<FeaturePipelineOrder?> selectBy() async {
     final infos = await _overlay.wait(() => _fetcher.fetch());
     final info = await _router.push<FeaturePipelineInfo>(
       RouteName.selectFeatures,
@@ -36,9 +36,15 @@ final class EditFeaturePipelineUsecase extends _$EditFeaturePipelineUsecase {
     }
 
     final template = FeaturePipelineOrderExtension.from(info);
-    await _router.push(
+    final editedParametrs =
+        await _router.push<Iterable<FeaturePipelineParameterOrder>>(
       RouteName.featuresEdit,
       arg: FeaturePipelineParameterOrderEditRouteArgs(template.parameters),
+    );
+    return FeaturePipelineOrder(
+      // FIXME: c#の型情報と表示名を分ける
+      type: "BotTrade.Domain.Features.Process.${template.type}, Domain",
+      parameters: editedParametrs?.toList(),
     );
   }
 }

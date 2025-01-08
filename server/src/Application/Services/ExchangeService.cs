@@ -24,6 +24,15 @@ public class ExchangeService : ServiceBase.ExchangeServiceBase
         _repository = repository;
     }
 
+    public override Task<ExchangePlaces> SupportedExchanges(Empty request, ServerCallContext context)
+    {
+        // TODO: バックテスト以外も選択可能にする
+        return Task.FromResult(new ExchangePlaces
+        {
+            Places = { new ExchangePlace { Name = "Bybit", IsBacktest = true, } }
+        });
+    }
+
     public override async Task<Symbols> SupportedSymbols(ExchangePlace request, ServerCallContext context)
     {
         var symbols = await _exchange.SupportSymbolsAsync(context.CancellationToken);
