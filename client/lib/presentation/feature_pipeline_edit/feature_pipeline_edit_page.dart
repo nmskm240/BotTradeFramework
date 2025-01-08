@@ -56,7 +56,7 @@ final class FeaturePipelineEditPage extends ConsumerWidget {
             return FeaturePipelineListTile(
               key: ValueKey(index),
               pipeline: pipeline,
-              onTap: () => notifier.onTappedPipelineListTile(pipeline),
+              onTap: () => notifier.onTappedPipelineListTile(index),
             );
           },
           itemCount: state.pipelines.length,

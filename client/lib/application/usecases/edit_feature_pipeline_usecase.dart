@@ -36,14 +36,23 @@ final class EditFeaturePipelineUsecase extends _$EditFeaturePipelineUsecase {
     }
 
     final template = FeaturePipelineOrderExtension.from(info);
+    return await edit(template);
+  }
+
+  Future<FeaturePipelineOrder?> edit(FeaturePipelineOrder current) async {
     final editedParametrs =
         await _router.push<Iterable<FeaturePipelineParameterOrder>>(
       RouteName.featuresEdit,
-      arg: FeaturePipelineParameterOrderEditRouteArgs(template.parameters),
+      arg: FeaturePipelineParameterOrderEditRouteArgs(current.parameters),
     );
+
+    // FIXME: c#の型情報と表示名を分ける
+    if (!current.type.contains("BotTrade")) {
+      current.type = "BotTrade.Domain.Features.Process.${current.type}, Domain";
+    }
+
     return FeaturePipelineOrder(
-      // FIXME: c#の型情報と表示名を分ける
-      type: "BotTrade.Domain.Features.Process.${template.type}, Domain",
+      type: current.type,
       parameters: editedParametrs?.toList(),
     );
   }

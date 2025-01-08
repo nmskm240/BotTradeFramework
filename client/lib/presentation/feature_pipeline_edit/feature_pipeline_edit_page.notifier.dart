@@ -44,10 +44,29 @@ class FeaturePipelineEditPageNotifier
     );
   }
 
-  void onReorder(int oldIndex, int newIndex) {}
+  void onReorder(int oldIndex, int newIndex) {
+    final reordered = state.pipelines.toList();
+    final e = reordered.removeAt(oldIndex);
+    reordered.insert(newIndex, e);
+
+    state = state.copyWith(pipelines: reordered);
+  }
 
   void onPopInvokedWithResult(
       bool didPop, Iterable<FeaturePipelineOrder>? result) {}
 
-  void onTappedPipelineListTile(FeaturePipelineOrder tapped) {}
+  void onTappedPipelineListTile(int index) async {
+    final usecase = ref.read(editFeaturePipelineUsecaseProvider);
+    final current = state.pipelines.elementAt(index);
+    final edited = await usecase.edit(current);
+
+    if (edited == null) {
+      return;
+    }
+
+    final fixed = state.pipelines.toList();
+    fixed[index] = edited;
+
+    state = state.copyWith(pipelines: fixed);
+  }
 }
