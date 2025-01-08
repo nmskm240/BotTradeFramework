@@ -1,4 +1,8 @@
 // Flutter imports:
+import 'package:bot_runner/application/generated/bot.pb.dart';
+import 'package:bot_runner/application/generated/exchange.pb.dart';
+import 'package:bot_runner/application/services/bot_booter.dart';
+import 'package:bot_runner/application/services/routing_service.dart';
 import 'package:flutter/material.dart';
 
 // Package imports:
@@ -50,6 +54,7 @@ final class FeaturePipelineEditPage extends ConsumerWidget {
           itemBuilder: (context, index) {
             final pipeline = state.pipelines.elementAt(index);
             return FeaturePipelineListTile(
+              key: ValueKey(index),
               pipeline: pipeline,
               onTap: () => notifier.onTappedPipelineListTile(pipeline),
             );

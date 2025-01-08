@@ -81,9 +81,9 @@ final class BotDetailRoute extends GoRouteData {
 
   @override
   Widget build(BuildContext context, GoRouterState state) {
-    final i = state.extra as Stream<BotPerformance>;
+    final extra = state.extra as BotDetailRouteExtraArgs;
     return LoadingOverlay(
-      child: BotDeatilPage(activities: i),
+      child: BotDeatilPage(activities: extra.activitiesStream),
     );
   }
 }

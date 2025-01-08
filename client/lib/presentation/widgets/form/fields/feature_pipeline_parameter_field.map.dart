@@ -55,6 +55,7 @@ final class _FeaturePipelineMapParameterField
       onAdded: onAdded,
       onDeleted: onDeleted,
       onReordered: onReordered,
+      valueTransformer: valueTransform,
     );
   }
 
@@ -80,5 +81,16 @@ final class _FeaturePipelineMapParameterField
       _entries.insert(newIndex, key);
     });
     return _entries;
+  }
+
+  FeaturePipelineParameterOrder valueTransform(Iterable<MapEntry<String, String>>? value) {
+    return FeaturePipelineParameterOrder(
+      name: widget.name,
+      value: FeaturePipelineParameterValue(
+        mapValue: MapValue(
+          values: Map.fromEntries(value ?? []),
+        )
+      )
+    );
   }
 }

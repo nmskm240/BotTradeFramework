@@ -9,6 +9,7 @@ final class FeaturePipelineListTile extends StatelessWidget {
   final VoidCallback? onTap;
 
   const FeaturePipelineListTile({
+    super.key,
     required this.pipeline,
     this.onTap,
   });

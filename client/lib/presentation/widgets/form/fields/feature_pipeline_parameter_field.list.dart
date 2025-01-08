@@ -59,6 +59,7 @@ final class _FeaturePipelineListParameterField
       onAdded: onAdded,
       onDeleted: onDeleted,
       onReordered: onReordered,
+      valueTransformer: valueTransform,
     );
   }
 
@@ -82,5 +83,16 @@ final class _FeaturePipelineListParameterField
       _controllers.insert(newIndex, e);
     });
     return values;
+  }
+
+  FeaturePipelineParameterOrder valueTransform(List<String>? value) {
+    return FeaturePipelineParameterOrder(
+      name: widget.name,
+      value: FeaturePipelineParameterValue(
+        listValue: ListValue(
+          values: value ?? [],
+        ),
+      ),
+    );
   }
 }

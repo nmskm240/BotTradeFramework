@@ -15,6 +15,7 @@ class ListFromField<T> extends FormBuilderField<List<T>> {
             BuildContext context, int index, FormFieldState<List<T>> field)
         itemBuilder,
     super.initialValue,
+    super.valueTransformer,
     Iterable<T> Function(T element, int index)? onAdded,
     Iterable<T> Function(T element, int index)? onDeleted,
     Iterable<T> Function(int oldIndex, int newIndex)? onReordered,
@@ -22,6 +23,7 @@ class ListFromField<T> extends FormBuilderField<List<T>> {
           builder: (field) {
             final items = field.value ?? [];
             return DynamicReorderableListView<T>(
+              title: Text(name),
               items: items,
               itemBuilder: (context, index) {
                 return itemBuilder(context, index, field);

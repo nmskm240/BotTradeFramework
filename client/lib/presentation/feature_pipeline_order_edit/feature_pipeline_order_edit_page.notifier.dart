@@ -15,10 +15,16 @@ class FeaturePipelineOrderEditPageNotifier
   }
 
   void onConfirmed() {
-    if (!(state.formKey.currentState?.validate() ?? false)) {
+    final formState = state.formKey.currentState;
+    if (formState == null || !formState.validate()) {
       return;
     }
-    state.formKey.currentState!.save();
-    print(state.formKey.currentState!.value);
+    formState.save();
+
+    final router = ref.read(routingServiceProvider);
+    final res = formState.value.values
+        .map((e) => e as FeaturePipelineParameterOrder)
+        .toList();
+    router.pop(res: res);
   }
 }
