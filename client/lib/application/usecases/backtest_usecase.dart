@@ -34,9 +34,9 @@ final class BacktestUsecase {
   void call(BotOrder order) async {
     final activityStream = _booter.boot(order);
     await _loadingOverlay.wait(() => activityStream.first);
-    await _router.goToBotDetail(
-      id: "0",
-      activities: activityStream,
+    await _router.replace(
+      RouteName.botDetail,
+      arg: BotDetailRouteArgs("0", activityStream),
     );
   }
 }

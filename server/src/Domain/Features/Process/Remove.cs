@@ -8,16 +8,15 @@ namespace BotTrade.Domain.Features.Process;
 public sealed class Remove : IFeaturePipeline
 {
     public FeaturePipelineOrder Order { get; init; }
-    [ListParameterInfo(name: "", description: "", defalutValue: [])]
+    [ListParameterInfo(name: "targets", description: "", defalutValue: [])]
     public IEnumerable<string> Targets { get; init; }
 
     public Remove(FeaturePipelineOrder order)
     {
         Order = order;
 
-        var elements = Order.Parameters
-            .FirstOrDefault(p => p.Name == "target").StringValue ?? string.Empty;
-        Targets = elements.Split(",");
+        Targets = Order.Parameters
+            .FirstOrDefault(p => p.Name == "targets").ListValue ?? [];
     }
 
     public Dictionary<string, double> Execute(Dictionary<string, double> input)

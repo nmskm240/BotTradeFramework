@@ -29,17 +29,15 @@ class BotEditPage extends ConsumerWidget {
     final notifier = ref.read(provider.notifier);
     final state = ref.watch(provider);
     return Scaffold(
-      appBar: AppBar(
-
-      ),
+      appBar: AppBar(),
       body: SingleChildScrollView(
         child: BotEditForm(
-          formKey: state.formKey,
+          state.formKey,
         ),
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.start),
-        onPressed: notifier.onEditComfirm
+        onPressed: notifier.onEditComfirm,
       ),
     );
   }

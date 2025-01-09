@@ -14,6 +14,6 @@ class HomePageNotifier extends _$HomePageNotifier {
   }
 
   void pushBotCreatePage() {
-    ref.read(routingServiceProvider).goToBotEdit();
+    ref.read(routingServiceProvider).push(RouteName.botCreate);
   }
 }

@@ -9,6 +9,7 @@ part of 'router.dart';
 List<RouteBase> get $appRoutes => [
       $homeRoute,
       $botRoute,
+      $selectRoute,
     ];
 
 RouteBase get $homeRoute => GoRouteData.$route(
@@ -45,9 +46,9 @@ RouteBase get $botRoute => GoRouteData.$route(
           factory: $BotCreateRouteExtension._fromState,
           routes: [
             GoRouteData.$route(
-              path: '/features/select',
-              name: 'feature_method_select',
-              factory: $FeatureMethodSelectRouteExtension._fromState,
+              path: '/features',
+              name: 'edit_feature',
+              factory: $FeaturePipelinEditRouteExtension._fromState,
             ),
           ],
         ),
@@ -93,12 +94,12 @@ extension $BotCreateRouteExtension on BotCreateRoute {
   void replace(BuildContext context) => context.replace(location);
 }
 
-extension $FeatureMethodSelectRouteExtension on FeatureMethodSelectRoute {
-  static FeatureMethodSelectRoute _fromState(GoRouterState state) =>
-      FeatureMethodSelectRoute();
+extension $FeaturePipelinEditRouteExtension on FeaturePipelinEditRoute {
+  static FeaturePipelinEditRoute _fromState(GoRouterState state) =>
+      FeaturePipelinEditRoute();
 
   String get location => GoRouteData.$location(
-        '/features/select',
+        '/features',
       );
 
   void go(BuildContext context) => context.go(location);
@@ -118,6 +119,100 @@ extension $BotDetailRouteExtension on BotDetailRoute {
 
   String get location => GoRouteData.$location(
         '/${Uri.encodeComponent(id)}',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+RouteBase get $selectRoute => GoRouteData.$route(
+      path: '/select',
+      name: 'select',
+      factory: $SelectRouteExtension._fromState,
+      routes: [
+        GoRouteData.$route(
+          path: '/exchanges',
+          name: 'select_exchanges',
+          factory: $SelectExchangeRouteExtension._fromState,
+        ),
+        GoRouteData.$route(
+          path: '/features',
+          name: 'select_features',
+          factory: $SelectFeatureRouteExtension._fromState,
+        ),
+        GoRouteData.$route(
+          path: '/symbols',
+          name: 'select_symbols',
+          factory: $SelectSymbolRouteExtension._fromState,
+        ),
+      ],
+    );
+
+extension $SelectRouteExtension on SelectRoute {
+  static SelectRoute _fromState(GoRouterState state) => SelectRoute();
+
+  String get location => GoRouteData.$location(
+        '/select',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $SelectExchangeRouteExtension on SelectExchangeRoute {
+  static SelectExchangeRoute _fromState(GoRouterState state) =>
+      SelectExchangeRoute();
+
+  String get location => GoRouteData.$location(
+        '/exchanges',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $SelectFeatureRouteExtension on SelectFeatureRoute {
+  static SelectFeatureRoute _fromState(GoRouterState state) =>
+      SelectFeatureRoute();
+
+  String get location => GoRouteData.$location(
+        '/features',
+      );
+
+  void go(BuildContext context) => context.go(location);
+
+  Future<T?> push<T>(BuildContext context) => context.push<T>(location);
+
+  void pushReplacement(BuildContext context) =>
+      context.pushReplacement(location);
+
+  void replace(BuildContext context) => context.replace(location);
+}
+
+extension $SelectSymbolRouteExtension on SelectSymbolRoute {
+  static SelectSymbolRoute _fromState(GoRouterState state) =>
+      SelectSymbolRoute();
+
+  String get location => GoRouteData.$location(
+        '/symbols',
       );
 
   void go(BuildContext context) => context.go(location);

@@ -11,16 +11,16 @@ import 'package:bot_runner/infra/grpc_client.dart';
 part 'symbol_fetcher.g.dart';
 
 @riverpod
-_SymbolFetcher symbolFetcher(Ref ref) {
+SymbolFetcher symbolFetcher(Ref ref) {
   final grpc = ref.read(grpcClientProvider);
   final client = grpc.get<ExchangeServiceClient>();
-  return _SymbolFetcher(client: client);
+  return SymbolFetcher(client: client);
 }
 
-final class _SymbolFetcher {
+final class SymbolFetcher {
   final ExchangeServiceClient client;
 
-  const _SymbolFetcher({
+  const SymbolFetcher({
     required this.client,
   });
 
